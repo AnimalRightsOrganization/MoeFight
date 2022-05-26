@@ -57,8 +57,8 @@ namespace Code.Client
 
         public override void LogicUpdate()
         {
-            foreach (var kv in _players)
-                kv.Value.Update(LogicTimer.FixedDelta);
+            //foreach (var kv in _players)
+            //    kv.Value.Update(LogicTimer.FixedDelta);
         }
 
         public void AddClientPlayer(ClientPlayer player)

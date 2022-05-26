@@ -126,10 +126,10 @@ namespace Code.Server
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.C2S_Login:
+                case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
                     break;
-                case PacketType.C2S_Input:
+                case PacketType.C2S_Lockstep:
                     OnInputReceived(reader, peer);
                     break;
                 default:
@@ -167,7 +167,7 @@ namespace Code.Server
             Console.WriteLine($"[C2S] OnLogin: {req.UserName}");
 
             LoginResponse resp = new LoginResponse { UserName = req.UserName, Token = "123ABC" };
-            peer.Send(WriteSerializable(PacketType.S2C_Login, resp), DeliveryMethod.ReliableOrdered);
+            peer.Send(WriteSerializable(PacketType.S2C_LoginResult, resp), DeliveryMethod.ReliableOrdered);
         }
 
         void OnInputReceived(NetPacketReader reader, NetPeer peer)

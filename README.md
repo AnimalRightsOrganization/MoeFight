@@ -8,3 +8,8 @@
 
 2. 所有引用项的复制本地 True → False。
 
+## 模拟弱网
+
+clumsy 延迟
+
+``udp and outbound and ip.DstAddr = 8.8.8.8``

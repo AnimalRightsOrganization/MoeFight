@@ -45,7 +45,10 @@ namespace Code.Client
         void Update()
         {
             _netManager.PollEvents();
+
             UI_Main.Instance.Ping(_ping);
+
+            //Debug.Log("<color=green>Update</color>");
         }
 
         void OnDestroy()
@@ -56,6 +59,8 @@ namespace Code.Client
         void FixedUpdate()
         {
             _playerManager.LogicUpdate();
+
+            //Debug.Log($"<color=yellow>FixedUpdate: {Time.time}</color>"); //两个Fixed之间有多个Update
         }
         #endregion
 
@@ -104,7 +109,7 @@ namespace Code.Client
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.S2C_Login:
+                case PacketType.S2C_LoginResult:
                     OnLogin(peer, reader);
                     break;
                 default:
@@ -142,7 +147,12 @@ namespace Code.Client
         public void SendLogin()
         {
             var request = new LoginRequest { UserName = _userName };
-            SendPacketSerializable(PacketType.C2S_Login, request, DeliveryMethod.Unreliable);
+            SendPacketSerializable(PacketType.C2S_LoginReq, request, DeliveryMethod.Unreliable);
+        }
+
+        public void SendInput(C2S_InputBufferPacket cmd)
+        {
+            SendPacketSerializable(PacketType.C2S_Lockstep, cmd, DeliveryMethod.ReliableOrdered);
         }
 
         private void OnLogin(NetPeer peer, NetPacketReader reader)
