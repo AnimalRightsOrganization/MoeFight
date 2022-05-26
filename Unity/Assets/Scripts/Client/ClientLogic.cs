@@ -11,20 +11,16 @@ namespace Code.Client
 {
     public class ClientLogic : MonoBehaviour, INetEventListener
     {
+        public const string IP = "localhost";
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
         private Action<DisconnectInfo> _onDisconnected;
-        //private GamePool<ShootEffect> _shootsPool;
 
         private NetManager _netManager;
         private NetDataWriter _writer;
-        //private NetPacketProcessor _packetProcessor;
-
 
         private string _userName;
-        private ServerState _cachedServerState;
-        private ShootPacket _cachedShootData;
         private ushort _lastServerTick;
         private NetPeer _server;
         private ClientPlayerManager _playerManager;
@@ -32,23 +28,14 @@ namespace Code.Client
 
         public static LogicTimer LogicTimer { get; private set; }
 
-        private void Awake()
+        void Awake()
         {
             DontDestroyOnLoad(gameObject);
             Random rd = new Random();
-            _cachedServerState = new ServerState();
-            _cachedShootData = new ShootPacket();
             _userName = Environment.MachineName + " " + rd.Next(100000);
             LogicTimer = new LogicTimer(OnLogicUpdate);
             _writer = new NetDataWriter();
             _playerManager = new ClientPlayerManager(this);
-            //_shootsPool = new GamePool<ShootEffect>(ShootEffectContructor, 100);
-            //_packetProcessor = new NetPacketProcessor();
-            //_packetProcessor.RegisterNestedType((w, v) => w.Put(v), reader => reader.GetVector2());
-            //_packetProcessor.RegisterNestedType<PlayerState>();
-            //_packetProcessor.SubscribeReusable<PlayerJoinedPacket>(OnPlayerJoined);
-            //_packetProcessor.SubscribeReusable<JoinAcceptPacket>(OnJoinAccept);
-            //_packetProcessor.SubscribeReusable<PlayerLeavedPacket>(OnPlayerLeaved);
             _netManager = new NetManager(this)
             {
                 AutoRecycle = true,
@@ -61,14 +48,7 @@ namespace Code.Client
         {
             _netManager.PollEvents();
             LogicTimer.Update();
-            //if (_playerManager.OurPlayer != null)
-            //    _debugText.text =
-            //        string.Format(
-            //            $"LastServerTick: {_lastServerTick}\n" +
-            //            $"StoredCommands: {_playerManager.OurPlayer.StoredCommands}\n" +
-            //            $"Ping: {_ping}");
-            //else
-            //    _debugText.text = "Disconnected";
+            //$"Ping: {_ping}");
         }
 
         void OnDestroy()
@@ -76,11 +56,18 @@ namespace Code.Client
             _netManager.Stop();
         }
 
+        void FixedUpdate()
+        {
+            
+        }
+
         private void OnLogicUpdate()
         {
             _playerManager.LogicUpdate();
         }
 
+
+        #region Interface
         public void SendPacketSerializable<T>(PacketType type, T packet, DeliveryMethod deliveryMethod) where T : INetSerializable
         {
             if (_server == null)
@@ -139,18 +126,6 @@ namespace Code.Client
                 case PacketType.S2C_Login:
                     OnLogin(peer, reader);
                     break;
-                case PacketType.Spawn:
-                    break;
-                case PacketType.ServerState:
-                    _cachedServerState.Deserialize(reader);
-                    OnServerState();
-                    break;
-                case PacketType.Serialized:
-                    //_packetProcessor.ReadAllPackets(reader);
-                    break;
-                case PacketType.Shoot:
-                    //_cachedShootData.Deserialize(reader);
-                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -171,14 +146,15 @@ namespace Code.Client
         {
             request.Reject();
         }
+        #endregion
 
-        public void Connect(string ip, Action<DisconnectInfo> onDisconnected)
+
+        #region Functions
+        public void Connect(Action<DisconnectInfo> onDisconnected)
         {
             _onDisconnected = onDisconnected;
-            _netManager.Connect(ip, Port, Key);
+            _netManager.Connect(IP, Port, Key);
         }
-
-
 
         public void SendLogin()
         {
@@ -189,17 +165,6 @@ namespace Code.Client
         private void OnPlayerJoined(PlayerJoinedPacket packet)
         {
             Debug.Log($"[C] Player joined: {packet.UserName}");
-            var remotePlayer = new RemotePlayer(_playerManager, packet.UserName, packet);
-            //var view = RemotePlayerView.Create(_remotePlayerViewPrefab, remotePlayer);
-            //_playerManager.AddPlayer(remotePlayer, view);
-        }
-
-        private void OnServerState()
-        {
-            //skip duplicate or old because we received that packet unreliably
-            if (NetworkGeneral.SeqDiff(_cachedServerState.Tick, _lastServerTick) <= 0)
-                return;
-            _lastServerTick = _cachedServerState.Tick;
         }
 
         private void OnPlayerLeaved(PlayerLeavedPacket packet)
@@ -224,5 +189,6 @@ namespace Code.Client
             resp.Deserialize(reader);
             Debug.Log($"[S2C] OnLogin: {resp.UserName}, {resp.Token}");
         }
+        #endregion
     }
 }

@@ -7,12 +7,10 @@ namespace Code.Client
     public struct PlayerHandler
     {
         public readonly BasePlayer Player;
-        public readonly IPlayerView View;
 
-        public PlayerHandler(BasePlayer player, IPlayerView view)
+        public PlayerHandler(BasePlayer player)
         {
             Player = player;
-            View = view;
         }
 
         public void Update(float delta)
@@ -52,7 +50,6 @@ namespace Code.Client
             if (_players.TryGetValue(id, out var handler))
             {
                 _players.Remove(id);
-                handler.View.Destroy();
             }
         
             return handler.Player;
@@ -64,21 +61,13 @@ namespace Code.Client
                 kv.Value.Update(LogicTimer.FixedDelta);
         }
 
-        public void AddClientPlayer(ClientPlayer player, ClientPlayerView view)
+        public void AddClientPlayer(ClientPlayer player)
         {
             _clientPlayer = player;
-            _players.Add(player.Id, new PlayerHandler(player, view));
         }
         
-        public void AddPlayer(RemotePlayer player, RemotePlayerView view)
-        {
-            _players.Add(player.Id, new PlayerHandler(player, view));
-        }
-
         public void Clear()
         {
-            foreach (var p in _players.Values)
-                p.View.Destroy();
             _players.Clear();
         }
     }
