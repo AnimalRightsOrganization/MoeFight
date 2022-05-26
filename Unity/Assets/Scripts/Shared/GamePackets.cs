@@ -1,19 +1,28 @@
-using System;
+﻿using System;
 using LiteNetLib.Utils;
 
 namespace Code.Shared
 {
     public enum PacketType : byte
     {
-        Movement,
-        Spawn,
-        ServerState,
-        Serialized,
-        Shoot,
+        //////////////
         C2S_Login,
+        C2S_Input,
+        //////////////
         S2C_Login,
+        S2C_FirstSync,
+        S2C_Input,
     }
 
+    #region 公用
+    public struct EmptyPacket : INetSerializable
+    {
+        public void Serialize(NetDataWriter writer) { }
+        public void Deserialize(NetDataReader reader) { }
+    }
+    #endregion
+
+    #region 上行
     public struct LoginRequest : INetSerializable
     {
         public string UserName;
@@ -28,6 +37,24 @@ namespace Code.Shared
             UserName = reader.GetString();
         }
     }
+    #endregion
+
+    #region 下行
+    // 错误码回包
+    public struct S2C_ErrorPacket : INetSerializable
+    {
+        public byte ErrorCode; //错误码
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(ErrorCode);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            ErrorCode = reader.GetByte();
+        }
+    }
+
     public struct LoginResponse : INetSerializable
     {
         public string UserName;
@@ -45,33 +72,7 @@ namespace Code.Shared
             Token = reader.GetString();
         }
     }
-
-
-    //Auto serializable packets
-    public class JoinPacket
-    {
-        public string UserName { get; set; }
-    }
-
-    public class JoinAcceptPacket
-    {
-        public byte Id { get; set; }
-        public ushort ServerTick { get; set; }
-    }
-
-    public class PlayerJoinedPacket
-    {
-        public string UserName { get; set; }
-        public bool NewPlayer { get; set; }
-        public byte Health { get; set; }
-        public ushort ServerTick { get; set; }
-        public PlayerState InitialPlayerState { get; set; }
-    }
-
-    public class PlayerLeavedPacket
-    {
-        public byte Id { get; set; }
-    }
+    #endregion
 
     [Flags]
     public enum MovementKeys : byte
@@ -104,63 +105,6 @@ namespace Code.Shared
             Keys = (MovementKeys)reader.GetByte();
             Rotation = reader.GetFloat();
             ServerTick = reader.GetUShort();
-        }
-    }
-    
-    public struct PlayerState : INetSerializable
-    {
-        public byte Id;
-        public float Rotation;
-        public ushort Tick;
-
-        public const int Size = 1 + 8 + 4 + 2;
-        
-        public void Serialize(NetDataWriter writer)
-        {
-            writer.Put(Id);
-            writer.Put(Rotation);
-            writer.Put(Tick);
-        }
-
-        public void Deserialize(NetDataReader reader)
-        {
-            Id = reader.GetByte();
-            Rotation = reader.GetFloat();
-            Tick = reader.GetUShort();
-        }
-    }
-
-    public struct ServerState : INetSerializable
-    {
-        public ushort Tick;
-        public ushort LastProcessedCommand;
-        
-        public int PlayerStatesCount;
-        public int StartState; //server only
-        public PlayerState[] PlayerStates;
-        
-        //tick
-        public const int HeaderSize = sizeof(ushort)*2;
-        
-        public void Serialize(NetDataWriter writer)
-        {
-            writer.Put(Tick);
-            writer.Put(LastProcessedCommand);
-            
-            for (int i = 0; i < PlayerStatesCount; i++)
-                PlayerStates[StartState + i].Serialize(writer);
-        }
-
-        public void Deserialize(NetDataReader reader)
-        {
-            Tick = reader.GetUShort();
-            LastProcessedCommand = reader.GetUShort();
-            
-            PlayerStatesCount = reader.AvailableBytes / PlayerState.Size;
-            if (PlayerStates == null || PlayerStates.Length < PlayerStatesCount)
-                PlayerStates = new PlayerState[PlayerStatesCount];
-            for (int i = 0; i < PlayerStatesCount; i++)
-                PlayerStates[i].Deserialize(reader);
         }
     }
 }

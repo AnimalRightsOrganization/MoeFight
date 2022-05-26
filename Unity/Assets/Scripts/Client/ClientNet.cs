@@ -15,19 +15,18 @@ namespace Code.Client
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
-        private Action<DisconnectInfo> _onDisconnected;
-
         private NetPeer _server;
         private NetManager _netManager;
         private NetDataWriter _writer;
 
+        private Action<DisconnectInfo> _onDisconnected;
         private string _userName;
         private ushort _lastServerTick;
         private ClientPlayerManager _playerManager;
         private int _ping;
 
 
-        #region Unity Method
+        #region Inner Method
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
@@ -69,16 +68,6 @@ namespace Code.Client
             _writer.Reset();
             _writer.Put((byte)type);
             packet.Serialize(_writer);
-            _server.Send(_writer, deliveryMethod);
-        }
-
-        public void SendPacket<T>(T packet, DeliveryMethod deliveryMethod) where T : class, new()
-        {
-            if (_server == null)
-                return;
-            _writer.Reset();
-            _writer.Put((byte)PacketType.Serialized);
-            //_packetProcessor.Write(_writer, packet);
             _server.Send(_writer, deliveryMethod);
         }
 
@@ -152,25 +141,6 @@ namespace Code.Client
         {
             var request = new LoginRequest { UserName = _userName };
             SendPacketSerializable(PacketType.C2S_Login, request, DeliveryMethod.Unreliable);
-        }
-
-        private void OnPlayerJoined(PlayerJoinedPacket packet)
-        {
-            Debug.Log($"[C] Player joined: {packet.UserName}");
-        }
-
-        private void OnPlayerLeaved(PlayerLeavedPacket packet)
-        {
-            var player = _playerManager.RemovePlayer(packet.Id);
-            if (player != null)
-                Debug.Log($"[C] Player leaved: {player.Name}");
-        }
-
-        private void OnJoinAccept(JoinAcceptPacket packet)
-        {
-            Debug.Log("[C] Join accept. Received player id: " + packet.Id);
-            _lastServerTick = packet.ServerTick;
-            var clientPlayer = new ClientPlayer(this, _playerManager, _userName, packet.Id);
         }
 
         private void OnLogin(NetPeer peer, NetPacketReader reader)

@@ -8,7 +8,6 @@ namespace Code.Client
         private PlayerInputPacket _nextCommand;
         private readonly ClientNet _clientLogic;
         private readonly ClientPlayerManager _playerManager;
-        private ServerState _lastServerState;
         private const int MaxStoredCommands = 60;
         private bool _firstStateReceived;
         private int _updateCount;
