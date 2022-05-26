@@ -55,7 +55,6 @@ namespace Code.Server
             if (_serverTick % 2 == 0)
             {
                 _serverState.Tick = _serverTick;
-                _serverState.PlayerStates = _playerManager.PlayerStates;
                 int pCount = _playerManager.Count;
 
                 foreach (ServerPlayer p in _playerManager)
@@ -96,58 +95,6 @@ namespace Code.Server
         //    //_packetProcessor.Write(_cachedWriter, packet);
         //    return _cachedWriter;
         //}
-
-        private void OnJoinReceived(JoinPacket joinPacket, NetPeer peer)
-        {
-            Console.WriteLine("[S] Join packet received: " + joinPacket.UserName);
-            var player = new ServerPlayer(_playerManager, joinPacket.UserName, peer);
-            _playerManager.AddPlayer(player);
-
-            //player.Spawn(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)));
-
-            //Send join accept
-            var ja = new JoinAcceptPacket { Id = player.Id, ServerTick = _serverTick };
-            //peer.Send(WritePacket(ja), DeliveryMethod.ReliableOrdered);
-
-            //Send to old players info about new player
-            var pj = new PlayerJoinedPacket
-            {
-                UserName = joinPacket.UserName,
-                NewPlayer = true,
-                InitialPlayerState = player.NetworkState,
-                ServerTick = _serverTick
-            };
-            //_netManager.SendToAll(WritePacket(pj), DeliveryMethod.ReliableOrdered, peer);
-
-            //Send to new player info about old players
-            pj.NewPlayer = false;
-            foreach (ServerPlayer otherPlayer in _playerManager)
-            {
-                if (otherPlayer == player)
-                    continue;
-                pj.UserName = otherPlayer.Name;
-                pj.InitialPlayerState = otherPlayer.NetworkState;
-                //peer.Send(WritePacket(pj), DeliveryMethod.ReliableOrdered);
-            }
-        }
-
-        private void OnInputReceived(NetPacketReader reader, NetPeer peer)
-        {
-            if (peer.Tag == null)
-                return;
-            _cachedCommand.Deserialize(reader);
-            var player = (ServerPlayer)peer.Tag;
-
-            bool antilagApplied = _playerManager.EnableAntilag(player);
-            player.ApplyInput(_cachedCommand, LogicTimer.FixedDelta);
-            if (antilagApplied)
-                _playerManager.DisableAntilag();
-        }
-
-        public void SendShoot(ref ShootPacket sp)
-        {
-            _netManager.SendToAll(WriteSerializable(PacketType.Shoot, sp), DeliveryMethod.ReliableUnordered);
-        }
 
         void INetEventListener.OnPeerConnected(NetPeer peer)
         {
@@ -224,6 +171,48 @@ namespace Code.Server
 
             LoginResponse resp = new LoginResponse { UserName = req.UserName, Token = "123ABC" };
             peer.Send(WriteSerializable(PacketType.S2C_Login, resp), DeliveryMethod.ReliableOrdered);
+        }
+
+        private void OnJoinReceived(JoinPacket joinPacket, NetPeer peer)
+        {
+            Console.WriteLine("[S] Join packet received: " + joinPacket.UserName);
+            var player = new ServerPlayer(_playerManager, joinPacket.UserName, peer);
+            _playerManager.AddPlayer(player);
+
+            //player.Spawn(new Vector2(Random.Range(-2f, 2f), Random.Range(-2f, 2f)));
+
+            //Send join accept
+            var ja = new JoinAcceptPacket { Id = player.Id, ServerTick = _serverTick };
+            //peer.Send(WritePacket(ja), DeliveryMethod.ReliableOrdered);
+
+            //Send to old players info about new player
+            var pj = new PlayerJoinedPacket
+            {
+                UserName = joinPacket.UserName,
+                NewPlayer = true,
+                InitialPlayerState = player.NetworkState,
+                ServerTick = _serverTick
+            };
+            //_netManager.SendToAll(WritePacket(pj), DeliveryMethod.ReliableOrdered, peer);
+
+            //Send to new player info about old players
+            pj.NewPlayer = false;
+            foreach (ServerPlayer otherPlayer in _playerManager)
+            {
+                if (otherPlayer == player)
+                    continue;
+                pj.UserName = otherPlayer.Name;
+                pj.InitialPlayerState = otherPlayer.NetworkState;
+                //peer.Send(WritePacket(pj), DeliveryMethod.ReliableOrdered);
+            }
+        }
+
+        private void OnInputReceived(NetPacketReader reader, NetPeer peer)
+        {
+            if (peer.Tag == null)
+                return;
+            _cachedCommand.Deserialize(reader);
+            var player = (ServerPlayer)peer.Tag;
         }
     }
 }

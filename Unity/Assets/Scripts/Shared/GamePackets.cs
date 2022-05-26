@@ -1,6 +1,5 @@
 using System;
 using LiteNetLib.Utils;
-using UnityEngine;
 
 namespace Code.Shared
 {
@@ -48,8 +47,6 @@ namespace Code.Shared
     }
 
 
-
-
     //Auto serializable packets
     public class JoinPacket
     {
@@ -76,25 +73,6 @@ namespace Code.Shared
         public byte Id { get; set; }
     }
 
-    //Manual serializable packets
-    public struct SpawnPacket : INetSerializable
-    {
-        public long PlayerId;
-        public Vector2 Position;
-        
-        public void Serialize(NetDataWriter writer)
-        {
-            writer.Put(PlayerId);
-            writer.Put(Position);
-        }
-
-        public void Deserialize(NetDataReader reader)
-        {
-            PlayerId = reader.GetLong();
-            Position = reader.GetVector2();
-        }
-    }
-
     [Flags]
     public enum MovementKeys : byte
     {
@@ -105,30 +83,6 @@ namespace Code.Shared
         Fire = 1 << 5
     }
 
-    public struct ShootPacket : INetSerializable
-    {
-        public byte FromPlayer;
-        public ushort CommandId;
-        public Vector2 Hit;
-        public ushort ServerTick;
-        
-        public void Serialize(NetDataWriter writer)
-        {
-            writer.Put(FromPlayer);
-            writer.Put(CommandId);
-            writer.Put(Hit);
-            writer.Put(ServerTick);
-        }
-
-        public void Deserialize(NetDataReader reader)
-        {
-            FromPlayer = reader.GetByte();
-            CommandId = reader.GetUShort();
-            Hit = reader.GetVector2();
-            ServerTick = reader.GetUShort();
-        }
-    }
-    
     public struct PlayerInputPacket : INetSerializable
     {
         public ushort Id;
@@ -156,7 +110,6 @@ namespace Code.Shared
     public struct PlayerState : INetSerializable
     {
         public byte Id;
-        public Vector2 Position;
         public float Rotation;
         public ushort Tick;
 
@@ -165,7 +118,6 @@ namespace Code.Shared
         public void Serialize(NetDataWriter writer)
         {
             writer.Put(Id);
-            writer.Put(Position);
             writer.Put(Rotation);
             writer.Put(Tick);
         }
@@ -173,7 +125,6 @@ namespace Code.Shared
         public void Deserialize(NetDataReader reader)
         {
             Id = reader.GetByte();
-            Position = reader.GetVector2();
             Rotation = reader.GetFloat();
             Tick = reader.GetUShort();
         }

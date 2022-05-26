@@ -42,26 +42,6 @@ namespace Code.Client
                 yield return ph.Value.Player;
         }
 
-        public void ApplyServerState(ref ServerState serverState)
-        {
-            for (int i = 0; i < serverState.PlayerStatesCount; i++)
-            {
-                var state = serverState.PlayerStates[i];
-                if(!_players.TryGetValue(state.Id, out var handler))
-                    return;
-
-                if (handler.Player == _clientPlayer)
-                {
-                    _clientPlayer.ReceiveServerState(serverState, state);
-                }
-                else
-                {
-                    var rp = (RemotePlayer)handler.Player;
-                    rp.OnPlayerState(state);
-                }
-            }
-        }
-
         public BasePlayer GetById(byte id)
         {
             return _players.TryGetValue(id, out var ph) ? ph.Player : null;

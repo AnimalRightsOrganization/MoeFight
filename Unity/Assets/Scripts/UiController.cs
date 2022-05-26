@@ -1,5 +1,4 @@
-﻿using Code.Server;
-using LiteNetLib;
+﻿using LiteNetLib;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,7 +8,7 @@ namespace Code.Client
     {
         [SerializeField] private GameObject _uiObject;
         [SerializeField] private ClientLogic _clientLogic;
-        [SerializeField] private ServerLogic _serverLogic;
+        //[SerializeField] private ServerLogic _serverLogic;
         [SerializeField] private InputField _ipField;
         [SerializeField] private Text _disconnectInfoField;
 
@@ -18,12 +17,12 @@ namespace Code.Client
             _ipField.text = NetUtils.GetLocalIp(LocalAddrType.IPv4);
         }
 
-        public void OnHostClick()
-        {
-            _serverLogic.StartServer();
-            _uiObject.SetActive(false);
-            _clientLogic.Connect("localhost", OnDisconnected);
-        }
+        //public void OnHostClick()
+        //{
+        //    //_serverLogic.StartServer();
+        //    _uiObject.SetActive(false);
+        //    _clientLogic.Connect("localhost", OnDisconnected);
+        //}
 
         private void OnDisconnected(DisconnectInfo info)
         {

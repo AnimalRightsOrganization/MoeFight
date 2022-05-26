@@ -106,7 +106,6 @@ namespace Code.Client
             Debug.Log("[C] Connected to server: " + peer.EndPoint);
             _server = peer;
 
-            //SendPacket(new JoinPacket { UserName = _userName }, DeliveryMethod.ReliableOrdered);
             LogicTimer.Start();
         }
 
@@ -201,7 +200,6 @@ namespace Code.Client
             if (NetworkGeneral.SeqDiff(_cachedServerState.Tick, _lastServerTick) <= 0)
                 return;
             _lastServerTick = _cachedServerState.Tick;
-            _playerManager.ApplyServerState(ref _cachedServerState);
         }
 
         private void OnPlayerLeaved(PlayerLeavedPacket packet)

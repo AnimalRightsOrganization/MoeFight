@@ -1,37 +1,19 @@
 using System.Collections.Generic;
 using Code.Shared;
-using LiteNetLib;
 
 namespace Code.Server
 {
     public class ServerPlayerManager : BasePlayerManager
     {
-        private readonly ServerLogic _serverLogic;
         private readonly ServerPlayer[] _players;
-        private readonly AntilagSystem _antilagSystem;
-        
-        public readonly PlayerState[] PlayerStates;
+
         private int _playersCount;
-        
-        
+
         public override int Count => _playersCount;
 
         public ServerPlayerManager(ServerLogic serverLogic)
         {
-            _serverLogic = serverLogic;
-            _antilagSystem = new AntilagSystem(60, ServerLogic.MaxPlayers);
             _players = new ServerPlayer[ServerLogic.MaxPlayers];
-            PlayerStates = new PlayerState[ServerLogic.MaxPlayers];
-        }
-
-        public bool EnableAntilag(ServerPlayer forPlayer)
-        {
-            return _antilagSystem.TryApplyAntilag(_players, _serverLogic.Tick, forPlayer.AssociatedPeer.Id);
-        }
-
-        public void DisableAntilag()
-        {
-            _antilagSystem.RevertAntilag(_players);            
         }
 
         public override IEnumerator<BasePlayer> GetEnumerator()
@@ -65,7 +47,6 @@ namespace Code.Server
             {
                 var p = _players[i];
                 p.Update(LogicTimer.FixedDelta);
-                PlayerStates[i] = p.NetworkState;
             }
         }
 
