@@ -11,9 +11,9 @@ namespace Code.Server
 
         public override int Count => _playersCount;
 
-        public ServerPlayerManager(ServerLogic serverLogic)
+        public ServerPlayerManager(ServerNet serverLogic)
         {
-            _players = new ServerPlayer[ServerLogic.MaxPlayers];
+            _players = new ServerPlayer[ServerNet.MaxPlayers];
         }
 
         public override IEnumerator<BasePlayer> GetEnumerator()

@@ -7,7 +7,7 @@ namespace Rollback
 {
     internal class Program : MonoBehaviour
     {
-        static ServerLogic server;
+        static ServerNet server;
         
         async void Start()
         {
@@ -20,9 +20,9 @@ namespace Rollback
         {
             try
             {
-                using (server = new ServerLogic())
+                using (server = new ServerNet())
                 {
-                    Debug.Log($"StartServer, listen on {ServerLogic.Port}");
+                    Debug.Log($"StartServer, listen on {ServerNet.Port}");
                     await server.StartServer();
                     //Console.ReadLine();
                 }
@@ -40,6 +40,7 @@ namespace Rollback
         void OnDestroy()
         {
             Debug.Log("Dispose");
+
             server?.Dispose();
         }
     }

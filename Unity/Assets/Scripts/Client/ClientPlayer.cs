@@ -6,7 +6,7 @@ namespace Code.Client
     public class ClientPlayer : BasePlayer
     {
         private PlayerInputPacket _nextCommand;
-        private readonly ClientLogic _clientLogic;
+        private readonly ClientNet _clientLogic;
         private readonly ClientPlayerManager _playerManager;
         private ServerState _lastServerState;
         private const int MaxStoredCommands = 60;
@@ -16,7 +16,7 @@ namespace Code.Client
         public Vector2 LastPosition { get; private set; }
         public float LastRotation { get; private set; }
 
-        public ClientPlayer(ClientLogic clientLogic, ClientPlayerManager manager, string name, byte id) : base(manager, name, id)
+        public ClientPlayer(ClientNet clientLogic, ClientPlayerManager manager, string name, byte id) : base(manager, name, id)
         {
             _playerManager = manager;
             _clientLogic = clientLogic;

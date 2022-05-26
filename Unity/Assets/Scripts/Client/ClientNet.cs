@@ -9,7 +9,7 @@ using Random = System.Random;
 
 namespace Code.Client
 {
-    public class ClientLogic : MonoBehaviour, INetEventListener
+    public class ClientNet : MonoBehaviour, INetEventListener
     {
         public const string IP = "localhost";
         public const int Port = 5000;
@@ -17,23 +17,22 @@ namespace Code.Client
 
         private Action<DisconnectInfo> _onDisconnected;
 
+        private NetPeer _server;
         private NetManager _netManager;
         private NetDataWriter _writer;
 
         private string _userName;
         private ushort _lastServerTick;
-        private NetPeer _server;
         private ClientPlayerManager _playerManager;
         private int _ping;
 
-        public static LogicTimer LogicTimer { get; private set; }
 
+        #region Unity Method
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
             Random rd = new Random();
             _userName = Environment.MachineName + " " + rd.Next(100000);
-            LogicTimer = new LogicTimer(OnLogicUpdate);
             _writer = new NetDataWriter();
             _playerManager = new ClientPlayerManager(this);
             _netManager = new NetManager(this)
@@ -47,7 +46,6 @@ namespace Code.Client
         void Update()
         {
             _netManager.PollEvents();
-            LogicTimer.Update();
             //$"Ping: {_ping}");
         }
 
@@ -58,13 +56,9 @@ namespace Code.Client
 
         void FixedUpdate()
         {
-            
-        }
-
-        private void OnLogicUpdate()
-        {
             _playerManager.LogicUpdate();
         }
+        #endregion
 
 
         #region Interface
@@ -92,15 +86,13 @@ namespace Code.Client
         {
             Debug.Log("[C] Connected to server: " + peer.EndPoint);
             _server = peer;
-
-            LogicTimer.Start();
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
             _playerManager.Clear();
             _server = null;
-            LogicTimer.Stop();
+
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
             if (_onDisconnected != null)
             {
@@ -179,8 +171,6 @@ namespace Code.Client
             Debug.Log("[C] Join accept. Received player id: " + packet.Id);
             _lastServerTick = packet.ServerTick;
             var clientPlayer = new ClientPlayer(this, _playerManager, _userName, packet.Id);
-            //var view = ClientPlayerView.Create(_clientPlayerViewPrefab, clientPlayer);
-            //_playerManager.AddClientPlayer(clientPlayer, view);
         }
 
         private void OnLogin(NetPeer peer, NetPacketReader reader)

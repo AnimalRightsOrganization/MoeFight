@@ -22,13 +22,13 @@ namespace Code.Client
     public class ClientPlayerManager : BasePlayerManager
     {
         private readonly Dictionary<byte, PlayerHandler> _players;
-        private readonly ClientLogic _clientLogic;
+        private readonly ClientNet _clientLogic;
         private ClientPlayer _clientPlayer;
 
         public ClientPlayer OurPlayer => _clientPlayer;
         public override int Count => _players.Count;
 
-        public ClientPlayerManager(ClientLogic clientLogic)
+        public ClientPlayerManager(ClientNet clientLogic)
         {
             _clientLogic = clientLogic;
             _players = new Dictionary<byte, PlayerHandler>();

@@ -8,7 +8,7 @@ using LiteNetLib.Utils;
 
 namespace Code.Server
 {
-    public class ServerLogic : INetEventListener, IDisposable
+    public class ServerNet : INetEventListener, IDisposable
     {
         private NetManager _netManager;
 

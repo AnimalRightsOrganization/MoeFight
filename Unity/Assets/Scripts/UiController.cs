@@ -7,7 +7,7 @@ namespace Code.Client
     public class UiController : MonoBehaviour
     {
         [SerializeField] private GameObject _uiObject;
-        [SerializeField] private ClientLogic _clientLogic;
+        [SerializeField] private ClientNet _clientLogic;
         [SerializeField] private Text _disconnectInfoField;
 
         private void OnDisconnected(DisconnectInfo info)

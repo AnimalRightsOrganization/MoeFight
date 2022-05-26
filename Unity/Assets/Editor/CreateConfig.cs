@@ -1,0 +1,39 @@
+﻿using System.IO;
+using UnityEngine;
+using UnityEditor;
+
+public class CreateConfig : Editor
+{
+    static void CreateAsset<Type>() where Type : ScriptableObject
+    {
+        Type asset = ScriptableObject.CreateInstance<Type>();
+
+        string bundles_dir = Application.dataPath + "/Bundles";
+        if (!Directory.Exists(bundles_dir))
+            Directory.CreateDirectory(bundles_dir);
+
+        string config_dir = bundles_dir + "/Config";
+        if (!Directory.Exists(config_dir))
+            Directory.CreateDirectory(config_dir);
+
+        string path = AssetDatabase.GenerateUniqueAssetPath("Assets/Bundles/Config/" + typeof(Type) + ".asset");
+
+        AssetDatabase.CreateAsset(asset, path);
+        AssetDatabase.SaveAssets();
+
+        EditorUtility.FocusProjectWindow();
+        Selection.activeObject = asset;
+    }
+
+    [MenuItem("Tools/CreateConfig/InputConfig")]
+    static void CreateInputConfig()
+    {
+        CreateAsset<InputConfig>();
+    }
+
+    [MenuItem("Tools/CreateConfig/GlobalConfig")]
+    static void CreateGlobalConfig()
+    {
+        CreateAsset<GlobalConfig>();
+    }
+}
