@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Unity.Collections;
 using UnityEngine;
-//using Newtonsoft.Json;
+using Newtonsoft.Json;
 using HitstunConstants;
 
 public class HitstunRunner : MonoBehaviour
@@ -236,7 +236,7 @@ public class HitstunRunner : MonoBehaviour
 
     void LoadCharacterData()
     {
-        /*
+        ///*
         characterDatas = new CharacterData[Constants.NUM_PLAYERS];
         string jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player1Character.ToString());
         characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
@@ -244,7 +244,7 @@ public class HitstunRunner : MonoBehaviour
         characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
         LocalSession.characterDatas = characterDatas;
         LocalSession.gs.characterDatas = characterDatas;
-        */
+        //*/
     }
 
     public void TestSave()

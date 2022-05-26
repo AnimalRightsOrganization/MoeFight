@@ -5,7 +5,6 @@ namespace Code.Client
 { 
     public class ClientPlayer : BasePlayer
     {
-        private PlayerInputPacket _nextCommand;
         private readonly ClientNet _clientLogic;
         private readonly ClientPlayerManager _playerManager;
         private const int MaxStoredCommands = 60;

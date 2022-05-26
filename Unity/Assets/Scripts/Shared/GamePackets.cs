@@ -32,22 +32,82 @@ namespace Code.Shared
     #endregion
 
     #region 上行
-    public struct LoginRequest : INetSerializable
+    // 登录请求
+    public struct C2S_LoginPacket : INetSerializable
     {
+        public string UserName; //账号
+        public string Password;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(UserName);
+            writer.Put(Password);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            UserName = reader.GetString();
+            Password = reader.GetString();
+        }
+    }
+    // 客户端操作
+    public struct C2S_InputPacket : INetSerializable
+    {
+        public uint frameNumber;
+        public uint input; //按键压制
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(frameNumber);
+            writer.Put(input);
+        }
+
+        public void Deserialize(NetDataReader reader)
+        {
+            frameNumber = reader.GetUInt();
+            input = reader.GetUInt();
+        }
+    }
+    #endregion
+
+    #region 下行
+    // 错误码回包
+    public struct S2C_ErrorPacket : INetSerializable
+    {
+        public byte ErrorCode; //错误码
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(ErrorCode);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            ErrorCode = reader.GetByte();
+        }
+    }
+
+    // 登录结果
+    public struct S2C_LoginResultPacket : INetSerializable
+    {
+        public byte Code; //255
+        public short PeerId; //65535
         public string UserName;
 
         public void Serialize(NetDataWriter writer)
         {
+            writer.Put(Code);
+            writer.Put(PeerId);
             writer.Put(UserName);
         }
 
         public void Deserialize(NetDataReader reader)
         {
+            Code = reader.GetByte();
+            PeerId = reader.GetShort();
             UserName = reader.GetString();
         }
     }
 
-    public struct InputPacket : INetSerializable
+    public struct S2C_InputPacket : INetSerializable
     {
         public uint frameNumber;
         public uint[] inputs; //数组长度为2，双方的操作
@@ -80,7 +140,9 @@ namespace Code.Shared
             }
         }
     }
+    #endregion
 
+    #region 帧同步
     [System.Serializable] //必须序列化才能保存
     public struct InputBuffer : INetSerializable
     {
@@ -124,6 +186,7 @@ namespace Code.Shared
             return $"dir={Dir}，hit={Hit}，keyDown={KeyDown}";
         }
     }
+
     // 客户端操作（5字节）
     public struct C2S_InputBufferPacket : INetSerializable
     {
@@ -157,74 +220,101 @@ namespace Code.Shared
             return $"Tick={Tick}，op={Operation.ToString()}";
         }
     }
-    #endregion
-
-    #region 下行
-    // 错误码回包
-    public struct S2C_ErrorPacket : INetSerializable
+    // 请求缺失帧
+    public struct C2S_LackFramesPacket : INetSerializable
     {
-        public byte ErrorCode; //错误码
+        public ushort FromFrameID;
 
         public void Serialize(NetDataWriter writer)
         {
-            writer.Put(ErrorCode);
+            writer.Put(FromFrameID);
         }
         public void Deserialize(NetDataReader reader)
         {
-            ErrorCode = reader.GetByte();
+            FromFrameID = reader.GetUShort();
         }
     }
 
-    public struct LoginResponse : INetSerializable
+    // 服务器同步操作（8字节）
+    public struct S2C_AllPlayerOperationPacket : INetSerializable
     {
-        public string UserName;
-        public string Token;
-
-        public void Serialize(NetDataWriter writer)
+        public static implicit operator S2C_AllPlayerOperationPacket(ushort a)
         {
-            writer.Put(UserName);
-            writer.Put(Token);
+            return new S2C_AllPlayerOperationPacket
+            {
+                ServerTick = a,
+                HostOperation = InputBuffer.Default,
+                GuestOperation = InputBuffer.Default,
+            };
         }
+        public static S2C_AllPlayerOperationPacket Default = 0;
 
-        public void Deserialize(NetDataReader reader)
-        {
-            UserName = reader.GetString();
-            Token = reader.GetString();
-        }
-    }
-    #endregion
-
-    [Flags]
-    public enum MovementKeys : byte
-    {
-        Left = 1 << 1,
-        Right = 1 << 2,
-        Up = 1 << 3,
-        Down = 1 << 4,
-        Fire = 1 << 5
-    }
-
-    public struct PlayerInputPacket : INetSerializable
-    {
-        public ushort Id;
-        public MovementKeys Keys;
-        public float Rotation;
         public ushort ServerTick;
+        public InputBuffer HostOperation;
+        public InputBuffer GuestOperation;
 
         public void Serialize(NetDataWriter writer)
         {
-            writer.Put(Id);
-            writer.Put((byte)Keys);
-            writer.Put(Rotation);
             writer.Put(ServerTick);
+            HostOperation.Serialize(writer);
+            GuestOperation.Serialize(writer);
         }
-
         public void Deserialize(NetDataReader reader)
         {
-            Id = reader.GetUShort();
-            Keys = (MovementKeys)reader.GetByte();
-            Rotation = reader.GetFloat();
             ServerTick = reader.GetUShort();
+            HostOperation.Deserialize(reader);
+            GuestOperation.Deserialize(reader);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+        /*
+        public override bool Equals(object obj)
+        {
+            var record = (S2C_AllPlayerOperationPacket)obj;
+            bool cond1 = record.ServerTick == ServerTick;
+            bool cond2 = HostOperation.Equals(record.HostOperation);
+            bool cond3 = GuestOperation.Equals(record.GuestOperation);
+            if (!cond2)
+            {
+                Debug.LogError($"主位不同{ServerTick}，Dir={HostOperation.Dir}/{record.HostOperation.Dir}");
+            }
+            if (!cond3)
+            {
+                Debug.LogError($"客位不同{ServerTick}，Dir={GuestOperation.Dir}/{record.GuestOperation.Dir}");
+            }
+            //return cond1 && cond2 && cond3;
+            return cond2 && cond3;
+        }
+        public override string ToString()
+        {
+            return $"ServerTick={ServerTick}，Host={HostOperation.ToString()}，Guest={GuestOperation.ToString()}";
+        }*/
+    }
+    // 下发缺失帧
+    public struct S2C_LackFramesPacket : INetSerializable
+    {
+        public int FrameCount;
+        public S2C_AllPlayerOperationPacket[] Frames;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(FrameCount);
+
+            for (int i = 0; i < FrameCount; i++)
+                Frames[i].Serialize(writer);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            FrameCount = reader.GetInt();
+
+            if (Frames == null)
+                Frames = new S2C_AllPlayerOperationPacket[FrameCount];
+            for (int i = 0; i < FrameCount; i++)
+                Frames[i].Deserialize(reader);
         }
     }
+    #endregion
 }

@@ -334,7 +334,7 @@ public class GameState
             }
             // apply collision resolution
             int pushDistance = (overlap.GetWidth() / 2) + 1;
-            Debug.Log($"推动距离={pushDistance}"); //移动推19//Dash推38//跳下来推20//靠墙移动反推9,5,1//靠墙攻击反推不在这！！
+            //Debug.Log($"推动距离={pushDistance}"); //移动推19//Dash推38//跳下来推20//靠墙移动反推9,5,1//靠墙攻击反推不在这！！
             characters[0].position.x += resolveLeft ? -pushDistance : pushDistance;
             characters[1].position.x += resolveLeft ? pushDistance : -pushDistance;
         }

@@ -19,13 +19,12 @@ namespace Code.Server
         public const int MaxPlayers = 64;
         private LogicTimer _logicTimer;
         private ServerPlayerManager _playerManager;
-        private PlayerInputPacket _cachedCommand = new PlayerInputPacket();
         public ushort Tick => _serverTick;
         private ushort _serverTick;
 
 
         #region Inner Method
-        public async Task StartServer()
+        public async Task StartProgram()
         {
             _logicTimer = new LogicTimer(OnLogicUpdate);
             _playerManager = new ServerPlayerManager(this);
@@ -41,6 +40,28 @@ namespace Code.Server
                 Update();
                 await Task.Delay(15);
             }
+        }
+        public void StartServer()
+        {
+            _logicTimer = new LogicTimer(OnLogicUpdate);
+            _playerManager = new ServerPlayerManager(this);
+            _netManager = new NetManager(this)
+            {
+                AutoRecycle = true
+            };
+            _netManager.Start(Port);
+            _logicTimer.Start();
+
+            //while (true)
+            //{
+            //    Update();
+            //    await Task.Delay(15);
+            //}
+        }
+        public void Update()
+        {
+            _netManager.PollEvents();
+            _logicTimer.Update();
         }
 
         public void Dispose()
@@ -74,12 +95,6 @@ namespace Code.Server
                 }
             }
         }
-
-        void Update()
-        {
-            _netManager.PollEvents();
-            _logicTimer.Update();
-        }
         #endregion
 
 
@@ -94,12 +109,12 @@ namespace Code.Server
 
         void INetEventListener.OnPeerConnected(NetPeer peer)
         {
-            Console.WriteLine("[S] Player connected: " + peer.EndPoint);
+            UnityEngine.Debug.Log("[S] Player connected: " + peer.EndPoint);
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            Console.WriteLine("[S] Player disconnected: " + disconnectInfo.Reason);
+            UnityEngine.Debug.Log("[S] Player disconnected: " + disconnectInfo.Reason);
 
             if (peer.Tag != null)
             {
@@ -114,7 +129,7 @@ namespace Code.Server
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
-            Console.WriteLine("[S] NetworkError: " + socketError);
+            UnityEngine.Debug.Log("[S] NetworkError: " + socketError);
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
@@ -124,6 +139,7 @@ namespace Code.Server
                 return;
 
             PacketType pt = (PacketType)packetType;
+            UnityEngine.Debug.Log($"[新消息] {pt}");
             switch (pt)
             {
                 case PacketType.C2S_LoginReq:
@@ -133,7 +149,7 @@ namespace Code.Server
                     OnInputReceived(reader, peer);
                     break;
                 default:
-                    Console.WriteLine("Unhandled packet: " + pt);
+                    UnityEngine.Debug.Log("Unhandled packet: " + pt);
                     break;
             }
         }
@@ -162,20 +178,29 @@ namespace Code.Server
         #region Handler
         void OnLoginReceived(NetPacketReader reader, NetPeer peer)
         {
-            LoginRequest req = new LoginRequest();
+            var req = new C2S_LoginPacket();
             req.Deserialize(reader);
-            Console.WriteLine($"[C2S] OnLogin: {req.UserName}");
+            UnityEngine.Debug.Log($"[C2S.Login] {peer.Id}: {req.UserName}");
 
-            LoginResponse resp = new LoginResponse { UserName = req.UserName, Token = "123ABC" };
+            var resp = new S2C_LoginResultPacket { Code = 0, PeerId = (short)peer.Id, UserName = req.UserName };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, resp), DeliveryMethod.ReliableOrdered);
         }
 
         void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
-            if (peer.Tag == null)
-                return;
-            _cachedCommand.Deserialize(reader);
-            var player = (ServerPlayer)peer.Tag;
+            var req = new C2S_InputPacket();
+            req.Deserialize(reader);
+            UnityEngine.Debug.Log($"[C2S.Input] {peer.Id}: {req.frameNumber}---{req.input}");
+
+            // 发回给客户端
+            S2C_InputPacket packet = new S2C_InputPacket
+            {
+                frameNumber = req.frameNumber,
+                inputs = new uint[] { req.input, 0 }
+            };
+            _netManager.SendToAll(WriteSerializable(PacketType.S2C_Lockstep, packet), DeliveryMethod.ReliableOrdered);
+
+            // 同一个帧号，集齐两人份就下发
         }
         #endregion
     }

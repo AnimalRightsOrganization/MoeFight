@@ -1,6 +1,7 @@
 ﻿using LiteNetLib;
 using UnityEngine;
 using UnityEngine.UI;
+using Code.Shared;
 
 namespace Code.Client
 {
@@ -30,7 +31,10 @@ namespace Code.Client
 
         public void OnLoginClick()
         {
-            _clientLogic.SendLogin();
+            System.Random rd = new System.Random();
+            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_LoginPacket { UserName = _userName };
+            _clientLogic.SendLogin(cmd);
         }
 
         public void Ping(int latency)
