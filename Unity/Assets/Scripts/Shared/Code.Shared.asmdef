@@ -1,0 +1,16 @@
+{
+    "name": "Code.Shared",
+    "rootNamespace": "",
+    "references": [
+        "GUID:cf636a13429d3a643a59026e31e56a0c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

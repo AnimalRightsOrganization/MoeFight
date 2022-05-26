@@ -1,0 +1,19 @@
+{
+    "name": "Scripts",
+    "rootNamespace": "",
+    "references": [
+        "Code.Client",
+        "Code.Server",
+        "Code.Shared",
+        "Plugins"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
