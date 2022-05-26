@@ -11,7 +11,7 @@ namespace Code.Client
 {
     public class ClientNet : MonoBehaviour, INetEventListener
     {
-        public const string IP = "localhost";
+        public const string IP = "moegijinka.cn";
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
@@ -45,7 +45,7 @@ namespace Code.Client
         void Update()
         {
             _netManager.PollEvents();
-            //$"Ping: {_ping}");
+            UI_Main.Instance.Ping(_ping);
         }
 
         void OnDestroy()
@@ -121,6 +121,7 @@ namespace Code.Client
         void INetEventListener.OnNetworkLatencyUpdate(NetPeer peer, int latency)
         {
             _ping = latency;
+            Debug.Log($"OnNetworkLatencyUpdate: {peer.Id} - {latency}ms");
         }
 
         void INetEventListener.OnConnectionRequest(ConnectionRequest request)
@@ -135,6 +136,7 @@ namespace Code.Client
         {
             _onDisconnected = onDisconnected;
             _netManager.Connect(IP, Port, Key);
+            Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
         public void SendLogin()

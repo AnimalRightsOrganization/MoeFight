@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Diagnostics;
 using UnityEngine;
@@ -11,20 +11,20 @@ public class EditorTools : Editor
     //^ (ctrl on Windows, Linux, and macOS),
     //# (shift),
     //& (alt)
-    [MenuItem("Tools/Æô¶¯/¿Í»§¶Ë %_F11", false)]
+    [MenuItem("Tools/å¯åŠ¨/å®¢æˆ·ç«¯ %_F11", false)]
     static void RunClient()
     {
         string filepath = "D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Client\\moefight.exe";
         Process.Start(filepath);
     }
-    [MenuItem("Tools/Æô¶¯/·şÎñÆ÷ %_F12", false)]
+    [MenuItem("Tools/å¯åŠ¨/æœåŠ¡å™¨ %_F12", false)]
     static void RunServer()
     {
         string filepath = "D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Server\\moefight.exe";
         Process.Start(filepath);
     }
 
-    [MenuItem("Tools/´ò°ü/¿Í»§¶Ë", false)]
+    [MenuItem("Tools/æ‰“åŒ…/å®¢æˆ·ç«¯", false)]
     static void BuildClient()
     {
         string curr_dir = Environment.CurrentDirectory;
@@ -49,9 +49,9 @@ public class EditorTools : Editor
 
         BuildPipeline.BuildPlayer(opt);
 
-        Debug.Log($"´ò°ü³É¹¦: {opt.locationPathName}");
+        Debug.Log($"æ‰“åŒ…æˆåŠŸ: {opt.locationPathName}");
     }
-    [MenuItem("Tools/´ò°ü/·şÎñÆ÷", false)]
+    [MenuItem("Tools/æ‰“åŒ…/æœåŠ¡å™¨", false)]
     static void BuildServer()
     {
         string curr_dir = Environment.CurrentDirectory;
@@ -62,8 +62,15 @@ public class EditorTools : Editor
             Directory.CreateDirectory(build_root);
 
         string build_dir = $"{build_root}/Server";
-        if (Directory.Exists(build_dir))
-            Directory.Delete(build_dir, true);
+        try
+        {
+            if (Directory.Exists(build_dir))
+                Directory.Delete(build_dir, true);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"æ— æ³•åˆ é™¤: {e}");
+        }
         Directory.CreateDirectory(build_dir);
 
         //BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
@@ -76,8 +83,8 @@ public class EditorTools : Editor
 
         BuildPipeline.BuildPlayer(opt);
 
-        Debug.Log($"´ò°ü³É¹¦: {opt.locationPathName}");
+        Debug.Log($"æ‰“åŒ…æˆåŠŸ: {opt.locationPathName}");
     }
-    [MenuItem("Tools/´ò°ü/×ÊÔ´", false)]
+    [MenuItem("Tools/æ‰“åŒ…/èµ„æº", false)]
     static void BuildRes() { }
 }

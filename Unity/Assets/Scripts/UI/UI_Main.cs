@@ -4,16 +4,23 @@ using UnityEngine.UI;
 
 namespace Code.Client
 {
-    public class UiController : MonoBehaviour
+    public class UI_Main : MonoBehaviour
     {
+        public static UI_Main Instance;
+
         [SerializeField] private GameObject _uiObject;
         [SerializeField] private ClientNet _clientLogic;
-        [SerializeField] private Text _disconnectInfoField;
+        [SerializeField] private Text m_InfoText;
+
+        void Awake()
+        {
+            Instance = this;
+        }
 
         private void OnDisconnected(DisconnectInfo info)
         {
+            m_InfoText.text = info.Reason.ToString();
             _uiObject.SetActive(true);
-            _disconnectInfoField.text = info.Reason.ToString();
         }
 
         public void OnConnectClick()
@@ -24,6 +31,11 @@ namespace Code.Client
         public void OnLoginClick()
         {
             _clientLogic.SendLogin();
+        }
+
+        public void Ping(int latency)
+        {
+            m_InfoText.text = $"Ping: {latency}ms";
         }
     }
 }
