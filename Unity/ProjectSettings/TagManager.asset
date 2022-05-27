@@ -8,7 +8,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Hitbox
   - Water
   - UI
   - 
@@ -40,4 +40,22 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: PLAYER_BOTTOM
+    uniqueID: 1169874425
+    locked: 0
+  - name: PLAYER_TOP
+    uniqueID: 1537865031
+    locked: 0
+  - name: PROJECTILE
+    uniqueID: 1430987947
+    locked: 0
+  - name: HURTBOX
+    uniqueID: 496760745
+    locked: 0
+  - name: COLLISIONBOX
+    uniqueID: 1977314999
+    locked: 0
+  - name: HITBOX
+    uniqueID: 116359715
     locked: 0
