@@ -34,6 +34,55 @@ public class Animation
     public bool staticHurtBox;
     public Dictionary<uint, int[][]> hurtBoxes;
 }
+[Serializable]
+public class AnimationEx
+{
+    public AnimationEx(Animation anime)
+    {
+        this.animationName = anime.animationName;
+        this.distinctSprites = anime.distinctSprites;
+        this.totalFrames = anime.totalFrames;
+        this.frameDuration = anime.frameDuration;
+        this.dx = anime.dx;
+        this.dy = anime.dy;
+        this.collisionBox = anime.collisionBox;
+        this.staticHurtBox = anime.staticHurtBox;
+        this.hurtBoxes = new List<BoxUnitArray>();
+        foreach (var item in anime.hurtBoxes)
+        {
+            BoxUnitArray line = new BoxUnitArray();
+            for (int i = 0; i < item.Value.Length; i++)
+            {
+                var unit = new BoxUnit();
+                unit.list = item.Value[i];
+                line.list.Add(unit);
+            }
+            this.hurtBoxes.Add(line);
+        }
+    }
+    public string animationName;
+    public int distinctSprites;
+    public int totalFrames;
+    public int[] frameDuration;
+    public int[] dx;
+    public int[] dy;
+    public int[] collisionBox;
+    public bool staticHurtBox;
+    public List<BoxUnitArray> hurtBoxes;
+}
+[Serializable]
+public class BoxUnit //[-320, 330, 0, 600]
+{
+    public int[] list = new int[] { };
+}
+[Serializable]
+public class BoxUnitArray //[[-320, 330, 0, 600],[-270,130,600,740]]
+{
+    public List<BoxUnit> list = new List<BoxUnit>();
+}
+
+
+
 
 
 [Serializable]

@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: 0739242bfcfe8594ea2792cf8c0f7c46, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -361,19 +361,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d62a999b04b0747468a25beb9fbb05b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: e0ba6c6de15411042a7fa0dd0a21db0d, type: 2}
-  amount: 0.3
-  gridtype: 1
-  gridcolor: {r: 0, g: 0, b: 0, a: 1}
-  xstep: 1
-  ystep: 2
-  xoffset: 0
-  yoffset: 0
-  xmin: 0
-  xmax: 1
-  ymin: 0
-  ymax: 1
-  flashing: 0
 --- !u!1001 &1472912395
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Unity.Collections;
+﻿using Unity.Collections;
 using UnityEngine;
 using Newtonsoft.Json;
 using HitstunConstants;
@@ -237,10 +236,17 @@ public class HitstunRunner : MonoBehaviour
     void LoadCharacterData()
     {
         characterDatas = new CharacterData[Constants.NUM_PLAYERS];
-        string jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player1Character.ToString());
-        characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
-        jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player2Character.ToString());
-        characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
+
+        //string jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player1Character.ToString());
+        //characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
+        //jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player2Character.ToString());
+        //characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
+
+        var ta1 = Resources.Load<TextAsset>($"CharacterData/{player1Character}");
+        var ta2 = Resources.Load<TextAsset>($"CharacterData/{player2Character}");
+        characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(ta1.text);
+        characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(ta2.text);
+
         LocalSession.characterDatas = characterDatas;
         LocalSession.gs.characterDatas = characterDatas;
     }

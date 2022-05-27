@@ -36,4 +36,28 @@ public class CreateConfig : Editor
     {
         CreateAsset<GlobalConfig>();
     }
+
+    [MenuItem("Tools/CreateConfig/CharacterData")]
+    static void CreateCharacterConfig()
+    {
+        CreateAsset<CharacterConfig>();
+    }
+    [MenuItem("Tools/CreateConfig/LoadJson")]
+    static void LoadJson()
+    {
+        // 搜索 type:CharacterConfig
+        var ids = AssetDatabase.FindAssets("CharacterConfig t:CharacterConfig");
+        if (ids.Length == 1)
+        {
+            var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(ids[0]));
+
+            Selection.objects = new UnityEngine.Object[] { readmeObject };
+
+            (Selection.objects[0] as CharacterConfig).FromJson();
+        }
+        else
+        {
+            Debug.Log("Couldn't find a readme");
+        }
+    }
 }
