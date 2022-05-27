@@ -133,6 +133,7 @@ public class GameState
         // handle collision box overlap
         HandleCollisionBoxes();
 
+        // 处理舞台边界
         // force players to stay within max distance and also within bounds of the stage
         HandleBounds();
 
@@ -298,9 +299,6 @@ public class GameState
             else if (characters[0].position.x > characters[1].position.x)
             {
                 resolveLeft = false;
-                Debug.LogError($"0大 + {characters[0].position.x} : {characters[1].position.x}"); //空中时已经在右边了
-
-                //顶住墙的状态判断？
             }
             else
             {
@@ -357,10 +355,12 @@ public class GameState
         }
     }
 
+    // 处理舞台边界
     public void HandleBounds()
     {
         for (int i = 0; i < Constants.NUM_PLAYERS; i++)
         {
+            // 两人间距
             // force players to stay within max distance
             if (Math.Abs(characters[i].position.x - characters[1 - i].position.x) > Constants.MAX_CHARACTER_DISTANCE)
             {
@@ -374,9 +374,18 @@ public class GameState
                 }
             }
 
+            // 场景边界
             // force players to stay within bounds
             characters[i].position.x = characters[i].position.x >= 0 ? characters[i].position.x : 0;
             characters[i].position.y = characters[i].position.y >= 0 ? characters[i].position.y : 0;
+
+            // 空中撞墙，避免把另一人寄出来
+            if (characters[i].position.x > Constants.BOUNDS_WIDTH && characters[i].position.y > 0)
+            {
+                characters[i].position.x = Constants.BOUNDS_WIDTH - 1;
+                characters[i].velocity.x = 0;
+            }
+
             characters[i].position.x = characters[i].position.x <= Constants.BOUNDS_WIDTH ? characters[i].position.x : Constants.BOUNDS_WIDTH;
             characters[i].position.y = characters[i].position.y <= Constants.BOUNDS_HEIGHT ? characters[i].position.y : Constants.BOUNDS_HEIGHT;
         }

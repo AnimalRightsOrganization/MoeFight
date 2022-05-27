@@ -18,7 +18,7 @@ public class Character
 
     // Input Buffer
     private uint[] inputBuffer;
-    private uint currentBufferPos;
+    private uint currentBufferPos; //P1:0, P2:1
 
     public Character()
     {
