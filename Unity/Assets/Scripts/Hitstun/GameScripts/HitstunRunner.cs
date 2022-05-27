@@ -69,7 +69,14 @@ public class HitstunRunner : MonoBehaviour
         nextStep = false;
     }
 
-    public void FixedUpdate()
+    //void FixedUpdate()
+    //{
+    //    uint[] inputs = LocalSession.RunFrame();
+    //    OnFixedUpdate(inputs);
+    //}
+
+    //public void OnFixedUpdate(uint[] inputs)
+    void FixedUpdate()
     {
         if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
         {

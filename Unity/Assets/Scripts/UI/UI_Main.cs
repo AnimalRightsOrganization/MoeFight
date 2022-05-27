@@ -11,6 +11,7 @@ namespace Code.Client
 
         public ClientNet _clientLogic;
         public Button m_ConnectBtn;
+        public Button m_LoginBtn;
         public Button m_ReadyBtn;
         public Text m_InfoText;
 
@@ -19,11 +20,12 @@ namespace Code.Client
             Instance = this;
 
             m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
+            m_LoginBtn = transform.Find("LoginBtn").GetComponent<Button>();
             m_ReadyBtn = transform.Find("ReadyBtn").GetComponent<Button>();
             m_InfoText = transform.Find("PingText").GetComponent<Text>();
 
             m_ConnectBtn.onClick.AddListener(OnConnectClick);
-            m_ReadyBtn.onClick.AddListener(OnConnectClick);
+            m_LoginBtn.onClick.AddListener(OnLoginClick);
             m_ReadyBtn.onClick.AddListener(OnReadyClick);
         }
 

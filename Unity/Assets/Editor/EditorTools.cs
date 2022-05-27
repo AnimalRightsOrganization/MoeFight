@@ -14,13 +14,13 @@ public class EditorTools : Editor
     [MenuItem("Tools/启动/客户端 %_F11", false)]
     static void RunClient()
     {
-        string filepath = "D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Client\\moefight.exe";
+        string filepath = $"D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Client\\{Application.productName}.exe";
         Process.Start(filepath);
     }
     [MenuItem("Tools/启动/服务器 %_F12", false)]
     static void RunServer()
     {
-        string filepath = "D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Server\\moefight.exe";
+        string filepath = $"D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Server\\{Application.productName}.exe";
         Process.Start(filepath);
     }
 

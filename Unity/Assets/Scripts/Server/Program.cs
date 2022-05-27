@@ -12,6 +12,8 @@ namespace Rollback
         
         async void Start()
         {
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+
             await RunMainAsync();
         }
 
