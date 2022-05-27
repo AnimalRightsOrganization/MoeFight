@@ -42,11 +42,11 @@ public class CreateConfig : Editor
     {
         CreateAsset<CharacterConfig>();
     }
-    [MenuItem("Tools/CreateConfig/LoadJson")]
+    [MenuItem("Tools/CreateConfig/选中角色配置")]
     static void LoadJson()
     {
         // 搜索 type:CharacterConfig
-        var ids = AssetDatabase.FindAssets("CharacterConfig t:CharacterConfig");
+        var ids = AssetDatabase.FindAssets("* t:CharacterConfig");
         if (ids.Length == 1)
         {
             var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(ids[0]));
@@ -57,7 +57,7 @@ public class CreateConfig : Editor
         }
         else
         {
-            Debug.Log("Couldn't find a readme");
+            Debug.Log("Couldn't find a CharacterConfig");
         }
     }
 }

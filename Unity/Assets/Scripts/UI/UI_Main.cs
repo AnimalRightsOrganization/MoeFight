@@ -9,32 +9,47 @@ namespace Code.Client
     {
         public static UI_Main Instance;
 
-        [SerializeField] private GameObject _uiObject;
-        [SerializeField] private ClientNet _clientLogic;
-        [SerializeField] private Text m_InfoText;
+        public ClientNet _clientLogic;
+        public Button m_ConnectBtn;
+        public Button m_ReadyBtn;
+        public Text m_InfoText;
 
         void Awake()
         {
             Instance = this;
+
+            m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
+            m_ReadyBtn = transform.Find("ReadyBtn").GetComponent<Button>();
+            m_InfoText = transform.Find("PingText").GetComponent<Text>();
+
+            m_ConnectBtn.onClick.AddListener(OnConnectClick);
+            m_ReadyBtn.onClick.AddListener(OnConnectClick);
+            m_ReadyBtn.onClick.AddListener(OnReadyClick);
         }
 
-        private void OnDisconnected(DisconnectInfo info)
+        void OnDisconnected(DisconnectInfo info)
         {
             m_InfoText.text = info.Reason.ToString();
-            _uiObject.SetActive(true);
+            gameObject.SetActive(true);
         }
 
-        public void OnConnectClick()
+        void OnConnectClick()
         {
             _clientLogic.Connect(OnDisconnected);
         }
 
-        public void OnLoginClick()
+        void OnLoginClick()
         {
             System.Random rd = new System.Random();
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
             var cmd = new C2S_LoginPacket { UserName = _userName };
             _clientLogic.SendLogin(cmd);
+        }
+
+        void OnReadyClick()
+        {
+            var cmd = new EmptyPacket();
+            _clientLogic.SendReady(cmd);
         }
 
         public void Ping(int latency)

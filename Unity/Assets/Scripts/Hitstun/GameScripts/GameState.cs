@@ -95,7 +95,7 @@ public class GameState
             }
             else
             {
-                characters[i].ParseInputsToBuffer(inputs[i]); //读取双方输入
+                characters[i].ParseInputsToBuffer(inputs[i]); //读取双方输入，存进inputBuffer
             }
         }
 

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using HitstunConstants;
@@ -188,7 +188,7 @@ public class Character
         }
     }
 
-    // ArrayԪ��ȫ������
+    // Array元素全部归零
     public void FlushBuffer()
     {
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; i++)
@@ -344,12 +344,13 @@ public class Character
                (state == CharacterState.JUMP_BACKWARD && framesInState <= Constants.PREJUMP_FRAMES);
     }
 
-    // ֻ�ͷ����й�
+    // 只和防御有关
     public bool IsInCorner()
     {
         return position.x < Constants.PUSHBACK_CORNER_THRESH || position.x > Constants.BOUNDS_WIDTH - Constants.PUSHBACK_CORNER_THRESH;
     }
 
+    // 检查防御
     public bool IsBlockingLow()
     {
         return IsIdle() && CheckSequence(new uint[] { (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_BACK }, 1);
@@ -363,6 +364,8 @@ public class Character
         return IsIdle() && CheckSequence(new uint[] { (uint)Inputs.INPUT_BACK }, 1);
     }
 
+    // 使用input，检查各种状态是否会触发。
+    // 触发状态，会对速度、状态赋值。
     public void UpdateCharacter(CharacterData data)
     {
         framesInState++;
@@ -638,7 +641,7 @@ public class Character
 
     public bool CheckGroundedSpecials(CharacterData data)
     {
-        // [����] + [I] + ��CD��
+        // [↓→] + [I] + 非CD中
         if (CheckSequence(Motions.QCF, Constants.LENIENCY_QF) && 
             CheckSequence(new uint[] { (uint)Inputs.INPUT_nMP, (uint)Inputs.INPUT_MP }, 3) && 
             !projectile.active)

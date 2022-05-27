@@ -69,7 +69,7 @@ public class HitstunRunner : MonoBehaviour
         nextStep = false;
     }
 
-    void FixedUpdate()
+    public void FixedUpdate()
     {
         if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
         {
@@ -90,7 +90,7 @@ public class HitstunRunner : MonoBehaviour
             {
                 oldBuffer.Dispose();
             }
-            oldBuffer = GameState.ToBytes(LocalSession.gs);
+            oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
 
 
 
@@ -111,7 +111,7 @@ public class HitstunRunner : MonoBehaviour
             // 两次传入的参数inputs, flag是一样的
             // oldBuffer是执行输入前一帧的 LocalSession.gs
             // load old gamestate and re-simulate
-            GameState.FromBytes(LocalSession.gs, oldBuffer);
+            GameState.FromBytes(LocalSession.gs, oldBuffer);  //从NativeArray读出来，同时会赋值
             LocalSession.gs.Update(inputs, 0);
 
             // save new gamestate again
@@ -236,11 +236,6 @@ public class HitstunRunner : MonoBehaviour
     void LoadCharacterData()
     {
         characterDatas = new CharacterData[Constants.NUM_PLAYERS];
-
-        //string jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player1Character.ToString());
-        //characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
-        //jsonPath = string.Format("Assets/Resources/CharacterData/{0}.json", player2Character.ToString());
-        //characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(File.ReadAllText(jsonPath));
 
         var ta1 = Resources.Load<TextAsset>($"CharacterData/{player1Character}");
         var ta2 = Resources.Load<TextAsset>($"CharacterData/{player2Character}");

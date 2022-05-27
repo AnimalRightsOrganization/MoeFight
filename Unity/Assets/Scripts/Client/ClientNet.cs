@@ -6,6 +6,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using UnityEngine;
 using HitstunConstants;
+using System.Collections.Generic;
 
 namespace Code.Client
 {
@@ -21,8 +22,6 @@ namespace Code.Client
         private NetDataWriter _writer;
 
         private Action<DisconnectInfo> _onDisconnected;
-        private string _userName;
-        private ushort _lastServerTick;
         private ClientPlayerManager _playerManager;
         private int _ping;
 
@@ -46,6 +45,12 @@ namespace Code.Client
         {
             //用FixedUpdate代替InvokeRepeating, Stopwatch, 可以在编辑器步进
             //InvokeRepeating("LogicUpdate", 0, ConfigManager.FIXED_DELTA);
+
+            sendTick = 0;
+            recvTick = 0;
+            ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50帧每秒 = 85,899,346秒 = 23,860小时 = 994天。4+4+4=12个字节
+            ggpo_recieve = new Dictionary<uint, uint[]>();
+            dic_delay = new Queue<C2S_InputPacket>();
         }
 
         void Update()
@@ -159,6 +164,11 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
         }
 
+        public void SendReady(EmptyPacket cmd)
+        {
+            SendPacketSerializable(PacketType.C2S_BattleStart, cmd);
+        }
+
         public void SendInput(C2S_InputPacket cmd)
         {
             //Debug.Log($"[C2S.SendInput] {cmd.frameNumber}---{cmd.input}");
@@ -176,18 +186,40 @@ namespace Code.Client
         {
             var resp = new S2C_InputPacket();
             resp.Deserialize(reader);
-            Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}");
+            //Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}");
+
+            ggpo_recieve[resp.frameNumber] = resp.inputs;
+
+            //Debug.Log($"Left => {(input & (uint)KeyPress.KEY_LEFT) != 0}"); //判断是否按了左键
+            //Debug.Log($"Right => {(input & (uint)KeyPress.KEY_RIGHT) != 0}");
         }
         #endregion
 
+        public ushort sendTick;
+        public ushort recvTick;
+        private Dictionary<uint, uint[]> ggpo_predict; //预测帧
+        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧
+        private Queue<C2S_InputPacket> dic_delay; //延迟帧
 
         public void LogicUpdate()
         {
-            _lastServerTick++;
-
-            uint _input = ReadInputs(0);
-            C2S_InputPacket cmd = new C2S_InputPacket { frameNumber = _lastServerTick, input = _input };
+            //①收集本地按键，发送，预测
+            sendTick++;
+            uint input = ReadInputs(0);
+            var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
+
+            //②Delay模式缓冲帧
+            //..
+
+            //③发送完看下有没有收到新的帧
+
+
+            //若收到，对比预测
+
+            //预测不一致处理
+
+            //④帧传给逻辑层，推进
         }
 
         // 键盘输入，左右两边控制
