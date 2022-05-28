@@ -20,6 +20,8 @@ public class HitstunRunner : MonoBehaviour
     CharacterData[] characterDatas; //技能数据
 
     // Internal
+    GameState buffer1;
+    GameState buffer2;
     NativeArray<byte> buffer;
     NativeArray<byte> oldBuffer; //快照
     private bool running;
@@ -69,14 +71,28 @@ public class HitstunRunner : MonoBehaviour
         nextStep = false;
     }
 
-    //void FixedUpdate()
-    //{
-    //    uint[] inputs = LocalSession.RunFrame();
-    //    OnFixedUpdate(inputs);
-    //}
-
-    //public void OnFixedUpdate(uint[] inputs)
+    public void SaveOldBuffer()
+    {
+        // 保存一个Buffer Temp数据，要放在读取input前
+        // save old gamestate
+        if (oldBuffer.IsCreated)
+        {
+            oldBuffer.Dispose();
+        }
+        oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
+    }
+    /*
     void FixedUpdate()
+    {
+        SaveOldBuffer();
+
+        // 必须备份一个oldBuffer，不然帧数多一
+        uint[] inputs = LocalSession.RunFrame();
+        Debug.Log($"FixedUpdate: <color=yellow>{LocalSession.gs.frameNumber}</color>");
+        OnFixedUpdate(inputs);
+    }
+    */
+    public void OnFixedUpdate(uint[] inputs)
     {
         if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
         {
@@ -91,36 +107,40 @@ public class HitstunRunner : MonoBehaviour
             nextStep = false;
 
 
-            // 保存一个Buffer Temp数据
-            // save old gamestate
-            if (oldBuffer.IsCreated)
-            {
-                oldBuffer.Dispose();
-            }
-            oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
-
-
+            //// 保存一个Buffer Temp数据
+            //// save old gamestate
+            //if (oldBuffer.IsCreated)
+            //{
+            //    oldBuffer.Dispose();
+            //}
+            //oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
 
             // 获取键盘输入，执行一帧逻辑运算 //LocalSession.gs.Update()
             // run the frame
-            uint[] inputs = LocalSession.RunFrame();
+            //uint[] inputs = LocalSession.RunFrame();
+            //OnFixedUpdate(inputs);
+
 
             // save new gamestate //TODO: 意义不明
             if (buffer.IsCreated)
             {
                 buffer.Dispose();
             }
-            buffer = GameState.ToBytes(LocalSession.gs); //游戏帧号，双方位置、状态等
+            buffer = GameState.ToBytes(LocalSession.gs); //class转NativeArray
             int checksum = CalcFletcher32(buffer);
+            //Debug.Log($"OnFixed111: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
 
 
             // 赋回旧的值，再计算一次？意义不明
             // 两次传入的参数inputs, flag是一样的
             // oldBuffer是执行输入前一帧的 LocalSession.gs
             // load old gamestate and re-simulate
-            GameState.FromBytes(LocalSession.gs, oldBuffer);  //从NativeArray读出来，同时会赋值
+            GameState.FromBytes(LocalSession.gs, oldBuffer);  //oldBuffer赋值给gs（回档）。再执行一次inputs
+            //Debug.Log($"导入inputs验证，input[0]={inputs[0]}");
             LocalSession.gs.Update(inputs, 0);
 
+
+            // 这里会产生错误
             // save new gamestate again
             if (buffer.IsCreated)
             {
@@ -128,13 +148,14 @@ public class HitstunRunner : MonoBehaviour
             }
             buffer = GameState.ToBytes(LocalSession.gs);
             int checksum2 = CalcFletcher32(buffer);
+            //Debug.Log($"OnFixed222: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
 
             if (checksum != checksum2)
             {
-                Debug.Log(checksum.ToString() + " , " + checksum2.ToString());
+                Debug.LogError(LocalSession.gs.frameNumber + ": " + checksum.ToString() + " , " + checksum2.ToString()); //state和framesInState不同
             }
 
-            // 运算结束，渲染
+            // 运算结束，驱动角色、子弹、相机
             UpdateGameView(LocalSession.gs);
         }
     }

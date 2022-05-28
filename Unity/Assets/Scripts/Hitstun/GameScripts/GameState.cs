@@ -13,6 +13,11 @@ public class GameState
     public Character[] characters;
     public CharacterData[] characterDatas;
 
+    public bool Equals(GameState other)
+    {
+        return base.Equals(other);
+    }
+
     public void Serialize(BinaryWriter bw)
     {
         // Frame Number

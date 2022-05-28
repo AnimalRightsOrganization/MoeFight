@@ -67,7 +67,6 @@ namespace Code.Client
         {
             _netManager.Stop();
         }
-
         #endregion
 
 
@@ -190,16 +189,21 @@ namespace Code.Client
         {
             var resp = new S2C_InputPacket();
             resp.Deserialize(reader);
-            //Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}");
+            //Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}({resp.inputs.Length})");
             //Debug.Log($"Left => {(resp.inputs[0] & (uint)KeyPress.KEY_LEFT) != 0}"); //判断是否按了左键
             //Debug.Log($"Right => {(resp.inputs[0] & (uint)KeyPress.KEY_RIGHT) != 0}");
 
             uint server_tick = resp.frameNumber;
             ggpo_recieve[server_tick] = resp.inputs;
+
+
+            //一定不能在这里更逻辑
+            //Process(resp.inputs);
+            //Execute(resp.frameNumber, resp.inputs);
         }
         #endregion
 
-        const int DELAY_FRAMES = 5;
+        public int DELAY_FRAMES = 0;
         public bool IsStart;
         public ushort sendTick;
         public ushort recvTick;
@@ -212,7 +216,9 @@ namespace Code.Client
         {
             if (!IsStart) return;
 
+            //Debug.Log("新的一帧----------------------------------------------------");
             S2C_InputPacket op = new S2C_InputPacket();
+            runner.SaveOldBuffer();
 
             //①收集本地按键，发送，预测
             sendTick++;
@@ -220,8 +226,6 @@ namespace Code.Client
             uint input = inputs[0];
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
-
-            return;
 
             //②Delay模式缓冲帧（设为0时，不走这块逻辑）
             if (DELAY_FRAMES > 0)
@@ -236,6 +240,7 @@ namespace Code.Client
                 //Debug.Log($"逻辑帧更新：{sendTick}/{myPacket.Tick}");
             }
 
+
             //③对比逻辑，不是在OnRecv做，在主循环做可控。
             bool verity = true;
             uint badTick = 0; //最早发生预测错误的帧
@@ -244,16 +249,16 @@ namespace Code.Client
             for (int i = recvTick + 1; i < ggpo_recieve.Count; i++)
             {
                 ushort _serverTick = (ushort)i;
-                //Debug.Log($"[C] 本地更{myPacket.Tick}时，发现有可用的服务器帧：{_serverTick}");
+                Debug.Log($"[C] 本地更{cmd.frameNumber}时，发现有可用的服务器帧：{_serverTick}");
 
                 //是否执行验证取决于是否预测过（Delay大于延迟，就不用预测）
                 bool needToVerity = ggpo_predict.ContainsKey(_serverTick);
                 if (needToVerity)
                 {
-                    var recieve1 = ggpo_recieve[_serverTick][1];
-                    var recieve2 = ggpo_recieve[_serverTick][2];
-                    var predict1 = ggpo_predict[_serverTick][1];
-                    var predict2 = ggpo_predict[_serverTick][2];
+                    var recieve1 = ggpo_recieve[_serverTick][0];
+                    var recieve2 = ggpo_recieve[_serverTick][1];
+                    var predict1 = ggpo_predict[_serverTick][0];
+                    var predict2 = ggpo_predict[_serverTick][1];
                     if (recieve1.Equals(predict1) && recieve2.Equals(predict2))
                     {
                         //之前的预测准确。不用更新表现了，预测时已经走过表现逻辑。
@@ -269,6 +274,7 @@ namespace Code.Client
                 }
                 else //delay很长，期间已经收到包了，没有预测过
                 {
+                    Debug.Log("delay很长");
                     uint[] _ops = ggpo_recieve[_serverTick]; //双方的操作
                     Process(_ops);
 
@@ -276,11 +282,12 @@ namespace Code.Client
                     ggpo_predict[_serverTick] = _ops;
                     recvTick = _serverTick;
 
-                    op = new S2C_InputPacket
-                    {
-                        frameNumber = _serverTick,
-                        inputs = _ops,
-                    };
+                    // 快照
+                    //op = new S2C_InputPacket
+                    //{
+                    //    frameNumber = _serverTick,
+                    //    inputs = _ops,
+                    //};
                     //Snapshot(op);
                 }
             }
@@ -311,16 +318,18 @@ namespace Code.Client
                 }
             }
 
+
             //④帧传给逻辑层，推进
 
-            //客户端推进帧，要走(packet.Tick)这一帧了，判断是否预测。
+            //客户端推进帧，要走(cmd.frameNumber)这一帧了，判断是否预测。
             if (ggpo_recieve.ContainsKey(cmd.frameNumber) == false)
             {
                 //没有帧，走预测
-                ggpo_predict[cmd.frameNumber] = new uint[0];
+                ggpo_predict[cmd.frameNumber] = new uint[2];
                 ggpo_predict[cmd.frameNumber][0] = cmd.input; //本地帧塞进去
                 Predict(cmd.frameNumber);
 
+                // 快照
                 //op = new S2C_AllPlayerOperationPacket
                 //{
                 //    ServerTick = myPacket.Tick,
@@ -363,7 +372,8 @@ namespace Code.Client
         // 追帧
         private void Process(uint[] inputs) //双方操作
         {
-            //runner.OnFixedUpdate(inputs);
+            Debug.Log($"FixedUpdate: <color=yellow>{LocalSession.gs.frameNumber}</color>");
+            runner.OnFixedUpdate(inputs);
         }
     }
 }

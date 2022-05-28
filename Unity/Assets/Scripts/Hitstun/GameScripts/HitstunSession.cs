@@ -97,4 +97,12 @@ public static class LocalSession
         }
         return input;
     }
+
+    public static uint[] ReadFrame(uint tick, uint[] inputs)
+    {
+        // 传进来第五帧数据inputs，先回到第四帧
+        gs.frameNumber = tick - 1;
+        gs.Update(inputs, 0);
+        return inputs;
+    }
 }

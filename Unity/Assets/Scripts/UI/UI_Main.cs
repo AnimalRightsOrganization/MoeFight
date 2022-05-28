@@ -10,10 +10,10 @@ namespace Code.Client
         public static UI_Main Instance;
 
         public ClientNet _clientLogic;
-        public Button m_ConnectBtn;
-        public Button m_LoginBtn;
-        public Button m_ReadyBtn;
-        public Text m_InfoText;
+        private Button m_ConnectBtn;
+        private Button m_LoginBtn;
+        private Button m_ReadyBtn;
+        private Text m_InfoText;
 
         void Awake()
         {
@@ -46,6 +46,8 @@ namespace Code.Client
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
             var cmd = new C2S_LoginPacket { UserName = _userName };
             _clientLogic.SendLogin(cmd);
+
+            gameObject.SetActive(false);
         }
 
         void OnReadyClick()

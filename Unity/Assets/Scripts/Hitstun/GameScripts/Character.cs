@@ -18,7 +18,12 @@ public class Character
 
     // Input Buffer
     private uint[] inputBuffer;
-    private uint currentBufferPos; //P1:0, P2:1
+    private uint currentBufferPos;
+
+    public string ToJson()
+    {
+        return JsonUtility.ToJson(this);
+    }
 
     public Character()
     {
@@ -90,7 +95,7 @@ public class Character
         blockStun = br.ReadUInt32();
         hitStun = br.ReadUInt32();
         // input buffer
-        inputBuffer = new uint[Constants.INPUT_BUFFER_SIZE];
+        inputBuffer = new uint[Constants.INPUT_BUFFER_SIZE]; //60
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; ++i)
         {
             inputBuffer[i] = br.ReadUInt32();
