@@ -313,6 +313,9 @@ public class Character
             || state == CharacterState.STAND_LK
             || state == CharacterState.STAND_MK
             || state == CharacterState.STAND_HK
+            || state == CharacterState.CROUCH_LP
+            || state == CharacterState.CROUCH_MP
+            || state == CharacterState.CROUCH_HP
             || state == CharacterState.CROUCH_LK
             || state == CharacterState.CROUCH_MK
             || state == CharacterState.CROUCH_HK
@@ -341,7 +344,12 @@ public class Character
                state == CharacterState.STAND_TO_CROUCH ||
                state == CharacterState.BLOCK_LOW ||
                state == CharacterState.HIT_CROUCH ||
-               state == CharacterState.CROUCH_MK;
+               state == CharacterState.CROUCH_LP ||
+               state == CharacterState.CROUCH_MP ||
+               state == CharacterState.CROUCH_HP ||
+               state == CharacterState.CROUCH_LK ||
+               state == CharacterState.CROUCH_MK ||
+               state == CharacterState.CROUCH_HK;
     }
 
     public bool IsStand()
@@ -643,8 +651,18 @@ public class Character
                     SetCharacterState(CharacterState.STAND);
                 }
                 break;
+            // CROUCH_LP STATE
+            case CharacterState.CROUCH_LP:
+            // CROUCH_MP STATE
+            case CharacterState.CROUCH_MP:
+            // CROUCH_HP STATE
+            case CharacterState.CROUCH_HP:
+            // CROUCH_LK STATE
+            case CharacterState.CROUCH_LK:
             // CROUCH_MK STATE
             case CharacterState.CROUCH_MK:
+            // CROUCH_HK STATE
+            case CharacterState.CROUCH_HK:
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
                 // check for cancels
@@ -832,9 +850,74 @@ public class Character
 
     public bool CheckCrouchingAttacks(CharacterData data)
     {
-        if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nMK, (uint)Inputs.INPUT_MK }, Constants.LENIENCY_BUFFER))
+        if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nLP, (uint)Inputs.INPUT_LP }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.CROUCH_LP);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nMP, (uint)Inputs.INPUT_MP }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.CROUCH_MP);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nHP, (uint)Inputs.INPUT_HP }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.CROUCH_HP);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nLK, (uint)Inputs.INPUT_LK }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.CROUCH_LK);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nMK, (uint)Inputs.INPUT_MK }, Constants.LENIENCY_BUFFER))
         {
             SetCharacterState(CharacterState.CROUCH_MK);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_nHK, (uint)Inputs.INPUT_HK }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.CROUCH_HK);
             // prepare the hitboxes
             foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
             {
