@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using HitstunConstants;
 using UnityEditor;
@@ -22,8 +22,9 @@ public class CharacterView : MonoBehaviour
     private List<HitboxView> hurtboxViews;
 
     private Transform model;
+    public Animator animator;
 
-    public void Awake()
+    void Awake()
     {
         sprites = new Dictionary<string, Sprite[]>();
         hitboxViews = new List<HitboxView>();
@@ -42,6 +43,7 @@ public class CharacterView : MonoBehaviour
 
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Bundles/Prefabs/Aoi.prefab");
         model = Instantiate(prefab, transform).transform;
+        animator = model.GetComponentInChildren<Animator>();
     }
 
     public void LoadResources(CharacterData _data)
@@ -88,11 +90,14 @@ public class CharacterView : MonoBehaviour
         }
     }
 
+    public CharacterState currentState;
+    public Animation currentAnimation;
+
     public void UpdateCharacterView(Character character)
     {
         // display correct sprite based on state
-        CharacterState currentState = character.state;
-        Animation currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
+        currentState = character.state;
+        currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
         int spriteIndex = 0;
         for (int i = 0; i < currentAnimation.frameDuration.Length; i++)
@@ -105,6 +110,8 @@ public class CharacterView : MonoBehaviour
             }
         }
         spriteRenderer.sprite = sprites[currentAnimation.animationName][spriteIndex % currentAnimation.totalFrames];
+        //动画帧
+        animator.Play(currentAnimation.animationName);
 
         // x and y position
         float viewX = ((character.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
@@ -150,7 +157,6 @@ public class CharacterView : MonoBehaviour
             float projectileViewX = ((character.projectile.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
             float projectileViewY = (character.projectile.position.y / Constants.SCALE);
             projectileView.transform.position = new Vector3(projectileViewX, projectileViewY, zDistance);
-
         }
         else
         {

@@ -322,7 +322,7 @@ namespace Code.Client
             uint lastTick = tick - 1;
             uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][1]; //取上一帧作为预测
             ggpo_predict[tick][1] = remoteInput;
-            Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
+            //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
             var _inputs = ggpo_predict[tick];
@@ -336,7 +336,7 @@ namespace Code.Client
         // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
         {
-            Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
+            //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
             runner.OnFixedUpdate(inputs);
