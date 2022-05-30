@@ -98,10 +98,17 @@ public static class LocalSession
         return input;
     }
 
-    public static uint[] ReadFrame(uint tick, uint[] inputs)
+    public static uint[] CreateInputs()
     {
-        // 传进来第五帧数据inputs，先回到第四帧
-        gs.frameNumber = tick - 1;
+        uint[] inputs = new uint[ngs.players.Length];
+        for (int i = 0; i < inputs.Length; ++i)
+        {
+            inputs[i] = ReadInputs(ngs.players[i].controllerId);
+        }
+        return inputs;
+    }
+    public static uint[] RunFrameNext(uint[] inputs)
+    {
         gs.Update(inputs, 0);
         return inputs;
     }

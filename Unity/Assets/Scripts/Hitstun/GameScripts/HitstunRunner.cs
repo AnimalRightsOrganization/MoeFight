@@ -20,8 +20,6 @@ public class HitstunRunner : MonoBehaviour
     CharacterData[] characterDatas; //技能数据
 
     // Internal
-    GameState buffer1;
-    GameState buffer2;
     NativeArray<byte> buffer;
     NativeArray<byte> oldBuffer; //快照
     private bool running;
