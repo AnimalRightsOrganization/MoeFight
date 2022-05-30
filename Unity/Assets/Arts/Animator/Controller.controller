@@ -251,7 +251,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SLP
+  m_Name: STAND_LP
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -563,7 +563,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Hadoken
+  m_Name: HADOUKEN
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
