@@ -105,20 +105,6 @@ public class HitstunRunner : MonoBehaviour
             nextStep = false;
 
 
-            //// 保存一个Buffer Temp数据
-            //// save old gamestate
-            //if (oldBuffer.IsCreated)
-            //{
-            //    oldBuffer.Dispose();
-            //}
-            //oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
-
-            // 获取键盘输入，执行一帧逻辑运算 //LocalSession.gs.Update()
-            // run the frame
-            //uint[] inputs = LocalSession.RunFrame();
-            //OnFixedUpdate(inputs);
-
-
             // save new gamestate //TODO: 意义不明
             if (buffer.IsCreated)
             {

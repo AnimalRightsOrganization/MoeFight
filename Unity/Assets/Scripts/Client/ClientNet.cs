@@ -6,6 +6,7 @@ using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using UnityEngine;
+using Unity.Collections;
 
 namespace Code.Client
 {
@@ -48,7 +49,7 @@ namespace Code.Client
             rendTick = 0;
             ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50帧每秒 = 85,899,346秒 = 23,860小时 = 994天。4+4+4=12个字节
             ggpo_recieve = new Dictionary<uint, uint[]>();
-            dic_delay = new Queue<C2S_InputPacket>();
+            cache_buffer = new Dictionary<uint, NativeArray<byte>>();
         }
 
         void Update()
@@ -63,6 +64,20 @@ namespace Code.Client
         void OnDestroy()
         {
             _netManager.Stop();
+
+            for (int i = 0; i < cache_buffer.Count; i++)
+            {
+                NativeArray<byte> buffer;
+                if (cache_buffer.TryGetValue((uint)i, out buffer))
+                {
+                    if (buffer.IsCreated)
+                    {
+                        //Debug.Log("Dispose: " + i);
+                        buffer.Dispose();
+                    }
+                }
+            }
+            GC.Collect(0);
         }
         #endregion
 
@@ -199,6 +214,7 @@ namespace Code.Client
         }
         #endregion
 
+
         public uint DELAY_FRAMES = 0;
         public bool IsStart;
         public uint sendTick;
@@ -206,7 +222,7 @@ namespace Code.Client
         public uint rendTick;
         private Dictionary<uint, uint[]> ggpo_predict; //预测帧
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧
-        private Queue<C2S_InputPacket> dic_delay; //延迟帧
+        private Dictionary<uint, NativeArray<byte>> cache_buffer; //快照
         public HitstunRunner runner;
 
         void FixedUpdate()
@@ -235,7 +251,7 @@ namespace Code.Client
                 {
                     //因为延迟表现，此时收到了，取出来表现
                     var _inputs = ggpo_recieve[rendTick];
-                    Process(_inputs);
+                    Process(rendTick, _inputs);
                 }
                 else
                 {
@@ -283,7 +299,7 @@ namespace Code.Client
                             {
                                 uint[] _inputs = ggpo_recieve[t];
                                 ggpo_predict[t] = _inputs;
-                                Process(_inputs);
+                                Process(t, _inputs);
                             }
                             recvTick = goodTick;
 
@@ -304,47 +320,40 @@ namespace Code.Client
         private void Predict(uint tick)
         {
             uint lastTick = tick - 1;
-            //uint[] try_inputs;
-            //if (ggpo_predict.TryGetValue(lastTick, out try_inputs) == false)
-            //{
-            //    ggpo_predict[lastTick] = new uint[2];
-            //    Debug.Log($"没有上一帧：{lastTick}，创建{ggpo_predict[lastTick][0]}, {ggpo_predict[lastTick][1]}");
-            //}
-
             uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][1]; //取上一帧作为预测
             ggpo_predict[tick][1] = remoteInput;
             Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
             var _inputs = ggpo_predict[tick];
-            Process(_inputs);
+            Process(tick, _inputs);
         }
         // 回滚
         private void Rollback(uint tick)
         {
-            /*
-            GameState shot = null;
-            shot = storeBuffer[tick];
-
-            var role1 = GetRole(1);
-            var role2 = GetRole(2);
-            role1.RollBack(shot.role1);
-            role2.RollBack(shot.role2);
-            for (int i = 0; i < dic_bullet.Count; i++)
-            {
-                var bullet = dic_bullet[i];
-                bullet.RollBack(shot.bullets[i]);
-            }
-            Debug.Log($"<color=#9500FF>快照退回到第{tick}帧</color>");
-            */
+            GameState.FromBytes(LocalSession.gs, cache_buffer[tick]);
         }
         // 追帧
-        private void Process(uint[] inputs) //双方操作
+        private void Process(uint tick, uint[] inputs) //双方操作
         {
-            Debug.Log($"FixedUpdate: <color=yellow>{LocalSession.gs.frameNumber}</color>");
+            Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
             runner.OnFixedUpdate(inputs);
+
+            Snapshot(tick);
+        }
+        // 快照
+        private void Snapshot(uint tick)
+        {
+            cache_buffer[tick] = GameState.ToBytes(LocalSession.gs);
+        }
+
+        // Editor方法
+        [ContextMenu("RollbackTo")]
+        public void RollbackTo()
+        {
+            Rollback(1);
         }
     }
 }
