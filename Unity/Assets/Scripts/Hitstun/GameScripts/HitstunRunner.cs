@@ -79,17 +79,16 @@ public class HitstunRunner : MonoBehaviour
         }
         oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
     }
-    /*
+    ///*
     void FixedUpdate()
     {
         SaveOldBuffer();
 
         // 必须备份一个oldBuffer，不然帧数多一
         uint[] inputs = LocalSession.RunFrame();
-        Debug.Log($"FixedUpdate: <color=yellow>{LocalSession.gs.frameNumber}</color>");
         OnFixedUpdate(inputs);
     }
-    */
+    //*/
     public void OnFixedUpdate(uint[] inputs)
     {
         if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)

@@ -307,7 +307,14 @@ public class Character
 
     public bool isAttacking()
     {
-        return state == CharacterState.STAND_LP || state == CharacterState.CROUCH_MK || state == CharacterState.HADOUKEN;
+        return state == CharacterState.STAND_LP
+            || state == CharacterState.STAND_MP
+            || state == CharacterState.STAND_HP
+            || state == CharacterState.CROUCH_LK
+            || state == CharacterState.CROUCH_MK
+            || state == CharacterState.CROUCH_HK
+            || state == CharacterState.HADOUKEN
+            || state == CharacterState.SHORYUKEN;
     }
 
     public bool IsAirborne()
@@ -346,6 +353,8 @@ public class Character
                state == CharacterState.BlOCK_HIGH ||
                state == CharacterState.HIT_STAND ||
                state == CharacterState.STAND_LP ||
+               state == CharacterState.STAND_MP ||
+               state == CharacterState.STAND_HP ||
                (state == CharacterState.JUMP_NEUTRAL && framesInState <= Constants.PREJUMP_FRAMES) ||
                (state == CharacterState.JUMP_FORWARD && framesInState <= Constants.PREJUMP_FRAMES) ||
                (state == CharacterState.JUMP_BACKWARD && framesInState <= Constants.PREJUMP_FRAMES);
@@ -606,6 +615,10 @@ public class Character
                 break;
             // STAND_LP STATE
             case CharacterState.STAND_LP:
+            // STAND_MP STATE
+            case CharacterState.STAND_MP:
+            // STAND_HP STATE
+            case CharacterState.STAND_HP:
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
                 // check for cancels
@@ -694,6 +707,32 @@ public class Character
         if (CheckSequence(new uint[] { (uint)Inputs.INPUT_LP, (uint)Inputs.INPUT_nLP }, Constants.LENIENCY_BUFFER))
         {
             SetCharacterState(CharacterState.STAND_LP);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_MP, (uint)Inputs.INPUT_nMP }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.STAND_MP);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
+            return true;
+        }
+        else if (CheckSequence(new uint[] { (uint)Inputs.INPUT_HP, (uint)Inputs.INPUT_nHP }, Constants.LENIENCY_BUFFER))
+        {
+            SetCharacterState(CharacterState.STAND_HP);
             // prepare the hitboxes
             foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
             {

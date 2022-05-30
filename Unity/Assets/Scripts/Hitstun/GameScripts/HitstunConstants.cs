@@ -140,10 +140,16 @@ namespace HitstunConstants
         BLOCK_LOW,
         HIT_STAND,
         HIT_CROUCH,
+        DIE,
 
         // attacks
         STAND_LP,
+        STAND_MP,
+        STAND_HP,
+        CROUCH_LK,
         CROUCH_MK,
+        CROUCH_HK,
         HADOUKEN,
+        SHORYUKEN,
     }
 }
