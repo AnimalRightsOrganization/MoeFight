@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using HitstunConstants;
+using UnityEditor;
 
 public class CharacterView : MonoBehaviour
 {
@@ -20,6 +21,8 @@ public class CharacterView : MonoBehaviour
     private List<HitboxView> hitboxViews;
     private List<HitboxView> hurtboxViews;
 
+    private Transform model;
+
     public void Awake()
     {
         sprites = new Dictionary<string, Sprite[]>();
@@ -36,6 +39,9 @@ public class CharacterView : MonoBehaviour
         projectileBoxView = Instantiate(hitboxPrefab, transform);
         projectileBoxView.spriteRenderer.color = new Color(1f, 0f, 0f, .5f);
         projectileBoxView.spriteRenderer.sortingLayerName = "HITBOX";
+
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Bundles/Prefabs/Aoi.prefab");
+        model = Instantiate(prefab, transform).transform;
     }
 
     public void LoadResources(CharacterData _data)
@@ -113,6 +119,8 @@ public class CharacterView : MonoBehaviour
         spriteRenderer.flipX = character.facingRight;
         float flipShadow = (character.facingRight) ? shadowOffset : -shadowOffset;
         shadowProjector.transform.position = new Vector3(viewX + flipShadow, viewY + 2.0f, zDistance + 0.15f);
+        model.rotation = (character.facingRight) ? Quaternion.Euler(0, 90, 0) : Quaternion.Euler(0, -90, 0);
+        model.localScale = (character.facingRight) ? Vector3.one : new Vector3(-1, 1, 1);
 
         // set correct drawing layer
         if (character.onTop)
