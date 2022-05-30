@@ -533,15 +533,17 @@ public class Character
             case CharacterState.DASH_FORWARD:
             // DASH_BACKWARD STATE
             case CharacterState.DASH_BACKWARD:
-                int dx = data.animations[state.ToString()].dx[framesInState];
-                velocity.x = facingRight ? dx : -dx;
-                velocity.y = 0;
-                if (framesInState >= data.animations[state.ToString()].totalFrames - 1)
                 {
-                    SetCharacterState(CharacterState.STAND);
-                    //Debug.Log("Dash");
+                    int dx = data.animations[state.ToString()].dx[framesInState];
+                    velocity.x = facingRight ? dx : -dx;
+                    velocity.y = 0;
+                    if (framesInState >= data.animations[state.ToString()].totalFrames - 1)
+                    {
+                        SetCharacterState(CharacterState.STAND);
+                        //Debug.Log("Dash");
+                    }
+                    break;
                 }
-                break;
             // BLOCK_HIGH STATE
             case CharacterState.BlOCK_HIGH:
             // BLOCK_STAND STATE
@@ -675,6 +677,29 @@ public class Character
                     SetCharacterState(CharacterState.STAND);
                 }
                 break;
+            // SHORYUKEN STATE
+            case CharacterState.SHORYUKEN:
+                {
+                    Attack atk = data.attacks[state.ToString()];
+                    if (framesInState < 24)
+                    {
+                        int dx = atk.dx[framesInState];
+                        int dy = atk.dy[framesInState];
+                        velocity.x = facingRight ? dx : -dx;
+                        velocity.y = dy;
+                        break;
+                    }
+                    velocity.x = velocity.x;
+                    velocity.y += Constants.GRAVITY / Constants.FPS; //下落
+
+                    // check for cancels
+                    // end state
+                    if (framesInState >= data.attacks[state.ToString()].totalFrames - 1)
+                    {
+                        SetCharacterState(CharacterState.STAND);
+                    }
+                    break;
+                }
             default:
                 Debug.Log("Character State invalid:" + state.ToString());
                 velocity.x = 0;
@@ -692,6 +717,14 @@ public class Character
         {
             FlushBuffer();
             SetCharacterState(CharacterState.HADOUKEN);
+            return true;
+        }
+        else if (CheckSequence(Motions.QCB, 20) 
+            && CheckSequence(new uint[] { (uint)Inputs.INPUT_nLP, (uint)Inputs.INPUT_LP }, 3)
+            && !projectile.active)
+        {
+            FlushBuffer();
+            SetCharacterState(CharacterState.SHORYUKEN);
             return true;
         }
         return false;

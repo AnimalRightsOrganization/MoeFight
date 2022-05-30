@@ -199,7 +199,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shoryuken
+  m_Name: SHORYUKEN
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -277,7 +277,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CLP
+  m_Name: CROUCH_LP
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -329,7 +329,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SLK
+  m_Name: STAND_LK
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -537,7 +537,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SMK
+  m_Name: STAND_MK
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -641,7 +641,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SHK
+  m_Name: STAND_HK
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -736,7 +736,7 @@ AnimatorStateMachine:
     m_Position: {x: 480, y: 60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102228758463528122}
-    m_Position: {x: 720, y: -240, z: 0}
+    m_Position: {x: 720, y: -390, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102463895392530562}
     m_Position: {x: 0, y: -240, z: 0}
@@ -772,7 +772,7 @@ AnimatorStateMachine:
     m_Position: {x: 240, y: -310, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2001051061532687623}
-    m_Position: {x: 480, y: -380, z: 0}
+    m_Position: {x: 480, y: -390, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

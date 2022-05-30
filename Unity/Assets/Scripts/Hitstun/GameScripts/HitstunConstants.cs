@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace HitstunConstants
 {
@@ -47,10 +47,10 @@ namespace HitstunConstants
 
     public static class Motions
     {
-        public static readonly uint[] DASH_FORWARD = { (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_NEUTRAL, (uint)Inputs.INPUT_FORWARD };
-        public static readonly uint[] DASH_BACKWARD = { (uint)Inputs.INPUT_BACK, (uint)Inputs.INPUT_NEUTRAL, (uint)Inputs.INPUT_BACK };
-        public static readonly uint[] QCF = { (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_FORWARD };
-        public static readonly uint[] QCB = { (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_BACK, (uint)Inputs.INPUT_BACK };
+        public static readonly uint[] DASH_FORWARD = { (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_NEUTRAL, (uint)Inputs.INPUT_FORWARD };//→〇→
+        public static readonly uint[] DASH_BACKWARD = { (uint)Inputs.INPUT_BACK, (uint)Inputs.INPUT_NEUTRAL, (uint)Inputs.INPUT_BACK };//←〇←
+        public static readonly uint[] QCF = { (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_FORWARD };//↓→
+        public static readonly uint[] QCB = { (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_BACK, (uint)Inputs.INPUT_BACK };//↓←
         public static readonly uint[] DOUBLE_QCF = { (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_FORWARD };
         public static readonly uint[] DP = { (uint)Inputs.INPUT_FORWARD, (uint)Inputs.INPUT_DOWN, (uint)Inputs.INPUT_DOWN | (uint)Inputs.INPUT_FORWARD };
 
