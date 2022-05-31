@@ -162,14 +162,17 @@ public class GameState
             if (defendingChar.IsCrouch())
             {
                 defendingChar.SetCharacterState(CharacterState.BLOCK_LOW);
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿下段防守");
             }
             else if (hitBox.type == HitBoxType.MID)
             {
                 defendingChar.SetCharacterState(CharacterState.BLOCK_STAND);
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿中段防守");
             }
             else
             {
                 defendingChar.SetCharacterState(CharacterState.BlOCK_HIGH);
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿上段防守");
             }
             // apply blockstun
             defendingChar.framesInState = 0;
@@ -191,10 +194,12 @@ public class GameState
             if (defendingChar.IsCrouch())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_CROUCH);
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中");
             }
             else if (defendingChar.IsStand())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_STAND);
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中");
             }
             // apply hitstun
             defendingChar.framesInState = 0;
