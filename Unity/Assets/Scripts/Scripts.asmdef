@@ -2,8 +2,6 @@
     "name": "Scripts",
     "rootNamespace": "",
     "references": [
-        "Code.Client",
-        "Code.Server",
         "Code.Shared",
         "Plugins"
     ],
