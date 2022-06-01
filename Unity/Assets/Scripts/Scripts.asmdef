@@ -2,8 +2,8 @@
     "name": "Scripts",
     "rootNamespace": "",
     "references": [
-        "Code.Shared",
-        "Plugins"
+        "GUID:d6dc9de901a87b6499c7024385e4befb",
+        "GUID:cf636a13429d3a643a59026e31e56a0c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
