@@ -2,7 +2,7 @@
     "name": "Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:534cb2a21a2034044ba6831cb0f639e9"
+        "Scripts"
     ],
     "includePlatforms": [
         "Editor"
