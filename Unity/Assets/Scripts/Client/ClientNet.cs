@@ -13,7 +13,7 @@ namespace Code.Client
     public class ClientNet : MonoBehaviour, INetEventListener
     {
         //public const string IP = "moegijinka.cn";
-        public const string IP = "127.0.0.1";
+        public const string IP = "192.168.1.101";
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
