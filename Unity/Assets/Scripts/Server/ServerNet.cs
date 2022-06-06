@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -57,6 +58,8 @@ namespace Code.Server
             //    Update();
             //    await Task.Delay(15);
             //}
+
+            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
         }
         public void Update()
         {
@@ -182,9 +185,14 @@ namespace Code.Server
             req.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.Login] {peer.Id}: {req.UserName}");
 
+            var p = (ServerPlayer)peer.Tag;
+            _playerManager.AddPlayer(p);
+
             var resp = new S2C_LoginResultPacket { Code = 0, PeerId = (short)peer.Id, UserName = req.UserName };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, resp), DeliveryMethod.ReliableOrdered);
         }
+
+        private Dictionary<uint, Dictionary<int, uint>> dic_recv;
 
         void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
@@ -192,15 +200,26 @@ namespace Code.Server
             req.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.Input] {peer.Id}: {req.frameNumber}---{req.input}");
 
-            // 发回给客户端
-            S2C_InputPacket packet = new S2C_InputPacket
-            {
-                frameNumber = req.frameNumber,
-                inputs = new uint[] { req.input, 0 }
-            };
-            _netManager.SendToAll(WriteSerializable(PacketType.S2C_Lockstep, packet), DeliveryMethod.ReliableOrdered);
 
-            // 同一个帧号，集齐两人份就下发
+            int pid = peer.Id;
+            if (dic_recv.ContainsKey(req.frameNumber) == false)
+            {
+                dic_recv[req.frameNumber] = new Dictionary<int, uint>();
+                dic_recv[req.frameNumber][pid] = req.input;
+            }
+            else
+            {
+                // 同一个帧号，集齐两人份就下发
+                dic_recv[req.frameNumber][pid] = req.input;
+
+                // 发回给客户端
+                S2C_InputPacket packet = new S2C_InputPacket
+                {
+                    frameNumber = req.frameNumber,
+                    inputs = new uint[] { dic_recv[req.frameNumber][0], dic_recv[req.frameNumber][1] }
+                };
+                _netManager.SendToAll(WriteSerializable(PacketType.S2C_Lockstep, packet), DeliveryMethod.ReliableOrdered);
+            }
         }
         #endregion
     }

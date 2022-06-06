@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using HitstunConstants;
-using UnityEditor;
 
 public class CharacterView : MonoBehaviour
 {
@@ -41,8 +40,9 @@ public class CharacterView : MonoBehaviour
         projectileBoxView.spriteRenderer.color = new Color(1f, 0f, 0f, .5f);
         projectileBoxView.spriteRenderer.sortingLayerName = "HITBOX";
 
-        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Bundles/Prefabs/Aoi.prefab");
+        var prefab = ResManager.LoadPrefab("Aoi");
         model = Instantiate(prefab, transform).transform;
+        model.name = "model";
         animator = model.GetComponentInChildren<Animator>();
     }
 
