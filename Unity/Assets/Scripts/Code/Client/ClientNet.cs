@@ -254,7 +254,7 @@ namespace Code.Client
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
-                    Debug.Log($"延迟不够，需要预测：{rendTick}");
+                    Debug.Log($"发送第{sendTick}帧，延迟不够({DELAY_FRAMES})，需要预测：{rendTick}");
                     Predict(rendTick);
                 }
             }

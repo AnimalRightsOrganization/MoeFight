@@ -167,17 +167,18 @@ namespace Code.Server
         {
             var req = new C2S_InputPacket();
             req.Deserialize(reader);
-            UnityEngine.Debug.Log($"[C2S.Input] {peer.Id}: {req.frameNumber}---{req.input}");
 
 
             int pid = peer.Id;
             if (dic_recv.ContainsKey(req.frameNumber) == false)
             {
+                UnityEngine.Debug.Log($"[C2S.Input.111] {pid}: {req.frameNumber}---{req.input}");
                 dic_recv[req.frameNumber] = new Dictionary<int, uint>();
                 dic_recv[req.frameNumber][pid] = req.input;
             }
             else
             {
+                UnityEngine.Debug.Log($"[C2S.Input.222] {pid}: {req.frameNumber}---{req.input}");
                 // 同一个帧号，集齐两人份就下发
                 dic_recv[req.frameNumber][pid] = req.input;
 
