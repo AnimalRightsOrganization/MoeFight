@@ -6,7 +6,6 @@ using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using UnityEngine;
-using Unity.Collections;
 
 namespace Code.Client
 {
@@ -233,8 +232,7 @@ namespace Code.Client
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
             //ggpo_predict[sendTick] = new uint[2];
-            //ggpo_predict[sendTick][mySeatId] = inputs[mySeatId];
-            //Snapshot(sendTick);
+            //ggpo_predict[sendTick][mySeatId] = input;
 
 
             //②Delay-Based，要求自己也延迟。
@@ -247,7 +245,7 @@ namespace Code.Client
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
                     //因为延迟表现，此时收到了，取出来表现
-                    Debug.Log($"延迟足够，取出：{rendTick}");
+                    //Debug.Log($"延迟足够，取出：{rendTick}");
                     var _inputs = ggpo_recieve[rendTick];
                     Process(rendTick, _inputs);
                 }
@@ -281,10 +279,7 @@ namespace Code.Client
                     }
                     else
                     {
-                        //verity = false;
                         uint badTick = i;
-                        //Debug.Log($"预测错误：\nP1:{predict1}\nP2:{predict2}");
-
 
                         // 验证失败处理
                         {
@@ -348,7 +343,7 @@ namespace Code.Client
         // 快照
         private void Snapshot(uint tick)
         {
-            Debug.Log($"快照: {tick}");
+            //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
 
