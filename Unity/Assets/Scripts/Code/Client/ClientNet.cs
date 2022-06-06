@@ -232,8 +232,9 @@ namespace Code.Client
             uint input = inputs[0];
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
-            ggpo_predict[sendTick] = new uint[2];
-            ggpo_predict[sendTick][mySeatId] = inputs[mySeatId];
+            //ggpo_predict[sendTick] = new uint[2];
+            //ggpo_predict[sendTick][mySeatId] = inputs[mySeatId];
+            //Snapshot(sendTick);
 
 
             //②Delay-Based，要求自己也延迟。
@@ -246,12 +247,14 @@ namespace Code.Client
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
                     //因为延迟表现，此时收到了，取出来表现
+                    Debug.Log($"延迟足够，取出：{rendTick}");
                     var _inputs = ggpo_recieve[rendTick];
                     Process(rendTick, _inputs);
                 }
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
+                    Debug.Log($"延迟不够，需要预测：{rendTick}");
                     Predict(rendTick);
                 }
             }
@@ -264,6 +267,7 @@ namespace Code.Client
                 bool needToVerity = ggpo_predict.ContainsKey(i);
                 if (needToVerity)
                 {
+                    //Debug.Log($"预测过{i}，需要验证。{ggpo_predict.Count}");
                     //之前标记为预测，判断预测是否准确
 
                     var recieve1 = ggpo_recieve[i][0];
@@ -320,7 +324,7 @@ namespace Code.Client
             uint lastTick = tick - 1;
             uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][remoteSeat]; //取上一帧作为预测
             ggpo_predict[tick][remoteSeat] = remoteInput;
-            //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
+            Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
             var _inputs = ggpo_predict[tick];
