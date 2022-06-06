@@ -169,6 +169,7 @@ namespace Code.Client
 
         public void SendJoin(C2S_LoginPacket cmd)
         {
+            myName = cmd.UserName;
             SendPacketSerializable(PacketType.C2S_JoinReq, cmd);
         }
 
@@ -185,12 +186,16 @@ namespace Code.Client
 
         private void OnJoin(NetPeer peer, NetPacketReader reader)
         {
-            var resp = new S2C_JoinResultPacket();
-            resp.Deserialize(reader);
-            Debug.Log($"[S2C] OnLogin: code={resp.Code}, peerid={resp.HostId}, {resp.HostName}");
+            var packet = new S2C_JoinResultPacket();
+            packet.Deserialize(reader);
+            Debug.Log($"[S2C] OnLogin: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
 
-            if (resp.Code == 0)
+            if (packet.Code == 0)
+            {
+                mySeatId = packet.HostName.Equals(myName) ? packet.HostId : packet.GuestId;
+                
                 IsStart = true;
+            }
         }
 
         private void OnBattleStart(NetPeer peer, NetPacketReader reader)
@@ -200,14 +205,14 @@ namespace Code.Client
 
         private void OnRecvLockstep(NetPeer peer, NetPacketReader reader)
         {
-            var resp = new S2C_InputPacket();
-            resp.Deserialize(reader);
+            var packet = new S2C_InputPacket();
+            packet.Deserialize(reader);
             //Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}({resp.inputs.Length})");
             //Debug.Log($"Left => {(resp.inputs[0] & (uint)KeyPress.KEY_LEFT) != 0}"); //判断是否按了左键
             //Debug.Log($"Right => {(resp.inputs[0] & (uint)KeyPress.KEY_RIGHT) != 0}");
 
-            uint server_tick = resp.frameNumber;
-            ggpo_recieve[server_tick] = resp.inputs;
+            uint server_tick = packet.frameNumber;
+            ggpo_recieve[server_tick] = packet.inputs;
 
 
             //一定不能在这里更逻辑
@@ -225,6 +230,8 @@ namespace Code.Client
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧
         private Dictionary<uint, NativeArray<byte>> cache_buffer; //快照
         public HitstunRunner runner;
+        public string myName;
+        public int mySeatId;
 
         void FixedUpdate()
         {
@@ -238,7 +245,7 @@ namespace Code.Client
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
             ggpo_predict[sendTick] = new uint[2];
-            ggpo_predict[sendTick][0] = inputs[0];
+            ggpo_predict[sendTick][mySeatId] = inputs[mySeatId];
 
 
             //②Delay-Based，要求自己也延迟。

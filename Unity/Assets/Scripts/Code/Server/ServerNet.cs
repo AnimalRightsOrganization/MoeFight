@@ -132,8 +132,6 @@ namespace Code.Server
 
 
         #region Handler
-        private Dictionary<int, int> dic_players;
-
         void OnJoinReceived(NetPacketReader reader, NetPeer peer)
         {
             var req = new C2S_LoginPacket();
@@ -184,7 +182,7 @@ namespace Code.Server
                 dic_recv[req.frameNumber][pid] = req.input;
 
                 // 发回给客户端
-                S2C_InputPacket packet = new S2C_InputPacket
+                var packet = new S2C_InputPacket
                 {
                     frameNumber = req.frameNumber,
                     inputs = new uint[] { dic_recv[req.frameNumber][0], dic_recv[req.frameNumber][1] }
