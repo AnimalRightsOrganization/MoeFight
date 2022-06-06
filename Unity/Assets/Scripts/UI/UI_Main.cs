@@ -20,7 +20,7 @@ namespace Code.Client
             Instance = this;
 
             m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
-            m_JoinBtn = transform.Find("LoginBtn").GetComponent<Button>();
+            m_JoinBtn = transform.Find("JoinBtn").GetComponent<Button>();
             m_ReadyBtn = transform.Find("ReadyBtn").GetComponent<Button>();
             m_InfoText = transform.Find("PingText").GetComponent<Text>();
 

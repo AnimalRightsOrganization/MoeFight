@@ -24,6 +24,8 @@ namespace Code.Client
         private Action<DisconnectInfo> _onDisconnected;
         private ClientPlayerManager _playerManager;
         private int _ping;
+        private int mySeatId;
+        private string myName;
 
 
         #region Inner Method
@@ -49,7 +51,7 @@ namespace Code.Client
             rendTick = 0;
             ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50帧每秒 = 85,899,346秒 = 23,860小时 = 994天。4+4+4=12个字节
             ggpo_recieve = new Dictionary<uint, uint[]>();
-            cache_buffer = new Dictionary<uint, NativeArray<byte>>();
+            cache_buffer = new Dictionary<uint, byte[]>();
         }
 
         void Update()
@@ -65,18 +67,18 @@ namespace Code.Client
         {
             _netManager.Stop();
 
-            for (int i = 0; i < cache_buffer.Count; i++)
-            {
-                NativeArray<byte> buffer;
-                if (cache_buffer.TryGetValue((uint)i, out buffer))
-                {
-                    if (buffer.IsCreated)
-                    {
-                        //Debug.Log("Dispose: " + i);
-                        buffer.Dispose();
-                    }
-                }
-            }
+            //for (int i = 0; i < cache_buffer.Count; i++)
+            //{
+            //    byte[] buffer;
+            //    if (cache_buffer.TryGetValue((uint)i, out buffer))
+            //    {
+            //        if (buffer.IsCreated)
+            //        {
+            //            //Debug.Log("Dispose: " + i);
+            //            buffer.Dispose();
+            //        }
+            //    }
+            //}
             GC.Collect(0);
         }
         #endregion
@@ -228,10 +230,8 @@ namespace Code.Client
         public uint rendTick;
         private Dictionary<uint, uint[]> ggpo_predict; //预测帧
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧
-        private Dictionary<uint, NativeArray<byte>> cache_buffer; //快照
+        private Dictionary<uint, byte[]> cache_buffer; //快照
         public HitstunRunner runner;
-        public string myName;
-        public int mySeatId;
 
         void FixedUpdate()
         {
@@ -291,7 +291,7 @@ namespace Code.Client
                     {
                         //verity = false;
                         uint badTick = i;
-                        Debug.Log($"预测错误：\nP1:{predict1}\nP2:{predict2}");
+                        //Debug.Log($"预测错误：\nP1:{predict1}\nP2:{predict2}");
 
 
                         // 验证失败处理
@@ -339,7 +339,7 @@ namespace Code.Client
         // 回滚
         private void Rollback(uint tick)
         {
-            GameState.FromBytes(LocalSession.gs, cache_buffer[tick]);
+            GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
         }
         // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
@@ -354,7 +354,7 @@ namespace Code.Client
         // 快照
         private void Snapshot(uint tick)
         {
-            cache_buffer[tick] = GameState.ToBytes(LocalSession.gs);
+            cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
 
         // Editor方法

@@ -5,6 +5,7 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using HitstunConstants;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameState
 {
@@ -69,6 +70,30 @@ public class GameState
             }
         }
     }
+
+    public static void FromByteArray(GameState gs, byte[] bytes)
+    {
+        Assert.IsNotNull(gs);
+        using (var memoryStream = new MemoryStream(bytes))
+        {
+            using (var reader = new BinaryReader(memoryStream))
+            {
+                gs.Deserialize(reader);
+            }
+        }
+    }
+    public static byte[] ToByteArray(GameState gs)
+    {
+        using (var memoryStream = new MemoryStream())
+        {
+            using (var writer = new BinaryWriter(memoryStream))
+            {
+                gs.Serialize(writer);
+            }
+            return memoryStream.ToArray();
+        }
+    }
+
 
     public void Init()
     {
