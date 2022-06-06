@@ -6,7 +6,7 @@ namespace Code.Shared
     public enum PacketType : byte
     {
         //////////////
-        C2S_LoginReq        ,   //登录请求
+        C2S_JoinReq         ,   //独立启动加入
         C2S_BattleStart     ,   //请求开始战斗
         C2S_BattlePause     ,   //请求暂停战斗
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
@@ -15,7 +15,7 @@ namespace Code.Shared
         C2S_LackFrames      ,   //缺失帧
         //////////////
         S2C_ErrorOperate    ,   //错误代码
-        S2C_LoginResult     ,   //登录结果
+        S2C_JoinResult      ,   //独立启动加入
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
         S2C_BattleEnd       ,   //比赛结束，结算
@@ -86,24 +86,30 @@ namespace Code.Shared
     }
 
     // 登录结果
-    public struct S2C_LoginResultPacket : INetSerializable
+    public struct S2C_JoinResultPacket : INetSerializable
     {
         public byte Code; //255
-        public short PeerId; //65535
-        public string UserName;
+        public short HostId; //65535
+        public short GuestId; //65535
+        public string HostName;
+        public string GuestName;
 
         public void Serialize(NetDataWriter writer)
         {
             writer.Put(Code);
-            writer.Put(PeerId);
-            writer.Put(UserName);
+            writer.Put(HostId);
+            writer.Put(GuestId);
+            writer.Put(HostName);
+            writer.Put(GuestName);
         }
 
         public void Deserialize(NetDataReader reader)
         {
             Code = reader.GetByte();
-            PeerId = reader.GetShort();
-            UserName = reader.GetString();
+            HostId = reader.GetShort();
+            GuestId = reader.GetShort();
+            HostName = reader.GetString();
+            GuestName = reader.GetString();
         }
     }
 

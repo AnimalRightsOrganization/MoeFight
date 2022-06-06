@@ -11,7 +11,7 @@ namespace Code.Client
 
         public ClientNet _clientLogic;
         private Button m_ConnectBtn;
-        private Button m_LoginBtn;
+        private Button m_JoinBtn;
         private Button m_ReadyBtn;
         private Text m_InfoText;
 
@@ -20,12 +20,12 @@ namespace Code.Client
             Instance = this;
 
             m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
-            m_LoginBtn = transform.Find("LoginBtn").GetComponent<Button>();
+            m_JoinBtn = transform.Find("LoginBtn").GetComponent<Button>();
             m_ReadyBtn = transform.Find("ReadyBtn").GetComponent<Button>();
             m_InfoText = transform.Find("PingText").GetComponent<Text>();
 
             m_ConnectBtn.onClick.AddListener(OnConnectClick);
-            m_LoginBtn.onClick.AddListener(OnLoginClick);
+            m_JoinBtn.onClick.AddListener(OnJoinClick);
             m_ReadyBtn.onClick.AddListener(OnReadyClick);
         }
 
@@ -40,12 +40,12 @@ namespace Code.Client
             _clientLogic.Connect(OnDisconnected);
         }
 
-        void OnLoginClick()
+        void OnJoinClick()
         {
             System.Random rd = new System.Random();
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
             var cmd = new C2S_LoginPacket { UserName = _userName };
-            _clientLogic.SendLogin(cmd);
+            _clientLogic.SendJoin(cmd);
 
             gameObject.SetActive(false);
         }

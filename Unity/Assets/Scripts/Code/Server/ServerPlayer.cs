@@ -20,5 +20,7 @@ namespace Code.Server
         {
             base.Update(delta);
         }
+
+        public string UserName => base.Name;
     }
 }

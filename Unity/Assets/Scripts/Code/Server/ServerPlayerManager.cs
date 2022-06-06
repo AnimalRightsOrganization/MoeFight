@@ -46,7 +46,7 @@ namespace Code.Server
             for (int i = 0; i < _playersCount; i++)
             {
                 var p = _players[i];
-                p.Update(LogicTimer.FixedDelta);
+                //p.Update(LogicTimer.FixedDelta);
             }
         }
 
@@ -63,6 +63,11 @@ namespace Code.Server
                 }
             }
             return false;
+        }
+
+        public ServerPlayer GetPlayer(int playerId)
+        {
+            return _players[playerId];
         }
     }
 }

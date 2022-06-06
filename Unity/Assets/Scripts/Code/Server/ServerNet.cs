@@ -18,7 +18,6 @@ namespace Code.Server
         private readonly NetDataWriter _cachedWriter = new NetDataWriter();
 
         public const int MaxPlayers = 64;
-        private LogicTimer _logicTimer;
         private ServerPlayerManager _playerManager;
         public ushort Tick => _serverTick;
         private ushort _serverTick;
@@ -27,14 +26,14 @@ namespace Code.Server
         #region Inner Method
         public async Task StartProgram()
         {
-            _logicTimer = new LogicTimer(OnLogicUpdate);
             _playerManager = new ServerPlayerManager(this);
             _netManager = new NetManager(this)
             {
                 AutoRecycle = true
             };
             _netManager.Start(Port);
-            _logicTimer.Start();
+
+            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
 
             while (true)
             {
@@ -42,61 +41,15 @@ namespace Code.Server
                 await Task.Delay(15);
             }
         }
-        public void StartServer()
-        {
-            _logicTimer = new LogicTimer(OnLogicUpdate);
-            _playerManager = new ServerPlayerManager(this);
-            _netManager = new NetManager(this)
-            {
-                AutoRecycle = true
-            };
-            _netManager.Start(Port);
-            _logicTimer.Start();
 
-            //while (true)
-            //{
-            //    Update();
-            //    await Task.Delay(15);
-            //}
-
-            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
-        }
         public void Update()
         {
             _netManager.PollEvents();
-            _logicTimer.Update();
         }
 
         public void Dispose()
         {
             _netManager.Stop();
-            _logicTimer.Stop();
-        }
-
-        void OnLogicUpdate()
-        {
-            _serverTick = (ushort)((_serverTick + 1) % NetworkGeneral.MaxGameSequence);
-            _playerManager.LogicUpdate();
-            if (_serverTick % 2 == 0)
-            {
-                //_serverState.Tick = _serverTick;
-                int pCount = _playerManager.Count;
-
-                foreach (ServerPlayer p in _playerManager)
-                {
-                    //int statesMax = p.AssociatedPeer.GetMaxSinglePacketSize(DeliveryMethod.Unreliable) - ServerState.HeaderSize;
-                    //statesMax /= PlayerState.Size;
-
-                    //for (int s = 0; s < (pCount - 1) / statesMax + 1; s++)
-                    //{
-                    //    //TODO: divide
-                    //    //_serverState.LastProcessedCommand = p.LastProcessedCommandId;
-                    //    //_serverState.PlayerStatesCount = pCount;
-                    //    //_serverState.StartState = s * statesMax;
-                    //    //p.AssociatedPeer.Send(WriteSerializable(PacketType.ServerState, _serverState), DeliveryMethod.Unreliable);
-                    //}
-                }
-            }
         }
         #endregion
 
@@ -142,11 +95,11 @@ namespace Code.Server
                 return;
 
             PacketType pt = (PacketType)packetType;
-            UnityEngine.Debug.Log($"[新消息] {pt}");
+            //UnityEngine.Debug.Log($"[新消息] {pt}");
             switch (pt)
             {
-                case PacketType.C2S_LoginReq:
-                    OnLoginReceived(reader, peer);
+                case PacketType.C2S_JoinReq:
+                    OnJoinReceived(reader, peer);
                     break;
                 case PacketType.C2S_Lockstep:
                     OnInputReceived(reader, peer);
@@ -179,17 +132,35 @@ namespace Code.Server
 
 
         #region Handler
-        void OnLoginReceived(NetPacketReader reader, NetPeer peer)
+        private Dictionary<int, int> dic_players;
+
+        void OnJoinReceived(NetPacketReader reader, NetPeer peer)
         {
             var req = new C2S_LoginPacket();
             req.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.Login] {peer.Id}: {req.UserName}");
 
-            var p = (ServerPlayer)peer.Tag;
-            _playerManager.AddPlayer(p);
+            //var p = (ServerPlayer)peer.Tag;
+            //_playerManager.AddPlayer(p);
+            var serverPlayer = new ServerPlayer(_playerManager, req.UserName, peer);
+            _playerManager.AddPlayer(serverPlayer);
 
-            var resp = new S2C_LoginResultPacket { Code = 0, PeerId = (short)peer.Id, UserName = req.UserName };
-            peer.Send(WriteSerializable(PacketType.S2C_LoginResult, resp), DeliveryMethod.ReliableOrdered);
+            if (_playerManager.Count < 2)
+            {
+                UnityEngine.Debug.Log($"player count: {_playerManager.Count}");
+                return;
+            }
+
+            var host = _playerManager.GetPlayer(0);
+            var guest = _playerManager.GetPlayer(1);
+            for (int i = 0; i < _playerManager.Count; i++)
+            {
+                var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.Id, HostName = host.UserName, GuestId = guest.Id, GuestName = guest.Name };
+
+                var sp = _playerManager.GetPlayer(i);
+                //UnityEngine.Debug.Log($"send to: {sp.Id}---{sp.Name}");
+                sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_JoinResult, packet), DeliveryMethod.ReliableOrdered);
+            }
         }
 
         private Dictionary<uint, Dictionary<int, uint>> dic_recv;

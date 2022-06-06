@@ -126,8 +126,8 @@ namespace Code.Client
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.S2C_LoginResult:
-                    OnLogin(peer, reader);
+                case PacketType.S2C_JoinResult:
+                    OnJoin(peer, reader);
                     break;
                 case PacketType.S2C_BattleStart:
                     OnBattleStart(peer, reader);
@@ -167,9 +167,9 @@ namespace Code.Client
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
-        public void SendLogin(C2S_LoginPacket cmd)
+        public void SendJoin(C2S_LoginPacket cmd)
         {
-            SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
+            SendPacketSerializable(PacketType.C2S_JoinReq, cmd);
         }
 
         public void SendReady(EmptyPacket cmd)
@@ -183,13 +183,14 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
 
-        private void OnLogin(NetPeer peer, NetPacketReader reader)
+        private void OnJoin(NetPeer peer, NetPacketReader reader)
         {
-            var resp = new S2C_LoginResultPacket();
+            var resp = new S2C_JoinResultPacket();
             resp.Deserialize(reader);
-            Debug.Log($"[S2C] OnLogin: code={resp.Code}, peerid={resp.PeerId}, {resp.UserName}");
+            Debug.Log($"[S2C] OnLogin: code={resp.Code}, peerid={resp.HostId}, {resp.HostName}");
 
-            IsStart = true;
+            if (resp.Code == 0)
+                IsStart = true;
         }
 
         private void OnBattleStart(NetPeer peer, NetPacketReader reader)
