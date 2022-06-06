@@ -67,18 +67,6 @@ namespace Code.Client
         {
             _netManager.Stop();
 
-            //for (int i = 0; i < cache_buffer.Count; i++)
-            //{
-            //    byte[] buffer;
-            //    if (cache_buffer.TryGetValue((uint)i, out buffer))
-            //    {
-            //        if (buffer.IsCreated)
-            //        {
-            //            //Debug.Log("Dispose: " + i);
-            //            buffer.Dispose();
-            //        }
-            //    }
-            //}
             GC.Collect(0);
         }
         #endregion
@@ -327,9 +315,11 @@ namespace Code.Client
         // 预测
         private void Predict(uint tick)
         {
+            int remoteSeat = (mySeatId + 1) % 2;
+
             uint lastTick = tick - 1;
-            uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][1]; //取上一帧作为预测
-            ggpo_predict[tick][1] = remoteInput;
+            uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][remoteSeat]; //取上一帧作为预测
+            ggpo_predict[tick][remoteSeat] = remoteInput;
             //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
@@ -354,6 +344,7 @@ namespace Code.Client
         // 快照
         private void Snapshot(uint tick)
         {
+            Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
 
