@@ -11,7 +11,8 @@ namespace Code.Client
 
         public ClientNet _clientLogic;
         private Button m_ConnectBtn;
-        private Button m_JoinBtn;
+        private Button m_TestX1Btn;
+        private Button m_TestX2Btn;
         private Button m_ReadyBtn;
         private Text m_InfoText;
 
@@ -20,12 +21,14 @@ namespace Code.Client
             Instance = this;
 
             m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
-            m_JoinBtn = transform.Find("JoinBtn").GetComponent<Button>();
+            m_TestX1Btn = transform.Find("TestX1Btn").GetComponent<Button>();
+            m_TestX2Btn = transform.Find("TestX2Btn").GetComponent<Button>();
             m_ReadyBtn = transform.Find("ReadyBtn").GetComponent<Button>();
             m_InfoText = transform.Find("PingText").GetComponent<Text>();
 
             m_ConnectBtn.onClick.AddListener(OnConnectClick);
-            m_JoinBtn.onClick.AddListener(OnJoinClick);
+            m_TestX1Btn.onClick.AddListener(OnTestX1Click);
+            m_TestX2Btn.onClick.AddListener(OnTestX2Click);
             m_ReadyBtn.onClick.AddListener(OnReadyClick);
         }
 
@@ -40,12 +43,22 @@ namespace Code.Client
             _clientLogic.Connect(OnDisconnected);
         }
 
-        void OnJoinClick()
+        void OnTestX1Click()
         {
             System.Random rd = new System.Random();
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
-            var cmd = new C2S_LoginPacket { UserName = _userName };
-            _clientLogic.SendJoin(cmd);
+            var cmd = new C2S_JoinPacket { UserName = _userName };
+            _clientLogic.SendTestX1(cmd);
+
+            gameObject.SetActive(false);
+        }
+
+        void OnTestX2Click()
+        {
+            System.Random rd = new System.Random();
+            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_JoinPacket { UserName = _userName };
+            _clientLogic.SendTestX2(cmd);
 
             gameObject.SetActive(false);
         }

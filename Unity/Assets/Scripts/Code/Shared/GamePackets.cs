@@ -1,12 +1,12 @@
-﻿using System;
-using LiteNetLib.Utils;
+﻿using LiteNetLib.Utils;
 
 namespace Code.Shared
 {
     public enum PacketType : byte
     {
         //////////////
-        C2S_JoinReq         ,   //独立启动加入
+        C2S_TestX1Req       ,   //独立启动加入
+        C2S_TestX2Req       ,   //双人启动加入
         C2S_BattleStart     ,   //请求开始战斗
         C2S_BattlePause     ,   //请求暂停战斗
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
@@ -15,7 +15,8 @@ namespace Code.Shared
         C2S_LackFrames      ,   //缺失帧
         //////////////
         S2C_ErrorOperate    ,   //错误代码
-        S2C_JoinResult      ,   //独立启动加入
+        S2C_TestX1Result    ,   //独立启动加入
+        S2C_TestX2Result    ,   //双人启动加入
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
         S2C_BattleEnd       ,   //比赛结束，结算
@@ -32,8 +33,7 @@ namespace Code.Shared
     #endregion
 
     #region 上行
-    // 登录请求
-    public struct C2S_LoginPacket : INetSerializable
+    public struct C2S_JoinPacket : INetSerializable
     {
         public string UserName; //账号
         public string Password;
@@ -49,7 +49,7 @@ namespace Code.Shared
             Password = reader.GetString();
         }
     }
-    // 客户端操作
+
     public struct C2S_InputPacket : INetSerializable
     {
         public uint frameNumber;
@@ -85,7 +85,6 @@ namespace Code.Shared
         }
     }
 
-    // 登录结果
     public struct S2C_JoinResultPacket : INetSerializable
     {
         public byte Code; //255

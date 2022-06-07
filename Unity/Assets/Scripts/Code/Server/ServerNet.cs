@@ -98,8 +98,11 @@ namespace Code.Server
             //UnityEngine.Debug.Log($"[新消息] {pt}");
             switch (pt)
             {
-                case PacketType.C2S_JoinReq:
-                    OnJoinReceived(reader, peer);
+                case PacketType.C2S_TestX1Req:
+                    OnTestX1(reader, peer);
+                    break;
+                case PacketType.C2S_TestX2Req:
+                    OnTestX2(reader, peer);
                     break;
                 case PacketType.C2S_Lockstep:
                     OnInputReceived(reader, peer);
@@ -132,32 +135,43 @@ namespace Code.Server
 
 
         #region Handler
-        void OnJoinReceived(NetPacketReader reader, NetPeer peer)
+        void OnTestX1(NetPacketReader reader, NetPeer peer)
         {
-            var req = new C2S_LoginPacket();
-            req.Deserialize(reader);
-            UnityEngine.Debug.Log($"[C2S.Login] {peer.Id}: {req.UserName}");
+            var cmd = new C2S_JoinPacket();
+            cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[C2S.TestX1] {peer.Id}: {cmd.UserName}");
 
-            //var p = (ServerPlayer)peer.Tag;
-            //_playerManager.AddPlayer(p);
-            var serverPlayer = new ServerPlayer(_playerManager, req.UserName, peer);
+            var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
             _playerManager.AddPlayer(serverPlayer);
 
-            if (_playerManager.Count < 2)
-            {
-                UnityEngine.Debug.Log($"player count: {_playerManager.Count}");
-                return;
-            }
-
             var host = _playerManager.GetPlayer(0);
-            var guest = _playerManager.GetPlayer(1);
-            for (int i = 0; i < _playerManager.Count; i++)
-            {
-                var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.Id, HostName = host.UserName, GuestId = guest.Id, GuestName = guest.Name };
+            var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.Id, HostName = host.UserName, GuestId = 0, GuestName = "" };
+            peer.Send(WriteSerializable(PacketType.S2C_TestX1Result, packet), DeliveryMethod.ReliableOrdered);
+        }
 
-                var sp = _playerManager.GetPlayer(i);
-                //UnityEngine.Debug.Log($"send to: {sp.Id}---{sp.Name}");
-                sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_JoinResult, packet), DeliveryMethod.ReliableOrdered);
+        void OnTestX2(NetPacketReader reader, NetPeer peer)
+        {
+            var cmd = new C2S_JoinPacket();
+            cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[C2S.TestX2] {peer.Id}: {cmd.UserName}");
+
+            var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
+            _playerManager.AddPlayer(serverPlayer);
+
+
+            if (_playerManager.Count == 2)
+            {
+                var host = _playerManager.GetPlayer(0);
+                var guest = _playerManager.GetPlayer(1);
+
+                for (int i = 0; i < _playerManager.Count; i++)
+                {
+                    var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.Id, HostName = host.UserName, GuestId = guest.Id, GuestName = guest.Name };
+
+                    var sp = _playerManager.GetPlayer(i);
+                    //UnityEngine.Debug.Log($"send to: {sp.Id}---{sp.Name}");
+                    sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_TestX2Result, packet), DeliveryMethod.ReliableOrdered);
+                }
             }
         }
 

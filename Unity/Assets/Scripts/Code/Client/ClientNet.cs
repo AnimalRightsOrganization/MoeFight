@@ -115,11 +115,11 @@ namespace Code.Client
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.S2C_JoinResult:
-                    OnJoin(peer, reader);
+                case PacketType.S2C_TestX1Result:
+                    OnTestX1(peer, reader);
                     break;
-                case PacketType.S2C_BattleStart:
-                    OnBattleStart(peer, reader);
+                case PacketType.S2C_TestX2Result:
+                    OnTestX2(peer, reader);
                     break;
                 case PacketType.S2C_Lockstep:
                     OnRecvLockstep(peer, reader);
@@ -156,10 +156,16 @@ namespace Code.Client
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
-        public void SendJoin(C2S_LoginPacket cmd)
+        public void SendTestX1(C2S_JoinPacket cmd)
         {
             myName = cmd.UserName;
-            SendPacketSerializable(PacketType.C2S_JoinReq, cmd);
+            SendPacketSerializable(PacketType.C2S_TestX1Req, cmd);
+        }
+
+        public void SendTestX2(C2S_JoinPacket cmd)
+        {
+            myName = cmd.UserName;
+            SendPacketSerializable(PacketType.C2S_TestX2Req, cmd);
         }
 
         public void SendReady(EmptyPacket cmd)
@@ -173,39 +179,38 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
 
-        private void OnJoin(NetPeer peer, NetPacketReader reader)
+        private void OnTestX1(NetPeer peer, NetPacketReader reader)
+        {
+            Debug.Log("[S2C] 单人测试");
+
+            mySeatId = 0;
+
+            IsStart = true;
+        }
+
+        private void OnTestX2(NetPeer peer, NetPacketReader reader)
         {
             var packet = new S2C_JoinResultPacket();
             packet.Deserialize(reader);
-            Debug.Log($"[S2C] OnLogin: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
+            Debug.Log($"[S2C] 双人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
 
             if (packet.Code == 0)
             {
                 mySeatId = packet.HostName.Equals(myName) ? packet.HostId : packet.GuestId;
-                
+
                 IsStart = true;
             }
-        }
-
-        private void OnBattleStart(NetPeer peer, NetPacketReader reader)
-        {
-
         }
 
         private void OnRecvLockstep(NetPeer peer, NetPacketReader reader)
         {
             var packet = new S2C_InputPacket();
             packet.Deserialize(reader);
-            //Debug.Log($"[S2C.Lockstep] {resp.frameNumber}---{resp.inputs[0]}({resp.inputs.Length})");
             //Debug.Log($"Left => {(resp.inputs[0] & (uint)KeyPress.KEY_LEFT) != 0}"); //判断是否按了左键
             //Debug.Log($"Right => {(resp.inputs[0] & (uint)KeyPress.KEY_RIGHT) != 0}");
 
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-
-
-            //一定不能在这里更逻辑
-            //Process(resp.inputs);
         }
         #endregion
 
