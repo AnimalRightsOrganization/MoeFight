@@ -98,14 +98,9 @@ public static class LocalSession
         return input;
     }
 
-    public static uint[] CreateInputs()
+    public static uint GetInput()
     {
-        uint[] inputs = new uint[ngs.players.Length];
-        for (int i = 0; i < inputs.Length; ++i)
-        {
-            inputs[i] = ReadInputs(ngs.players[i].controllerId);
-        }
-        return inputs;
+        return ReadInputs(0);
     }
     public static uint[] RunFrameNext(uint[] inputs)
     {

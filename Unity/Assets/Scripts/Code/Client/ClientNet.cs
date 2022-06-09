@@ -121,6 +121,9 @@ namespace Code.Client
                 case PacketType.S2C_TestX2Result:
                     OnTestX2(peer, reader);
                     break;
+                case PacketType.S2C_BattlePause:
+                    OnPause(peer, reader);
+                    break;
                 case PacketType.S2C_Lockstep:
                     OnRecvLockstep(peer, reader);
                     break;
@@ -212,6 +215,11 @@ namespace Code.Client
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
         }
+
+        private void OnPause(NetPeer peer, NetPacketReader reader)
+        {
+            IsStart = false;
+        }
         #endregion
 
 
@@ -229,11 +237,9 @@ namespace Code.Client
         {
             if (!IsStart) return;
 
-
-            //①收集本地按键，发送，预测
+            //①收集本地按键，发送，预测?
             sendTick++;
-            uint[] inputs = LocalSession.CreateInputs();
-            uint input = inputs[0];
+            uint input = LocalSession.GetInput();
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
             //ggpo_predict[sendTick] = new uint[2];
@@ -316,6 +322,7 @@ namespace Code.Client
                 }
             }
         }
+
         // 预测
         private void Predict(uint tick)
         {
@@ -351,7 +358,6 @@ namespace Code.Client
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
-
         // Editor方法
         [ContextMenu("RollbackTo")]
         public void RollbackTo()
