@@ -12,7 +12,7 @@ namespace Code.Client
     public class ClientNet : MonoBehaviour, INetEventListener
     {
         //public const string IP = "moegijinka.cn";
-        public const string IP = "192.168.1.106";
+        public const string IP = "192.168.1.101";
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
@@ -116,10 +116,10 @@ namespace Code.Client
             switch (pt)
             {
                 case PacketType.S2C_TestX1Result:
-                    OnTestX1(peer, reader);
+                    OnTestPVE(peer, reader);
                     break;
                 case PacketType.S2C_TestX2Result:
-                    OnTestX2(peer, reader);
+                    OnTestPVP(peer, reader);
                     break;
                 case PacketType.S2C_BattlePause:
                     OnPause(peer, reader);
@@ -159,13 +159,13 @@ namespace Code.Client
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
-        public void SendTestX1(C2S_JoinPacket cmd)
+        public void SendTestPVE(C2S_JoinPacket cmd)
         {
             myName = cmd.UserName;
             SendPacketSerializable(PacketType.C2S_TestX1Req, cmd);
         }
 
-        public void SendTestX2(C2S_JoinPacket cmd)
+        public void SendTestPVP(C2S_JoinPacket cmd)
         {
             myName = cmd.UserName;
             SendPacketSerializable(PacketType.C2S_TestX2Req, cmd);
@@ -178,11 +178,10 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
-            //Debug.Log($"[C2S.SendInput] {cmd.frameNumber}---{cmd.input}");
             SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
 
-        private void OnTestX1(NetPeer peer, NetPacketReader reader)
+        private void OnTestPVE(NetPeer peer, NetPacketReader reader)
         {
             Debug.Log("[S2C] 单人测试");
 
@@ -191,7 +190,7 @@ namespace Code.Client
             IsStart = true;
         }
 
-        private void OnTestX2(NetPeer peer, NetPacketReader reader)
+        private void OnTestPVP(NetPeer peer, NetPacketReader reader)
         {
             var packet = new S2C_JoinResultPacket();
             packet.Deserialize(reader);
@@ -228,9 +227,9 @@ namespace Code.Client
         public uint sendTick;
         public uint recvTick;
         public uint rendTick;
-        private Dictionary<uint, uint[]> ggpo_predict; //预测帧
-        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧
-        private Dictionary<uint, byte[]> cache_buffer; //快照
+        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
+        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
+        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
         public HitstunRunner runner;
 
         void FixedUpdate()
@@ -242,17 +241,16 @@ namespace Code.Client
             uint input = LocalSession.GetInput();
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             SendInput(cmd);
-            //ggpo_predict[sendTick] = new uint[2];
-            //ggpo_predict[sendTick][mySeatId] = input;
+            ggpo_predict[sendTick] = new uint[2];
+            ggpo_predict[sendTick][mySeatId] = input;
 
 
             //②Delay-Based，要求自己也延迟。
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
             {
-                rendTick = (uint)i; //本次Update要求表现的帧，不一定收到了
+                rendTick = (uint)i;
 
-                //send=20，recv=15，delay=10(DELAY_FRAMES)。要求表现第10帧，剩余的存着。
-                //send=20，recv=15，delay=2。要求表现第18帧，不够，则要预测。
+                //本次Update要求表现的帧，判断是否收到
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
                     //因为延迟表现，此时收到了，取出来表现
@@ -263,15 +261,17 @@ namespace Code.Client
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
-                    Debug.Log($"发送第{sendTick}帧，延迟不够({DELAY_FRAMES})，需要预测：{rendTick}");
+                    Debug.Log($"发送第{sendTick}帧时，延迟不够({DELAY_FRAMES})，需要预测：{rendTick}");
                     Predict(rendTick);
                 }
             }
 
 
             //③处理所有新收到的帧
-            for (uint i = recvTick + 1; i < ggpo_recieve.Count; i++)
+            for (int x = (int)recvTick + 1; x < ggpo_recieve.Count; x++)
             {
+                uint i = (uint)x;
+
                 //如果这帧之前是预测的，对比，回滚
                 bool needToVerity = ggpo_predict.ContainsKey(i);
                 if (needToVerity)
@@ -330,11 +330,11 @@ namespace Code.Client
 
             uint lastTick = tick - 1;
             uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][remoteSeat]; //取上一帧作为预测
-            ggpo_predict[tick][remoteSeat] = remoteInput;
+            var _inputs = ggpo_predict[tick];
+            _inputs[remoteSeat] = remoteInput;
             Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
-            var _inputs = ggpo_predict[tick];
             Process(tick, _inputs);
         }
         // 回滚

@@ -48,7 +48,7 @@ namespace Code.Client
             System.Random rd = new System.Random();
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
             var cmd = new C2S_JoinPacket { UserName = _userName };
-            _clientLogic.SendTestX1(cmd);
+            _clientLogic.SendTestPVE(cmd);
 
             gameObject.SetActive(false);
         }
@@ -58,7 +58,7 @@ namespace Code.Client
             System.Random rd = new System.Random();
             string _userName = System.Environment.MachineName + " " + rd.Next(100000);
             var cmd = new C2S_JoinPacket { UserName = _userName };
-            _clientLogic.SendTestX2(cmd);
+            _clientLogic.SendTestPVP(cmd);
 
             gameObject.SetActive(false);
         }

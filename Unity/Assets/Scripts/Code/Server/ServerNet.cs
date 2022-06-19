@@ -99,10 +99,10 @@ namespace Code.Server
             switch (pt)
             {
                 case PacketType.C2S_TestX1Req:
-                    OnTestX1(reader, peer);
+                    OnTestPVE(reader, peer);
                     break;
                 case PacketType.C2S_TestX2Req:
-                    OnTestX2(reader, peer);
+                    OnTestPVP(reader, peer);
                     break;
                 case PacketType.C2S_Lockstep:
                     OnInputReceived(reader, peer);
@@ -135,11 +135,11 @@ namespace Code.Server
 
 
         #region Handler
-        void OnTestX1(NetPacketReader reader, NetPeer peer)
+        void OnTestPVE(NetPacketReader reader, NetPeer peer)
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[C2S.TestX1] {peer.Id}: {cmd.UserName}");
+            UnityEngine.Debug.Log($"[C2S.TestPVE] {peer.Id}: {cmd.UserName}");
 
             var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
             _playerManager.AddPlayer(serverPlayer);
@@ -149,11 +149,11 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_TestX1Result, packet), DeliveryMethod.ReliableOrdered);
         }
 
-        void OnTestX2(NetPacketReader reader, NetPeer peer)
+        void OnTestPVP(NetPacketReader reader, NetPeer peer)
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[C2S.TestX2] {peer.Id}: {cmd.UserName}");
+            UnityEngine.Debug.Log($"[C2S.TestPVP] {peer.Id}: {cmd.UserName}");
 
             var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
             _playerManager.AddPlayer(serverPlayer);

@@ -699,7 +699,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: X2
+  m_Text: PVP
 --- !u!222 &740116580
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1236,7 +1236,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: X1
+  m_Text: PVE
 --- !u!222 &1261833016
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1540,7 +1540,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a77c76b7885899499706477e4e0eeb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DELAY_FRAMES: 5
+  DELAY_FRAMES: 0
   IsStart: 0
   sendTick: 0
   recvTick: 0
