@@ -51,6 +51,7 @@ namespace Code.Client
             ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50帧每秒 = 85,899,346秒 = 23,860小时 = 994天。4+4+4=12个字节
             ggpo_recieve = new Dictionary<uint, uint[]>();
             cache_buffer = new Dictionary<uint, byte[]>();
+            predicted = new List<uint>();
         }
 
         void Update()
@@ -230,6 +231,7 @@ namespace Code.Client
         private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
         private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
+        private List<uint> predicted;
         public HitstunRunner runner;
 
         void FixedUpdate()
@@ -263,6 +265,7 @@ namespace Code.Client
                     //延迟不够，还未收到，预测。标记为是预测的。
                     Debug.Log($"发送第{sendTick}帧时，延迟不够({DELAY_FRAMES})，需要预测：{rendTick}");
                     Predict(rendTick);
+                    predicted.Add(rendTick);
                 }
             }
 
@@ -273,7 +276,8 @@ namespace Code.Client
                 uint i = (uint)x;
 
                 //如果这帧之前是预测的，对比，回滚
-                bool needToVerity = ggpo_predict.ContainsKey(i);
+                //bool needToVerity = ggpo_predict.ContainsKey(i);
+                bool needToVerity = predicted.Contains(i);
                 if (needToVerity)
                 {
                     //Debug.Log($"预测过{i}，需要验证。{ggpo_predict.Count}");
@@ -290,31 +294,29 @@ namespace Code.Client
                     }
                     else
                     {
+                        // 验证失败
                         uint badTick = i;
 
-                        // 验证失败处理
+                        // 一次性回滚到最早发生错误的地方。
+                        Debug.LogError($"[C] {badTick}预测错，回滚");
+                        Rollback(badTick);
+
+                        //用收到的帧，覆盖错误的预测。
+                        ushort goodTick = (ushort)ggpo_recieve.Count;
+                        Debug.Log($"<color=yellow>[C] 覆盖错误的预测: {badTick}~{goodTick}</color>");
+                        for (uint t = badTick; t <= goodTick; t++)
                         {
-                            //一次性回滚到最早发生错误的地方。
-                            Debug.LogError($"[C] {badTick}预测错，回滚");
-                            Rollback(badTick);
+                            uint[] _inputs = ggpo_recieve[t];
+                            ggpo_predict[t] = _inputs;
+                            Process(t, _inputs);
+                        }
+                        recvTick = goodTick;
 
-                            //用收到的帧，覆盖错误的预测。
-                            ushort goodTick = (ushort)ggpo_recieve.Count;
-                            Debug.Log($"<color=yellow>[C] 覆盖错误的预测: {badTick}~{goodTick}</color>");
-                            for (uint t = badTick; t <= goodTick; t++)
-                            {
-                                uint[] _inputs = ggpo_recieve[t];
-                                ggpo_predict[t] = _inputs;
-                                Process(t, _inputs);
-                            }
-                            recvTick = goodTick;
-
-                            //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
-                            //Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{packet.Tick - 1}</color>");
-                            for (ushort t = (ushort)(goodTick + 1); t < cmd.frameNumber; t++)
-                            {
-                                Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
-                            }
+                        //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
+                        //Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{packet.Tick - 1}</color>");
+                        for (ushort t = (ushort)(goodTick + 1); t < cmd.frameNumber; t++)
+                        {
+                            Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
                         }
 
                         break; //跳出循环
@@ -355,7 +357,7 @@ namespace Code.Client
         // 快照
         private void Snapshot(uint tick)
         {
-            //Debug.Log($"快照: {tick}");
+            Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
         // Editor方法
