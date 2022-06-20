@@ -245,7 +245,7 @@ namespace Code.Client
             SendInput(cmd);
             ggpo_predict[sendTick] = new uint[2];
             ggpo_predict[sendTick][mySeatId] = input;
-
+            Debug.Log($"发送: {sendTick}---{input}");
 
             //②Delay-Based，要求自己也延迟。
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
@@ -256,14 +256,14 @@ namespace Code.Client
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
                     //因为延迟表现，此时收到了，取出来表现
-                    //Debug.Log($"延迟足够，取出：{rendTick}");
+                    //Debug.Log($"延迟足够，表现{rendTick}");
                     var _inputs = ggpo_recieve[rendTick];
                     Process(rendTick, _inputs);
                 }
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
-                    Debug.Log($"发送第{sendTick}帧时，延迟不够({DELAY_FRAMES})，需要预测：{rendTick}");
+                    //Debug.Log($"延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
                     Predict(rendTick);
                     predicted.Add(rendTick);
                 }
@@ -283,10 +283,10 @@ namespace Code.Client
                     //Debug.Log($"预测过{i}，需要验证。{ggpo_predict.Count}");
                     //之前标记为预测，判断预测是否准确
 
-                    var recieve1 = ggpo_recieve[i][0];
-                    var recieve2 = ggpo_recieve[i][1];
-                    var predict1 = ggpo_predict[i][0];
-                    var predict2 = ggpo_predict[i][1];
+                    uint recieve1 = ggpo_recieve[i][0];
+                    uint recieve2 = ggpo_recieve[i][1];
+                    uint predict1 = ggpo_predict[i][0];
+                    uint predict2 = ggpo_predict[i][1];
                     if (recieve1.Equals(predict1) && recieve2.Equals(predict2))
                     {
                         //之前的预测准确。不用更新表现了，预测时已经走过表现逻辑。
@@ -298,8 +298,8 @@ namespace Code.Client
                         uint badTick = i;
 
                         // 一次性回滚到最早发生错误的地方。
-                        Debug.LogError($"[C] {badTick}预测错，回滚");
-                        Rollback(badTick);
+                        Debug.LogError($"[C] {badTick}预测错({recieve1}:{recieve2})，回滚");
+                        Rollback(badTick - 1);
 
                         //用收到的帧，覆盖错误的预测。
                         ushort goodTick = (ushort)ggpo_recieve.Count;
@@ -313,8 +313,8 @@ namespace Code.Client
                         recvTick = goodTick;
 
                         //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
-                        //Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{packet.Tick - 1}</color>");
-                        for (ushort t = (ushort)(goodTick + 1); t < cmd.frameNumber; t++)
+                        Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{sendTick - 1}</color>");
+                        for (ushort t = (ushort)(goodTick + 1); t < sendTick; t++)
                         {
                             Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
                         }
@@ -334,7 +334,7 @@ namespace Code.Client
             uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][remoteSeat]; //取上一帧作为预测
             var _inputs = ggpo_predict[tick];
             _inputs[remoteSeat] = remoteInput;
-            Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
+            //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
             Process(tick, _inputs);
@@ -343,6 +343,7 @@ namespace Code.Client
         private void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
+            Debug.Log($"回滚到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
         }
         // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
@@ -350,14 +351,15 @@ namespace Code.Client
             //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
-            runner.OnFixedUpdate(inputs);
+            runner.OnFixedUpdate(inputs); 
+            Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
         // 快照
         private void Snapshot(uint tick)
         {
-            Debug.Log($"快照: {tick}");
+            //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
         // Editor方法
@@ -365,6 +367,13 @@ namespace Code.Client
         public void RollbackTo()
         {
             Rollback(1);
+        }
+        [ContextMenu("WriteFile")]
+        public void WriteFile()
+        {
+            string path = "";
+            string content = "";
+            System.IO.File.WriteAllText(path, content);
         }
     }
 }

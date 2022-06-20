@@ -5,7 +5,6 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using HitstunConstants;
-using System.Runtime.Serialization.Formatters.Binary;
 
 public class GameState
 {
