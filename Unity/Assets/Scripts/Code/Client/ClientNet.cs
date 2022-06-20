@@ -298,12 +298,12 @@ namespace Code.Client
                         uint badTick = i;
 
                         // 一次性回滚到最早发生错误的地方。
-                        Debug.LogError($"[C] {badTick}预测错({recieve1}:{recieve2})，回滚");
+                        Debug.LogError($"{badTick}预测错({recieve1}:{recieve2})，回滚");
                         Rollback(badTick - 1);
 
                         //用收到的帧，覆盖错误的预测。
-                        ushort goodTick = (ushort)ggpo_recieve.Count;
-                        Debug.Log($"<color=yellow>[C] 覆盖错误的预测: {badTick}~{goodTick}</color>");
+                        uint goodTick = (uint)ggpo_recieve.Count;
+                        Debug.Log($"<color=yellow>覆盖错误的预测: {badTick}~{goodTick}</color>");
                         for (uint t = badTick; t <= goodTick; t++)
                         {
                             uint[] _inputs = ggpo_recieve[t];
@@ -313,12 +313,12 @@ namespace Code.Client
                         recvTick = goodTick;
 
                         //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
-                        Debug.Log($"总共预测了{ggpo_predict.Count}帧");
-                        Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{sendTick - 1}</color>");
-                        for (ushort t = (ushort)(goodTick + 1); t < sendTick - 1; t++)
+                        Debug.Log($"<color=yellow>>>> 追帧预测: {(uint)(goodTick + 1)}~{sendTick - 1}</color>");
+                        for (uint t = (uint)(goodTick + 1); t < sendTick; t++)
                         {
                             Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
                         }
+                        Debug.Log("<<< 结束追帧预测");
 
                         break; //跳出循环
                     }
