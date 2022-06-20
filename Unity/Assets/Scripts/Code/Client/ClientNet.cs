@@ -376,5 +376,57 @@ namespace Code.Client
             string content = "";
             System.IO.File.WriteAllText(path, content);
         }
+
+#if UNITY_EDITOR
+        private GUIStyle _style1;
+        private GUIStyle style1
+        {
+            get
+            {
+                if (_style1 == null)
+                {
+                    _style1 = new GUIStyle();
+                    _style1.fontSize = 25;
+                    _style1.normal.textColor = Color.red;
+                }
+                return _style1;
+            }
+        }
+        private Transform _view0;
+        private Transform view0
+        {
+            get
+            {
+                if (_view0 == null)
+                {
+                    _view0 = runner.transform.GetChild(0);
+                }
+                return _view0;
+            }
+        }
+        private Transform _view1;
+        private Transform view1
+        {
+            get
+            {
+                if (_view1 == null)
+                {
+                    _view1 = runner.transform.GetChild(1);
+                }
+                return _view1;
+            }
+        }
+
+        void OnDrawGizmos()
+        {
+            if (_netManager == null || _netManager.IsRunning == false) return;
+            //Gizmos.color = Color.yellow;
+            //Gizmos.DrawSphere(transform.position + Vector3.up * 2, 0.1f);
+            var x0 = LocalSession.gs.characters[0].position.x.ToString();
+            var x1 = LocalSession.gs.characters[1].position.x.ToString();
+            UnityEditor.Handles.Label(view0.position, x0, style1);
+            UnityEditor.Handles.Label(view1.position, x1, style1);
+        }
+#endif
     }
 }
