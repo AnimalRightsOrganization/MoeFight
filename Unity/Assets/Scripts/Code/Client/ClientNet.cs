@@ -313,8 +313,9 @@ namespace Code.Client
                         recvTick = goodTick;
 
                         //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
+                        Debug.Log($"总共预测了{ggpo_predict.Count}帧");
                         Debug.Log($"<color=yellow>[C] 追帧预测: {(ushort)(goodTick + 1)}~{sendTick - 1}</color>");
-                        for (ushort t = (ushort)(goodTick + 1); t < sendTick; t++)
+                        for (ushort t = (ushort)(goodTick + 1); t < sendTick - 1; t++)
                         {
                             Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
                         }
