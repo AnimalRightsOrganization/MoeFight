@@ -99,6 +99,7 @@ public class CharacterView : MonoBehaviour
         currentState = character.state;
         currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
+        /*
         int spriteIndex = 0;
         for (int i = 0; i < currentAnimation.frameDuration.Length; i++)
         {
@@ -110,8 +111,11 @@ public class CharacterView : MonoBehaviour
             }
         }
         spriteRenderer.sprite = sprites[currentAnimation.animationName][spriteIndex % currentAnimation.totalFrames];
+        */
         //动画帧
-        animator.Play(currentAnimation.animationName);
+        //animator.Play(currentAnimation.animationName);
+        //Debug.Log($"{currentAnimation.animationName} --- {currentFrame} / {currentAnimation.totalFrames}");
+        animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
 
         // x and y position
         float viewX = ((character.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);

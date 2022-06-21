@@ -54,13 +54,56 @@ namespace Code.Client
             predicted = new List<uint>();
         }
 
+        private uint tempkey;
+
         void Update()
         {
             _netManager.PollEvents();
 
             UI_Main.Instance.Ping(_ping);
 
-            //Debug.Log("<color=green>Update</color>");
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                Rollback(tempkey);
+
+                var char0 = LocalSession.gs.characters[0];
+                var data0 = LocalSession.gs.characterDatas[0];
+                var currentState0 = char0.state;
+                var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
+
+                Debug.Log($"回滚到: {tempkey}, {char0.state}: {char0.framesInState % currentAnimation0.totalFrames}");
+                //char0.SetCharacterState(char0.state, );
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                var char0 = LocalSession.gs.characters[0];
+                var data0 = LocalSession.gs.characterDatas[0];
+                var currentState0 = char0.state;
+                var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
+
+                tempkey = LocalSession.gs.frameNumber;
+                Debug.Log($"保存: {tempkey}, {char0.state}: {char0.framesInState % currentAnimation0.totalFrames}");
+            }
+        }
+
+        void OnGUI()
+        {
+            var char0 = LocalSession.gs.characters[0];
+            var data0 = LocalSession.gs.characterDatas[0];
+            var currentState0 = char0.state;
+            var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
+            int currentFrame0 = (int)char0.framesInState % currentAnimation0.totalFrames;
+
+            var char1 = LocalSession.gs.characters[1];
+            var data1 = LocalSession.gs.characterDatas[1];
+            var currentState1 = char1.state;
+            var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
+            int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
+
+            string log = $"game: {LocalSession.gs.frameNumber}" +
+                $"\nP0: {currentState0}: {currentFrame0}" +
+                $"\nP1: {currentState1}: {currentFrame1}";
+            GUI.Label(new Rect(10, 10, 100, 50), log, style1);
         }
 
         void OnDestroy()
@@ -245,7 +288,7 @@ namespace Code.Client
             SendInput(cmd);
             ggpo_predict[sendTick] = new uint[2];
             ggpo_predict[sendTick][mySeatId] = input;
-            Debug.Log($"发送: {sendTick}---{input}");
+            //Debug.Log($"发送: {sendTick}---{input}");
 
             //②Delay-Based，要求自己也延迟。
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
@@ -353,7 +396,7 @@ namespace Code.Client
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
             runner.OnFixedUpdate(inputs); 
-            Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            //Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
@@ -362,19 +405,6 @@ namespace Code.Client
         {
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
-        }
-        // Editor方法
-        [ContextMenu("RollbackTo")]
-        public void RollbackTo()
-        {
-            Rollback(1);
-        }
-        [ContextMenu("WriteFile")]
-        public void WriteFile()
-        {
-            string path = "";
-            string content = "";
-            System.IO.File.WriteAllText(path, content);
         }
 
 #if UNITY_EDITOR
