@@ -358,8 +358,8 @@ namespace Code.Client
                         recvTick = goodTick;
 
                         //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
-                        Debug.Log($"<color=yellow>>>> 追帧预测: {(uint)(goodTick + 1)}~{sendTick - 1}</color>");
-                        for (uint t = (uint)(goodTick + 1); t < sendTick; t++)
+                        Debug.Log($"<color=yellow>>>> 追帧预测: {(uint)(goodTick + 1)}~{rendTick}</color>");
+                        for (uint t = (uint)(goodTick + 1); t <= rendTick; t++)
                         {
                             Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
                         }
