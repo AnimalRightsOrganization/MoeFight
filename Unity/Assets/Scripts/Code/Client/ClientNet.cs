@@ -26,6 +26,7 @@ namespace Code.Client
         private int mySeatId;
         private string myName;
 
+        private uint tempkey;
 
         #region Inner Method
         void Awake()
@@ -53,8 +54,6 @@ namespace Code.Client
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
         }
-
-        private uint tempkey;
 
         void Update()
         {
@@ -101,6 +100,7 @@ namespace Code.Client
             int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
 
             string log = $"game: {LocalSession.gs.frameNumber}" +
+                $"\nping: {_ping}" +
                 $"\nP0: {currentState0}: {currentFrame0}" +
                 $"\nP1: {currentState1}: {currentFrame1}";
             GUI.Label(new Rect(10, 10, 100, 50), log, style1);
