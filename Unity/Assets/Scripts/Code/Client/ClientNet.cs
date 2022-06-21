@@ -33,6 +33,8 @@ namespace Code.Client
         {
             DontDestroyOnLoad(gameObject);
 
+            runner = FindObjectOfType<HitstunRunner>();
+
             _writer = new NetDataWriter();
             _playerManager = new ClientPlayerManager(this);
             _netManager = new NetManager(this)
@@ -275,7 +277,7 @@ namespace Code.Client
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
         private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
         private List<uint> predicted;
-        public HitstunRunner runner;
+        private HitstunRunner runner;
 
         void FixedUpdate()
         {
@@ -395,8 +397,8 @@ namespace Code.Client
             //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
-            runner.OnFixedUpdate(inputs); 
-            //Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            runner.OnFixedUpdate(inputs);
+            Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
