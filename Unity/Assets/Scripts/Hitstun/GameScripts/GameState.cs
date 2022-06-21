@@ -396,16 +396,9 @@ public class GameState
         {
             // 两人间距
             // force players to stay within max distance
-            if (Math.Abs(characters[i].position.x - characters[1 - i].position.x) > Constants.MAX_CHARACTER_DISTANCE)
+            if (Math.Abs(characters[i].position.x - characters[1 - i].position.x) > Constants.MAX_CHARACTER_DISTANCE && characters[i].velocity.x != 0)
             {
-                if (characters[i].position.x > characters[1 - i].position.x)
-                {
-                    characters[i].position.x = Constants.MAX_CHARACTER_DISTANCE + characters[1 - i].position.x;
-                }
-                else
-                {
-                    characters[i].position.x = characters[1 - i].position.x - Constants.MAX_CHARACTER_DISTANCE;
-                }
+                characters[i].position.x -= characters[i].velocity.x / Constants.FPS;
             }
 
             // 场景边界
