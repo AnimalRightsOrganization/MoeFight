@@ -97,14 +97,17 @@ namespace Code.Server
             //UnityEngine.Debug.Log($"[新消息] {pt}");
             switch (pt)
             {
-                case PacketType.C2S_TestX1Req:
+                case PacketType.C2S_TestPVE:
                     OnTestPVE(reader, peer);
                     break;
-                case PacketType.C2S_TestX2Req:
+                case PacketType.C2S_TestPVP:
                     OnTestPVP(reader, peer);
                     break;
                 case PacketType.C2S_Lockstep:
                     OnInputReceived(reader, peer);
+                    break;
+                case PacketType.C2S_LoginReq:
+                    OnLoginReceived(reader, peer);
                     break;
                 default:
                     UnityEngine.Debug.Log("Unhandled packet: " + pt);
@@ -112,10 +115,7 @@ namespace Code.Server
             }
         }
 
-        void INetEventListener.OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
-        {
-
-        }
+        void INetEventListener.OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) { }
 
         void INetEventListener.OnNetworkLatencyUpdate(NetPeer peer, int latency)
         {
@@ -145,7 +145,7 @@ namespace Code.Server
 
             var host = _playerManager.GetPlayer(0);
             var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.Id, HostName = host.UserName, GuestId = 0, GuestName = "" };
-            peer.Send(WriteSerializable(PacketType.S2C_TestX1Result, packet), DeliveryMethod.ReliableOrdered);
+            peer.Send(WriteSerializable(PacketType.S2C_TestPVE, packet), DeliveryMethod.ReliableOrdered);
         }
 
         void OnTestPVP(NetPacketReader reader, NetPeer peer)
@@ -169,14 +169,14 @@ namespace Code.Server
 
                     var sp = _playerManager.GetPlayer(i);
                     //UnityEngine.Debug.Log($"send to: {sp.Id}---{sp.Name}");
-                    sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_TestX2Result, packet), DeliveryMethod.ReliableOrdered);
+                    sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_TestPVP, packet), DeliveryMethod.ReliableOrdered);
                 }
             }
         }
 
         private Dictionary<uint, Dictionary<int, uint>> dic_recv;
 
-        void OnInputReceived(NetPacketReader reader, NetPeer peer)
+        private void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
             var req = new C2S_InputPacket();
             req.Deserialize(reader);
@@ -203,6 +203,74 @@ namespace Code.Server
                 };
                 _netManager.SendToAll(WriteSerializable(PacketType.S2C_Lockstep, packet), DeliveryMethod.ReliableOrdered);
             }
+        }
+
+        private void OnLoginReceived(NetPacketReader reader, NetPeer peer)
+        {
+            C2S_LoginPacket cmd = new C2S_LoginPacket();
+            cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"<color=green>[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}</color>");
+            /*
+            #region 检查逻辑
+            //校验账号密码
+            var check1 = ConfigManager.m_DBConfig.users.Where(d => (d.userName == cmd.UserName && d.password == cmd.Password));
+            if (check1.Count() == 0)
+            {
+                UnityEngine.Debug.LogError("账号或密码错误");
+                var packet = new S2C_LoginResultPacket { Code = 1 };
+                peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
+                return;
+            }
+            var userData = check1.FirstOrDefault();
+
+            //校验是否已登录
+            var list = m_PlayerManager.GetPlayersAll();
+            var check2 = list.Where(x => x.UserName == cmd.UserName);
+            if (check2.Count() > 0)
+            {
+                var player0 = check2.FirstOrDefault();
+
+                //TODO: 这里也可能是同一个人走了重连
+                UnityEngine.Debug.Log($"检测是否重连：{player0.ToString()}");
+                if (player0.Status == PlayerStatus.Reconnect)
+                {
+                    UnityEngine.Debug.Log($"<color=green>是重连的，返还数据</color>");
+                }
+                else
+                {
+                    UnityEngine.Debug.LogError("该账号已经登录，踢出之前登陆的");
+                    var _peer = server.ConnectedPeerList.Where(x => x.Id == check2.First().PeerId).ToList()[0];
+                    m_PlayerManager.RemovePlayer(_peer.Id); //踢人
+                    _peer.Disconnect();
+                }
+            }
+            #endregion
+            
+            #region 登录逻辑
+            // 新建玩家对象
+            var player = new ServerPlayer(cmd.UserName, peer);
+            m_PlayerManager.AddPlayer(player);
+
+            // 第一个包，登录许可
+            var packet1 = new S2C_LoginResultPacket
+            {
+                Code = 0,
+                PeerId = player.PeerId,
+                UserName = player.UserName,
+                NickName = player.NickName,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
+            // 第二个包，用户设置
+            var packet2 = new Settings
+            {
+                ScreenSize = 0,
+                FullScreen = 0,
+                MusicVolume = userData.musicVolume,
+                SoundVolume = userData.soundVolume,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
+            #endregion
+            */
         }
         #endregion
     }

@@ -33,10 +33,10 @@ namespace Code.Client
         {
             switch (eventID)
             {
-                case PacketType.S2C_TestX1Result:
+                case PacketType.S2C_TestPVE:
                     OnTestPVE(reader);
                     break;
-                case PacketType.S2C_TestX2Result:
+                case PacketType.S2C_TestPVP:
                     OnTestPVP(reader);
                     break;
                 case PacketType.S2C_BattlePause:

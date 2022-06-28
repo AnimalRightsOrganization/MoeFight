@@ -27,12 +27,11 @@ public class ResManager
     }
 
     public const string BUNDLES_FOLDER = "Assets/Bundles";
-    public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
 
     public static GameObject LoadPrefab(string fileName)
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
-        string filePath = $"{PREFAB_FOLDER}/{fileName}.prefab";
+        string filePath = $"{BUNDLES_FOLDER}/{fileName}.prefab";
         GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(filePath);
 #else
         string filePath = GetFilePath($"{fileName}.unity3d");

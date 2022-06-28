@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using Code.Shared;
+using HotFix;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using UnityEngine;
@@ -102,14 +103,14 @@ namespace Code.Client
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.S2C_TestX1Result:
+                case PacketType.S2C_TestPVE:
                     {
                         var packet = new EmptyPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_TestX2Result:
+                case PacketType.S2C_TestPVP:
                     {
                         var packet = new S2C_JoinResultPacket();
                         packet.Deserialize(reader);
@@ -164,13 +165,13 @@ namespace Code.Client
         public void SendTestPVE(C2S_JoinPacket cmd)
         {
             myName = cmd.UserName;
-            SendPacketSerializable(PacketType.C2S_TestX1Req, cmd);
+            SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
         }
 
         public void SendTestPVP(C2S_JoinPacket cmd)
         {
             myName = cmd.UserName;
-            SendPacketSerializable(PacketType.C2S_TestX2Req, cmd);
+            SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
 
         public void SendReady(EmptyPacket cmd)
@@ -182,6 +183,26 @@ namespace Code.Client
         {
             SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
+
+        public void SendLogin(string userName, string password)
+        {
+            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
+            {
+                Debug.LogError("用户名或密码未填");
+                var ui = UIManager.Get().Push<UI_Toast>();
+                ui.Show("用户名或密码未填");
+                return;
+            }
+
+            var cmd = new C2S_LoginPacket
+            {
+                UserName = userName,
+                Password = password,
+            };
+            SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
+            Debug.Log($"[C] 登录请求：用户名={cmd.UserName}，密码={cmd.Password}");
+        }
+
         #endregion
     }
 }
