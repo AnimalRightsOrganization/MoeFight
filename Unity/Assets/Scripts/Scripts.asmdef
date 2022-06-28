@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "Code.Shared",
-        "Plugins"
+        "Plugins",
+        "Unity.ThirdParty"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

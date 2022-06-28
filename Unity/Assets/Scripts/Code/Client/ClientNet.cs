@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -11,7 +10,17 @@ namespace Code.Client
 {
     public class ClientNet : MonoBehaviour, INetEventListener
     {
-        //public const string IP = "moegijinka.cn";
+        static ClientNet _get;
+        public static ClientNet Get
+        {
+            get
+            {
+                if (_get == null)
+                    _get = FindObjectOfType<ClientNet>();
+                return _get;
+            }
+        }
+
         public const string IP = "192.168.1.101";
         public const int Port = 5000;
         public const string Key = "ExampleGame";
@@ -22,18 +31,14 @@ namespace Code.Client
 
         private Action<DisconnectInfo> _onDisconnected;
         private ClientPlayerManager _playerManager;
-        private int _ping;
-        private int mySeatId;
-        private string myName;
+        public int _ping;
+        public string myName;
 
-        private uint tempkey;
 
         #region Inner Method
         void Awake()
         {
             DontDestroyOnLoad(gameObject);
-
-            runner = FindObjectOfType<HitstunRunner>();
 
             _writer = new NetDataWriter();
             _playerManager = new ClientPlayerManager(this);
@@ -45,74 +50,14 @@ namespace Code.Client
             _netManager.Start();
         }
 
-        void Start()
-        {
-            IsStart = false;
-            sendTick = 0;
-            recvTick = 0;
-            rendTick = 0;
-            ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50帧每秒 = 85,899,346秒 = 23,860小时 = 994天。4+4+4=12个字节
-            ggpo_recieve = new Dictionary<uint, uint[]>();
-            cache_buffer = new Dictionary<uint, byte[]>();
-            predicted = new List<uint>();
-        }
-
         void Update()
         {
             _netManager.PollEvents();
-
-            UI_Main.Instance.Ping(_ping);
-
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                Rollback(tempkey);
-
-                var char0 = LocalSession.gs.characters[0];
-                var data0 = LocalSession.gs.characterDatas[0];
-                var currentState0 = char0.state;
-                var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
-
-                Debug.Log($"回滚到: {tempkey}, {char0.state}: {char0.framesInState % currentAnimation0.totalFrames}");
-                //char0.SetCharacterState(char0.state, );
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                var char0 = LocalSession.gs.characters[0];
-                var data0 = LocalSession.gs.characterDatas[0];
-                var currentState0 = char0.state;
-                var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
-
-                tempkey = LocalSession.gs.frameNumber;
-                Debug.Log($"保存: {tempkey}, {char0.state}: {char0.framesInState % currentAnimation0.totalFrames}");
-            }
-        }
-
-        void OnGUI()
-        {
-            var char0 = LocalSession.gs.characters[0];
-            var data0 = LocalSession.gs.characterDatas[0];
-            var currentState0 = char0.state;
-            var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
-            int currentFrame0 = (int)char0.framesInState % currentAnimation0.totalFrames;
-
-            var char1 = LocalSession.gs.characters[1];
-            var data1 = LocalSession.gs.characterDatas[1];
-            var currentState1 = char1.state;
-            var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
-            int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
-
-            string log = $"game: {LocalSession.gs.frameNumber}" +
-                $"\nping: {_ping}" +
-                $"\nP0: {currentState0}: {currentFrame0}" +
-                $"\nP1: {currentState1}: {currentFrame1}";
-            GUI.Label(new Rect(10, 10, 100, 50), log, style1);
         }
 
         void OnDestroy()
         {
             _netManager.Stop();
-
-            GC.Collect(0);
         }
         #endregion
 
@@ -140,11 +85,8 @@ namespace Code.Client
             _server = null;
 
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
-            if (_onDisconnected != null)
-            {
-                _onDisconnected(disconnectInfo);
-                _onDisconnected = null;
-            }
+            _onDisconnected?.Invoke(disconnectInfo);
+            _onDisconnected = null;
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
@@ -155,23 +97,38 @@ namespace Code.Client
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             byte packetType = reader.GetByte();
-            if (packetType >= NetworkGeneral.PacketTypesCount)
-                return;
+            if (packetType >= 1024) return;
 
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
                 case PacketType.S2C_TestX1Result:
-                    OnTestPVE(peer, reader);
+                    {
+                        var packet = new EmptyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
                     break;
                 case PacketType.S2C_TestX2Result:
-                    OnTestPVP(peer, reader);
+                    {
+                        var packet = new S2C_JoinResultPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
                     break;
                 case PacketType.S2C_BattlePause:
-                    OnPause(peer, reader);
+                    {
+                        var packet = new EmptyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
                     break;
                 case PacketType.S2C_Lockstep:
-                    OnRecvLockstep(peer, reader);
+                    {
+                        var packet = new S2C_InputPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
                     break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
@@ -187,7 +144,6 @@ namespace Code.Client
         void INetEventListener.OnNetworkLatencyUpdate(NetPeer peer, int latency)
         {
             _ping = latency;
-            //Debug.Log($"OnNetworkLatencyUpdate: {peer.Id} - {latency}ms");
         }
 
         void INetEventListener.OnConnectionRequest(ConnectionRequest request)
@@ -226,239 +182,6 @@ namespace Code.Client
         {
             SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
-
-        private void OnTestPVE(NetPeer peer, NetPacketReader reader)
-        {
-            Debug.Log("[S2C] 单人测试");
-
-            mySeatId = 0;
-
-            IsStart = true;
-        }
-
-        private void OnTestPVP(NetPeer peer, NetPacketReader reader)
-        {
-            var packet = new S2C_JoinResultPacket();
-            packet.Deserialize(reader);
-            Debug.Log($"[S2C] 双人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
-
-            if (packet.Code == 0)
-            {
-                mySeatId = packet.HostName.Equals(myName) ? packet.HostId : packet.GuestId;
-
-                IsStart = true;
-            }
-        }
-
-        private void OnRecvLockstep(NetPeer peer, NetPacketReader reader)
-        {
-            var packet = new S2C_InputPacket();
-            packet.Deserialize(reader);
-            //Debug.Log($"Left => {(resp.inputs[0] & (uint)KeyPress.KEY_LEFT) != 0}"); //判断是否按了左键
-            //Debug.Log($"Right => {(resp.inputs[0] & (uint)KeyPress.KEY_RIGHT) != 0}");
-
-            uint server_tick = packet.frameNumber;
-            ggpo_recieve[server_tick] = packet.inputs;
-        }
-
-        private void OnPause(NetPeer peer, NetPacketReader reader)
-        {
-            IsStart = false;
-        }
         #endregion
-
-
-        public uint DELAY_FRAMES = 0;
-        public bool IsStart;
-        public uint sendTick;
-        public uint recvTick;
-        public uint rendTick;
-        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
-        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
-        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
-        private List<uint> predicted;
-        private HitstunRunner runner;
-
-        void FixedUpdate()
-        {
-            if (!IsStart) return;
-
-            //①收集本地按键，发送，预测?
-            sendTick++;
-            uint input = LocalSession.GetInput();
-            var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
-            SendInput(cmd);
-            ggpo_predict[sendTick] = new uint[2];
-            ggpo_predict[sendTick][mySeatId] = input;
-            //Debug.Log($"发送: {sendTick}---{input}");
-
-            //②Delay-Based，要求自己也延迟。
-            for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
-            {
-                rendTick = (uint)i;
-
-                //本次Update要求表现的帧，判断是否收到
-                if (ggpo_recieve.ContainsKey(rendTick))
-                {
-                    //因为延迟表现，此时收到了，取出来表现
-                    //Debug.Log($"延迟足够，表现{rendTick}");
-                    var _inputs = ggpo_recieve[rendTick];
-                    Process(rendTick, _inputs);
-                }
-                else
-                {
-                    //延迟不够，还未收到，预测。标记为是预测的。
-                    //Debug.Log($"延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
-                    Predict(rendTick);
-                    predicted.Add(rendTick);
-                }
-            }
-
-
-            //③处理所有新收到的帧
-            for (int x = (int)recvTick + 1; x < ggpo_recieve.Count; x++)
-            {
-                uint i = (uint)x;
-
-                //如果这帧之前是预测的，对比，回滚
-                //bool needToVerity = ggpo_predict.ContainsKey(i);
-                bool needToVerity = predicted.Contains(i);
-                if (needToVerity)
-                {
-                    //Debug.Log($"预测过{i}，需要验证。{ggpo_predict.Count}");
-                    //之前标记为预测，判断预测是否准确
-
-                    uint recieve1 = ggpo_recieve[i][0];
-                    uint recieve2 = ggpo_recieve[i][1];
-                    uint predict1 = ggpo_predict[i][0];
-                    uint predict2 = ggpo_predict[i][1];
-                    if (recieve1.Equals(predict1) && recieve2.Equals(predict2))
-                    {
-                        //之前的预测准确。不用更新表现了，预测时已经走过表现逻辑。
-                        recvTick = i;
-                    }
-                    else
-                    {
-                        // 验证失败
-                        uint badTick = i;
-
-                        // 一次性回滚到最早发生错误的地方。
-                        Debug.LogError($"{badTick}预测错({recieve1}:{recieve2})，回滚");
-                        Rollback(badTick - 1);
-
-                        //用收到的帧，覆盖错误的预测。
-                        uint goodTick = (uint)ggpo_recieve.Count;
-                        Debug.Log($"<color=yellow>覆盖错误的预测: {badTick}~{goodTick}</color>");
-                        for (uint t = badTick; t <= goodTick; t++)
-                        {
-                            uint[] _inputs = ggpo_recieve[t];
-                            ggpo_predict[t] = _inputs;
-                            Process(t, _inputs);
-                        }
-                        recvTick = goodTick;
-
-                        //追帧预测到本地的前一帧。本地的当前帧，在最后单独处理预测。
-                        Debug.Log($"<color=yellow>>>> 追帧预测: {(uint)(goodTick + 1)}~{rendTick}</color>");
-                        for (uint t = (uint)(goodTick + 1); t <= rendTick; t++)
-                        {
-                            Predict(t); //走到验证错误，说明本方操作已经存进去了。只需要预测对方即可。
-                        }
-                        Debug.Log("<<< 结束追帧预测");
-
-                        break; //跳出循环
-                    }
-                }
-            }
-        }
-
-        // 预测
-        private void Predict(uint tick)
-        {
-            int remoteSeat = (mySeatId + 1) % 2;
-
-            uint lastTick = tick - 1;
-            uint remoteInput = (ggpo_predict.ContainsKey(lastTick) == false) ? 0 : ggpo_predict[lastTick][remoteSeat]; //取上一帧作为预测
-            var _inputs = ggpo_predict[tick];
-            _inputs[remoteSeat] = remoteInput;
-            //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
-
-            //预测完成后，让角色跑预测帧。
-            Process(tick, _inputs);
-        }
-        // 回滚
-        private void Rollback(uint tick)
-        {
-            GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
-            Debug.Log($"回滚到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
-        }
-        // 追帧
-        private void Process(uint tick, uint[] inputs) //双方操作
-        {
-            //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
-            runner.SaveOldBuffer();
-            LocalSession.RunFrameNext(inputs);
-            runner.OnFixedUpdate(inputs);
-            Debug.Log($"执行到第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
-
-            Snapshot(tick);
-        }
-        // 快照
-        private void Snapshot(uint tick)
-        {
-            //Debug.Log($"快照: {tick}");
-            cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
-        }
-
-#if UNITY_EDITOR
-        private GUIStyle _style1;
-        private GUIStyle style1
-        {
-            get
-            {
-                if (_style1 == null)
-                {
-                    _style1 = new GUIStyle();
-                    _style1.fontSize = 25;
-                    _style1.normal.textColor = Color.red;
-                }
-                return _style1;
-            }
-        }
-        private Transform _view0;
-        private Transform view0
-        {
-            get
-            {
-                if (_view0 == null)
-                {
-                    _view0 = runner.transform.GetChild(0);
-                }
-                return _view0;
-            }
-        }
-        private Transform _view1;
-        private Transform view1
-        {
-            get
-            {
-                if (_view1 == null)
-                {
-                    _view1 = runner.transform.GetChild(1);
-                }
-                return _view1;
-            }
-        }
-
-        void OnDrawGizmos()
-        {
-            if (_netManager == null || _netManager.IsRunning == false) return;
-            //Gizmos.color = Color.yellow;
-            //Gizmos.DrawSphere(transform.position + Vector3.up * 2, 0.1f);
-            var x0 = LocalSession.gs.characters[0].position.x.ToString();
-            var x1 = LocalSession.gs.characters[1].position.x.ToString();
-            UnityEditor.Handles.Label(view0.position, x0, style1);
-            UnityEditor.Handles.Label(view1.position, x1, style1);
-        }
-#endif
     }
 }

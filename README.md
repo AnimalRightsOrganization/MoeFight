@@ -13,3 +13,8 @@
 clumsy 延迟
 
 ``udp and outbound and ip.DstAddr = 8.8.8.8``
+
+
+
+- [GGPO回滚演示](https://www.bilibili.com/video/BV1Gf4y1A7XT)
+

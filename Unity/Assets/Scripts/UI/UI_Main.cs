@@ -7,8 +7,6 @@ namespace Code.Client
 {
     public class UI_Main : MonoBehaviour
     {
-        public static UI_Main Instance;
-
         public ClientNet _clientLogic;
         private Button m_ConnectBtn;
         private Button m_TestX1Btn;
@@ -18,8 +16,6 @@ namespace Code.Client
 
         void Awake()
         {
-            Instance = this;
-
             m_ConnectBtn = transform.Find("ConnectBtn").GetComponent<Button>();
             m_TestX1Btn = transform.Find("TestX1Btn").GetComponent<Button>();
             m_TestX2Btn = transform.Find("TestX2Btn").GetComponent<Button>();

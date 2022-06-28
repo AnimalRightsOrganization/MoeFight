@@ -19,7 +19,7 @@ namespace Rollback
             await RunMainAsync();
         }
 
-        private static async Task<int> RunMainAsync()
+        static async Task<int> RunMainAsync()
         {
             try
             {
@@ -27,7 +27,6 @@ namespace Rollback
                 {
                     Debug.Log($"StartServer, listen on {ServerNet.Port}");
                     await server.StartProgram();
-                    //Console.ReadLine();
                     isStarted = true;
                 }
 

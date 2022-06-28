@@ -91,8 +91,7 @@ namespace Code.Server
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             byte packetType = reader.GetByte();
-            if (packetType >= NetworkGeneral.PacketTypesCount)
-                return;
+            if (packetType >= 1024) return;
 
             PacketType pt = (PacketType)packetType;
             //UnityEngine.Debug.Log($"[新消息] {pt}");
