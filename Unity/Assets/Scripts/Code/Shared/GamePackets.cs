@@ -493,6 +493,77 @@ namespace Code.Shared
         }
     }
 
+    // 角色加载所需信息
+    [System.Serializable]
+    public struct PlayerLoadPacket : INetSerializable
+    {
+        public string UserName; // 玩家昵称
+        public short PeerId;    // 玩家Id
+        //public int Score;       // 玩家积分
+        //public int Rank;        // 玩家排名
+        public byte RoleIndex;  // 角色编号
+        //public byte RoleColor;  // 角色颜色(双方角色相同时区分)
+        //public byte RoleCloth;  // 角色时装
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(UserName);
+            writer.Put(PeerId);
+            writer.Put(RoleIndex);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            UserName = reader.GetString();
+            PeerId = reader.GetShort();
+            RoleIndex = reader.GetByte();
+        }
+
+        public override string ToString()
+        {
+            string stringBuild = $"{PeerId}选择了{RoleIndex}";
+            return stringBuild;
+        }
+    }
+    // 双方准备后，服务器通知跳转场景。
+    // 下发初始化场景所需的参数。服务器房间内也要备份。
+    [System.Serializable]
+    public struct S2C_LoadScenePacket : INetSerializable
+    {
+        public short RoomId;    // 要加入的房间号
+        public string BattleId; // 服务器战斗编号
+        public int Seed;        // 随机种子
+        public byte MapId;      // 地图ID
+        public byte BattleMode; // 游戏模式
+        public PlayerLoadPacket Host;
+        public PlayerLoadPacket Guest;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(RoomId);
+            writer.Put(BattleId);
+            writer.Put(Seed);
+            writer.Put(MapId);
+            writer.Put(BattleMode);
+            Host.Serialize(writer);
+            Guest.Serialize(writer);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            RoomId = reader.GetShort();
+            BattleId = reader.GetString();
+            Seed = reader.GetInt();
+            MapId = reader.GetByte();
+            BattleMode = reader.GetByte();
+            Host.Deserialize(reader);
+            Guest.Deserialize(reader);
+        }
+
+        public override string ToString()
+        {
+            string stringBuild = $"RoomId={RoomId}, BattleId={BattleId}, Seed={Seed}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
+            return stringBuild;
+        }
+    }
+
     #endregion
 
     #region 帧同步
