@@ -12,10 +12,6 @@ namespace Rollback
         
         async void Start()
         {
-            //Console.OutputEncoding = System.Text.Encoding.UTF8;
-            //Console.WriteLine("中文测试");
-            //Debug.Log("中文测试貳"); //没用
-
             await RunMainAsync();
         }
 

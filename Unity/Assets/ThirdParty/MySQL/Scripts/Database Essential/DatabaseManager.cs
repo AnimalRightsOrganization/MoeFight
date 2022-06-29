@@ -1,30 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 using MySql.Data.MySqlClient;
 
 namespace DatabaseEssential
 {
-    public class DatabaseManager : MonoBehaviour
+    public class DatabaseManager
     {
-        public ServerConfiguration serverConfiguration;
+        //static ServerConfiguration serverConfiguration;
         static MySqlConnection con;
-        public static DatabaseManager instance;
 
-        void Awake()
-        {
-            instance = this;
-        }
         /// <summary>
         /// Method to Open/Initialize connection with Server, with return type of bool.
         /// </summary>
         /// <returns></returns>
-        public bool Initialize()
+        public static bool Initialize()
         {
+            ServerConfiguration serverConfiguration = new ServerConfiguration
+            {
+                host = "localhost",
+                database = "db_user",
+                user = "seol",
+                password = "123456",
+            };
             string connectionString = $"Server={serverConfiguration.host};" +
                 $"Database={serverConfiguration.database};" +
                 $"User={serverConfiguration.user};" +
-                $"password={serverConfiguration.password};"; //Connection String
+                $"password={serverConfiguration.password};";
+
             // Connect to Server using the connectionString and return true means connection stabled
             try
             {
@@ -35,7 +37,7 @@ namespace DatabaseEssential
             // Handle errors based on commond error numbers. 
             // 0: Cannot connect to server.
             // 1045: Invalid Username and/or Password.
-            catch(MySqlException e)
+            catch (MySqlException e)
             {
                 switch (e.Number)
                 {
@@ -53,7 +55,7 @@ namespace DatabaseEssential
         /// Method to Close connection from Server.
         /// </summary>
         /// <returns></returns>
-        public bool Close()
+        public static bool Close()
         {
             try
             {
@@ -72,10 +74,10 @@ namespace DatabaseEssential
         /// <param name="tableName">Name of the Table</param>
         /// <param name="statement">SQL Statement</param>
         /// <returns></returns>
-        public string Query(string statement)
+        public static string Query(string statement)
         {
             string result = "";
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = statement; //Assign the query to MySQLCommand 
@@ -93,7 +95,7 @@ namespace DatabaseEssential
                     }
                 }
 
-                this.Close(); //Closing the Connection
+                Close(); //Closing the Connection
 
                 return result;
             }
@@ -106,9 +108,9 @@ namespace DatabaseEssential
         /// Method to execute Non-Query SQL Command
         /// </summary>
         /// <param name="statement"></param>
-        public void NonQuery(string statement)
+        public static void NonQuery(string statement)
         {
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = statement; //Assign the query to MySQLCommand 
@@ -116,7 +118,7 @@ namespace DatabaseEssential
 
                 cmd.ExecuteNonQuery(); //Execute query (ExecuteNonQuery will not return any data)
 
-                this.Close(); //Closing the Connection
+                Close(); //Closing the Connection
             }
         }
 
@@ -126,19 +128,19 @@ namespace DatabaseEssential
         /// <param name="tableName"> Name of the table</param>
         /// <param name="keys"> Key(s) name or Column(s) Name</param>
         /// <param name="values"> Value(s) of Key(s) or Column(s) Name</param>
-        public void InsertRecord(string tableName, string keys, string values)
+        public static void InsertRecord(string tableName, string keys, string values)
         {
             string query = $"INSERT INTO {tableName} ({keys}) VALUES ({values})";
 
-            if (this.Initialize() == true)
-            {                       
+            if (Initialize() == true)
+            {
                 MySqlCommand cmd = new MySqlCommand(); // MySQL Command
                 cmd.CommandText = query; // Assign the query to MySQLCommand
                 cmd.Connection = con; // Assign the connection to SQLCommand Connection
 
                 cmd.ExecuteNonQuery(); //Execute query (ExecuteNonQuery will not return any data)
 
-                this.Close(); //Closing the connection
+                Close(); //Closing the connection
             }
         }
         /// <summary>
@@ -146,11 +148,11 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName">Name of the Table</param>
         /// <param name="condition">WHERE Condition</param>
-        public void DeleteRecord(string tableName, string condition)
+        public static void DeleteRecord(string tableName, string condition)
         {
             string query = $"DELETE FROM {tableName} WHERE {condition}";
             // Opening the connection
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand();  // MySQL Command  
                 cmd.CommandText = query; // Assign the query to MySQLCommand
@@ -158,7 +160,7 @@ namespace DatabaseEssential
 
                 cmd.ExecuteNonQuery(); //Execute query (ExecuteNonQuery will not return any data)
 
-                this.Close(); //Closing the connection
+                Close(); //Closing the connection
             }
         }
         /// <summary>
@@ -166,11 +168,11 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName">Name of the Table</param>
         /// <param name="condition">SET Condition, also WHERE condition too. Example: Username='Ashikur Rahman' WHERE Username='Srejon Khan'</param>
-        public void UpdateRecord(string tableName, string condition)
+        public static void UpdateRecord(string tableName, string condition)
         {
             string query = $"UPDATE {tableName} SET {condition}";
             // Opening the connection
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand
@@ -178,7 +180,7 @@ namespace DatabaseEssential
 
                 cmd.ExecuteNonQuery(); //Execute query (ExecuteNonQuery will not return any data)
 
-                this.Close(); //Closing the connection
+                Close(); //Closing the connection
             }
         }
         /// <summary>
@@ -187,7 +189,7 @@ namespace DatabaseEssential
         /// <param name="tableName">Name of the Table</param>
         /// <param name="columnName">Name of Column(s) to fetch values</param>
         /// <returns></returns>
-        public List<string>[] SelectAllRecord(string tableName, string columnName)
+        public static List<string>[] SelectAllRecord(string tableName, string columnName)
         {
             string query = $"Select * FROM {tableName}";
 
@@ -199,7 +201,7 @@ namespace DatabaseEssential
             }
 
             //Opening Connection
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand               
@@ -217,7 +219,7 @@ namespace DatabaseEssential
 
                 dataReader.Close(); // Closing DataReader
 
-                this.Close(); //Closing the Connection
+                Close(); //Closing the Connection
 
                 return results;
             }
@@ -231,13 +233,13 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public int Count(string query)
+        public static int Count(string query)
         {
             //string query = $"SELECT Count(*) FROM {tableName}";
             int count = -1; // Negative value will represent the failure of connection
 
             //Opening the Connection
-            if (this.Initialize() == true)
+            if (Initialize() == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand
@@ -245,7 +247,7 @@ namespace DatabaseEssential
 
                 count = int.Parse(cmd.ExecuteScalar() + ""); //ExecuteScaler will return one value
 
-                this.Close(); //Closing the connection
+                Close(); //Closing the connection
 
                 return count;
             }

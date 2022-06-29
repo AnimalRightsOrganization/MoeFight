@@ -215,7 +215,7 @@ namespace Code.Server
             #region 检查逻辑
             // 校验账号密码
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}'";
-            int check1 = DatabaseEssential.DatabaseManager.instance.Count(query);
+            int check1 = DatabaseEssential.DatabaseManager.Count(query);
             if (check1 == 0)
             {
                 UnityEngine.Debug.LogError("账号或密码错误");
@@ -225,26 +225,8 @@ namespace Code.Server
             }
 
             // 校验是否已登录
-            var list = _playerManager.GetPlayersAll();
-            var check2 = list.Where(x => x.UserName == cmd.UserName);
-            if (check2.Count() > 0)
-            {
-                var player0 = check2.FirstOrDefault();
-
-                // 这里也可能是同一个人走了重连
-                UnityEngine.Debug.Log($"检测是否重连：{player0.ToString()}");
-                //if (player0.Status == PlayerStatus.Reconnect)
-                //{
-                //    UnityEngine.Debug.Log($"<color=green>是重连的，返还数据</color>");
-                //}
-                //else
-                //{
-                //    UnityEngine.Debug.LogError("该账号已经登录，顶号");
-                //    var _peer = _netManager.ConnectedPeerList.Where(x => x.Id == check2.First().PeerId).ToList()[0];
-                //    _playerManager.RemovePlayer(_peer.Id); //踢人
-                //    _peer.Disconnect();
-                //}
-            }
+            //var list = _playerManager.GetPlayersAll();
+            //UnityEngine.Debug.Log($"list:{list.Length}"); //64
             #endregion
 
             #region 登录逻辑
@@ -261,7 +243,8 @@ namespace Code.Server
                 NickName = player.NickName,
             };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
-            
+            UnityEngine.Debug.Log("Done.");
+
             // 第二个包，用户设置
             //var packet2 = new Settings
             //{

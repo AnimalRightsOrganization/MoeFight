@@ -18,13 +18,13 @@ public class DatabaseTest : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             string query = $"SELECT Count(*) FROM userdata";
-            Debug.Log(DatabaseEssential.DatabaseManager.instance.Count(query));
+            Debug.Log(DatabaseEssential.DatabaseManager.Count(query));
         }
         //Select
         if (Input.GetKeyDown(KeyCode.S))
         {
             string columnName = "ID,Username,Password,Email,Phone,Address";
-            List<string>[] results = DatabaseEssential.DatabaseManager.instance.SelectAllRecord("userdata", columnName);
+            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord("userdata", columnName);
 
             for (int i = 0; i < results.Length; i++)
             {
@@ -36,7 +36,7 @@ public class DatabaseTest : MonoBehaviour
         //Update
         if (Input.GetKeyDown(KeyCode.U))
         {
-            DatabaseEssential.DatabaseManager.instance.UpdateRecord("userdata", "Username='Ashikur Rahman' WHERE Username='Srejon Khan'");
+            DatabaseEssential.DatabaseManager.UpdateRecord("userdata", "Username='Ashikur Rahman' WHERE Username='Srejon Khan'");
             Debug.Log("Update DONE");
         }
         //Insert
@@ -52,19 +52,19 @@ public class DatabaseTest : MonoBehaviour
             }
             var randomName = new String(stringChars);
 
-            DatabaseEssential.DatabaseManager.instance.InsertRecord("userdata", "ID,Username,Password,Email,Phone,Address", $"'0', '{randomName}', '123456', '{randomName}@gmail.com', '0123456789', 'Unknown Street, Unknown Street'");
+            DatabaseEssential.DatabaseManager.InsertRecord("userdata", "ID,Username,Password,Email,Phone,Address", $"'0', '{randomName}', '123456', '{randomName}@gmail.com', '0123456789', 'Unknown Street, Unknown Street'");
             Debug.Log("Insert Done");
         }
         //Delete
         if (Input.GetKeyDown(KeyCode.D))
         {
-            DatabaseEssential.DatabaseManager.instance.DeleteRecord("userdata", "Username='Ashikur Rahman'");
+            DatabaseEssential.DatabaseManager.DeleteRecord("userdata", "Username='Ashikur Rahman'");
             Debug.Log("Delete Done");
         }
         //Select Certain
         if (Input.GetKeyDown(KeyCode.W))
         {
-            Debug.Log(DatabaseEssential.DatabaseManager.instance.Query("SELECT * FROM userdata ORDER BY ID DESC"));
+            Debug.Log(DatabaseEssential.DatabaseManager.Query("SELECT * FROM userdata ORDER BY ID DESC"));
         }
     }
 }
