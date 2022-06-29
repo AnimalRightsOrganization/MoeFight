@@ -10,18 +10,18 @@ namespace HotFix
 {
     public class UI_Login : UIBase
     {
-        [SerializeField] CanvasGroup m_LoginPanel;
-        [SerializeField] InputField m_UserNameField;
-        [SerializeField] InputField m_PasswordField;
-        [SerializeField] Button m_LoginBtn;
-        [SerializeField] Button m_ToRegisterBtn;
+        public CanvasGroup m_LoginPanel;
+        public InputField m_UserNameField;
+        public InputField m_PasswordField;
+        public Button m_LoginBtn;
+        public Button m_ToRegisterBtn;
 
-        [SerializeField] CanvasGroup m_RegisterPanel;
-        [SerializeField] InputField m_regUserNameField;
-        [SerializeField] InputField m_regPasswordField;
-        [SerializeField] InputField m_regPassword2Field;
-        [SerializeField] Button m_RegisterBtn;
-        [SerializeField] Button m_ToLoginBtn;
+        public CanvasGroup m_RegisterPanel;
+        public InputField m_regUserNameField;
+        public InputField m_regPasswordField;
+        public InputField m_regPassword2Field;
+        public Button m_RegisterBtn;
+        public Button m_ToLoginBtn;
 
         void Awake()
         {
@@ -85,7 +85,6 @@ namespace HotFix
                     break;
                 default:
                     {
-                        // 飘错误提示
                         var toast = UIManager.Get().Push<UI_Toast>();
                         toast.Show("登录失败");
                     }

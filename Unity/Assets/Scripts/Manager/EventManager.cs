@@ -22,3 +22,21 @@ public class EventManager
         eventList.Invoke(type, reader, peer);
     }
 }
+
+public class UserEvent<T0> : UnityEvent<T0> { }
+public class UserEventManager
+{
+    private static UserEvent<PlayerStatus> userEventList = new UserEvent<PlayerStatus>();
+    public static void RegisterEvent(UnityAction<PlayerStatus> action)
+    {
+        userEventList.AddListener(action);
+    }
+    public static void UnRegisterEvent(UnityAction<PlayerStatus> action)
+    {
+        userEventList.RemoveListener(action);
+    }
+    public static void Trigger(PlayerStatus type)
+    {
+        userEventList.Invoke(type);
+    }
+}

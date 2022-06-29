@@ -5,12 +5,38 @@ using UnityEngine;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 
+public class TestWindow : EditorWindow
+{
+    static TestWindow window;
+
+    public static void ShowWindow()
+    {
+        window = (TestWindow)GetWindow(typeof(TestWindow));
+        window.titleContent = new GUIContent("调试窗口");
+        window.Show();
+    }
+    
+    void OnGUI()
+    {
+        if (GUILayout.Button("登录.自动填写"))
+        {
+            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
+            login.m_UserNameField.text = "test1";
+            login.m_PasswordField.text = "123456";
+        }
+    }
+}
 public class EditorTools : Editor
 {
     //% (ctrl on Windows and Linux, cmd on macOS),
     //^ (ctrl on Windows, Linux, and macOS),
     //# (shift),
     //& (alt)
+    [MenuItem("Tools/启动/调试 %_F10", false)]
+    static void RunEditor()
+    {
+        TestWindow.ShowWindow();
+    }
     [MenuItem("Tools/启动/客户端 %_F11", false)]
     static void RunClient()
     {

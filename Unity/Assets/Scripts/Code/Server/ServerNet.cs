@@ -305,6 +305,7 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
+            UnityEngine.Debug.Log($"[S] Match Request received: [{peer.Id}]{player.UserName}</color>");
 
             // 加入列表。
             lock (m_WaitingPeers)
@@ -318,6 +319,7 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
+            UnityEngine.Debug.Log($"[S] Match Cancel received: [{peer.Id}]{player.UserName}");
 
             // 移除列表。
             lock (m_WaitingPeers)

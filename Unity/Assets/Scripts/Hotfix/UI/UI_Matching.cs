@@ -24,6 +24,7 @@ namespace HotFix
             m_UsedTime = transform.Find("Panel/UsedTime").GetComponent<Text>();
             m_Rotate = transform.Find("Panel/Rotate").GetComponent<Image>();
             m_CancelBtn = transform.Find("Panel/CancelBtn").GetComponent<Button>();
+
             m_CancelBtn.onClick.AddListener(ClientNet.Get.SendMatchCancel);
 
             m_Panel.anchoredPosition = Vector3.zero;
@@ -51,7 +52,6 @@ namespace HotFix
         }
 
         #region 网络消息
-
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -61,10 +61,9 @@ namespace HotFix
                     break;
             }
         }
-
         private void OnMatchResult(INetSerializable reader)
         {
-            S2C_MatchResultPacket packet = (S2C_MatchResultPacket)reader;
+            var packet = (S2C_MatchResultPacket)reader;
             Debug.Log($"[UI_Matching] {packet.ToString()}");
 
             if (packet.Code == 0) //匹配成功
@@ -91,10 +90,9 @@ namespace HotFix
                 this.Pop();
             }
         }
-
         #endregion
 
-        // 匹配用时
+        #region 匹配用时
         private Timer aTimer;
         private DateTime startTime;
         private string deltaStr;
@@ -112,10 +110,7 @@ namespace HotFix
         {
             TimeSpan delta = e.SignalTime - startTime;
             deltaStr = delta.ToString(@"hh\:mm\:ss");
-            //Debug.Log(deltaStr);
-            //TimeSpan.FromSeconds(seconds).ToString();
-
-            //Debug.Log($"The Elapsed event was raised at {e.SignalTime:HH:mm:ss.fff}");
         }
+        #endregion
     }
 }

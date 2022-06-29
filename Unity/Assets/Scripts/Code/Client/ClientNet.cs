@@ -138,6 +138,13 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                case PacketType.S2C_MatchResult:
+                    {
+                        var packet = new S2C_MatchResultPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -204,7 +211,7 @@ namespace Code.Client
             var cmd = new C2S_LoginPacket
             {
                 UserName = userName,
-                Password = password,
+                Password = Md5Utils.GetMD5String(password),
             };
             SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
             Debug.Log($"[C] 登录请求：用户名={cmd.UserName}，密码={cmd.Password}");
@@ -230,8 +237,23 @@ namespace Code.Client
         {
             SendPacketSerializable(PacketType.C2S_Settings, cmd);
         }
-        
-        public void SendMatchCancel() { }
+
+        public void SendMatchRequest()
+        {
+            Debug.Log($"[C] 请求匹配");
+            EmptyPacket cmd = new EmptyPacket();
+            SendPacketSerializable(PacketType.C2S_MatchRequest, cmd);
+
+            m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.Matching);
+            UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
+        }
+
+        public void SendMatchCancel()
+        {
+            Debug.Log($"[C] 取消匹配");
+            EmptyPacket cmd = new EmptyPacket();
+            SendPacketSerializable(PacketType.C2S_MatchCancel, cmd);
+        }
 
         public void SendSelection(int id) { }
 

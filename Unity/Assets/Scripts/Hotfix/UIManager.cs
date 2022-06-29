@@ -53,7 +53,7 @@ namespace HotFix
             return ui.GetComponent<T>();
         }
 
-        public T Push<T>() where T : UIBase
+        public T Push<T>(int layer = 1) where T : UIBase
         {
             string fullName = typeof(T).ToString();
             string scriptName = string.Empty;
