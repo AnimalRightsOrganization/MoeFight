@@ -205,6 +205,10 @@ namespace Code.Client
                         var packet = new S2C_BattleStartPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
+                        Debug.Log($"[UI] 开始战斗，阶段：{packet.Stage}");
+                        //0:场景加载完成。
+                        //1:倒计时完成。
+                        //2:从暂停恢复。
                     }
                     break;
                 case PacketType.S2C_BattlePause:

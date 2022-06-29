@@ -506,7 +506,7 @@ namespace Code.Server
             // 解析客户端消息
             var cmd = new C2S_BattleStartPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] {player.ToString()} start battle, Stage={cmd.Stage}");
+            UnityEngine.Debug.Log($"[S] BattleStart: {player.ToString()}, Stage={cmd.Stage}");
 
             // 更新统计
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(player.RoomId);
