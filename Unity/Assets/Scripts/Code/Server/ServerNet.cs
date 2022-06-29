@@ -227,6 +227,7 @@ namespace Code.Server
             // 校验账号密码
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}'";
             int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            UnityEngine.Debug.Log($"check1: {check1}");
             if (check1 == 0)
             {
                 UnityEngine.Debug.LogError("账号或密码错误");
@@ -254,7 +255,6 @@ namespace Code.Server
                 NickName = player.NickName,
             };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
-            UnityEngine.Debug.Log("Done.");
 
             // 第二个包，用户设置
             //var packet2 = new Settings

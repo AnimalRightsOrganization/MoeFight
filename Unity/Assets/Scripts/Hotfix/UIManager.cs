@@ -55,7 +55,16 @@ namespace HotFix
 
         public T Push<T>() where T : UIBase
         {
-            string scriptName = typeof(T).ToString().Split('.')[1];
+            string fullName = typeof(T).ToString();
+            string scriptName = string.Empty;
+            if (fullName.Contains("."))
+            {
+                scriptName = fullName.Split('.')[1];
+            }
+            else
+            {
+                scriptName = fullName;
+            }
             //Debug.Log($"Push<{scriptName}>");
             UIBase ui = null;
             if (stack.TryGetValue(scriptName, out ui))
