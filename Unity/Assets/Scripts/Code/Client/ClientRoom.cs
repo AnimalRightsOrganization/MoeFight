@@ -49,9 +49,6 @@ namespace Code.Client
                 case PacketType.S2C_Lockstep:
                     OnLockstep(reader);
                     break;
-                case PacketType.S2C_LackFrames:
-                    OnLackFrames(reader);
-                    break;
             }
         }
         void OnLockstep(INetSerializable reader)
@@ -59,42 +56,35 @@ namespace Code.Client
             S2C_AllPlayerOperationPacket packet = (S2C_AllPlayerOperationPacket)reader;
             //GameManager.Instance.RecvOperation(packet);
         }
-        void OnLackFrames(INetSerializable reader)
-        {
-            S2C_LackFramesPacket packet = (S2C_LackFramesPacket)reader;
 
-            //GameManager.Instance.RecvLackFrames(packet);
-        }
 
         // 计时器，获得指定的更新频率
         //protected LogicTimer m_SendTimer;
         public bool IsHost = true; //我是否房主
-        //public S2C_LoadScenePacket sceneData;
+        public S2C_LoadScenePacket sceneData;
 
         // 用于创建场景
-        //public void DoInit(S2C_LoadScenePacket packet)
-        //{
-        //    sceneData = packet;
+        public void DoInit(S2C_LoadScenePacket packet)
+        {
+            sceneData = packet;
 
-        //    //RoomID //已经有了
-        //    BattleID = packet.BattleId;
-        //    Seed = packet.Seed;
-        //    MapId = packet.MapId;
-        //    BattleMode = (BattleMode)packet.BattleMode;
-        //    //hostPlayer.PeerId //已经有了
-        //    //guestPlayer.PeerId //已经有了
-        //    hostPlayer.RoleIndex = packet.Host.RoleIndex;
-        //    guestPlayer.RoleIndex = packet.Guest.RoleIndex;
+            //RoomID //已经有了
+            BattleID = packet.BattleId;
+            Seed = packet.Seed;
+            MapId = packet.MapId;
+            BattleMode = (BattleMode)packet.BattleMode;
+            hostPlayer.RoleIndex = packet.Host.RoleIndex;
+            guestPlayer.RoleIndex = packet.Guest.RoleIndex;
 
-        //    // 初始化计时器
-        //    m_SendTimer = new LogicTimer(OnSendUpdate);
+            // 初始化计时器
+            //m_SendTimer = new LogicTimer(OnSendUpdate);
 
-        //    // 判断我的主客位
-        //    if (BattleMode == BattleMode.Matching)
-        //    {
-        //        IsHost = Client.GetInstance().m_PlayerManager.LocalPlayer.SeatId == 0;
-        //    }
-        //}
+            // 判断我的主客位
+            if (BattleMode == BattleMode.Matching)
+            {
+                IsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId == 0;
+            }
+        }
 
         // 客户端启动计时器
         public void DoStart()

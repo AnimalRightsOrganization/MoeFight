@@ -131,7 +131,7 @@ namespace Code.Server
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             byte packetType = reader.GetByte();
-            if (packetType >= 1024) return;
+            if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
             //UnityEngine.Debug.Log($"[新消息] {pt}");
@@ -143,7 +143,7 @@ namespace Code.Server
                 case PacketType.C2S_TestPVP:
                     OnTestPVP(reader, peer);
                     break;
-                case PacketType.C2S_Lockstep:
+                case PacketType.C2S_Input:
                     OnInputReceived(reader, peer);
                     break;
                 //以上是测试，保留
@@ -189,6 +189,9 @@ namespace Code.Server
                 case PacketType.C2S_BattleEnd:
                     OnBattleEndReceived(reader, peer);
                     break;
+                case PacketType.C2S_Lockstep:
+                    OnLockstepReceived(reader, peer);
+                    break;
                 default:
                     UnityEngine.Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -214,7 +217,7 @@ namespace Code.Server
 
 
         #region Handler
-        void OnTestPVE(NetPacketReader reader, NetPeer peer)
+        private void OnTestPVE(NetPacketReader reader, NetPeer peer)
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
@@ -228,7 +231,7 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_TestPVE, packet), DeliveryMethod.ReliableOrdered);
         }
 
-        void OnTestPVP(NetPacketReader reader, NetPeer peer)
+        private void OnTestPVP(NetPacketReader reader, NetPeer peer)
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);

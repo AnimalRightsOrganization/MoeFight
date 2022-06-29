@@ -42,8 +42,8 @@ namespace Code.Client
                 case PacketType.S2C_BattlePause:
                     OnPause(reader);
                     break;
-                case PacketType.S2C_Lockstep:
-                    OnRecvLockstep(reader);
+                case PacketType.S2C_Input:
+                    OnRecvInput(reader);
                     break;
             }
         }
@@ -233,7 +233,7 @@ namespace Code.Client
             }
         }
 
-        private void OnRecvLockstep(INetSerializable reader)
+        private void OnRecvInput(INetSerializable reader)
         {
             var packet = (S2C_InputPacket)reader;
 

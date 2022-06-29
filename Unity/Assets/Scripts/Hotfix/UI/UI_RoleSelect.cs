@@ -180,7 +180,7 @@ namespace HotFix
         private void OnLoadScene(INetSerializable reader)
         {
             var packet = (S2C_LoadScenePacket)reader;
-            //ClientNet.Get.m_ClientRoom.DoInit(packet);
+            ClientNet.Get.m_ClientRoom.DoInit(packet);
             Debug.Log($"[C] 比赛开始，跳转到比赛场景\n{packet}");
 
             // 先变化状态，让用户看到。再倒计时切换场景。
@@ -188,15 +188,14 @@ namespace HotFix
             m_ReadyText[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyText[1].SetActive(true);
-            /*
+
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
+                //UIManager.Get().Push<UI_GameMenu>();
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
-            ConfigManager.Get().LoadScene("Game", 2, action);
-            */
+            //ConfigManager.Get().LoadScene("Game", 2, action);
         }
 
         #endregion

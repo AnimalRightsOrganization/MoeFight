@@ -16,7 +16,7 @@ namespace Code.Shared
         public byte MapId = 0;      // 地图编号（暂时用不到）
         public BattleMode BattleMode;
 
-        // 一个房间必须满足有2个人(掉线?)
+        // 一个房间必须满足有2个人
         public virtual BasePlayer[] m_PlayerList { get; protected set; }
         public virtual BasePlayer hostPlayer => m_PlayerList[0];
         public virtual BasePlayer guestPlayer => m_PlayerList[1];

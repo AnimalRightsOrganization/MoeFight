@@ -118,7 +118,7 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_Lockstep:
+                case PacketType.S2C_Input:
                     {
                         var packet = new S2C_InputPacket();
                         packet.Deserialize(reader);
@@ -222,6 +222,13 @@ namespace Code.Client
                         OnUserStatusChanged(pt, packet);
                     }
                     break;
+                case PacketType.S2C_Lockstep:
+                    {
+                        var packet = new S2C_InputPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -282,7 +289,7 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
-            SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
+            SendPacketSerializable(PacketType.C2S_Input, cmd);
         }
 
         public void SendLogin(string userName, string password)
@@ -359,10 +366,18 @@ namespace Code.Client
         {
             SendPacketSerializable(PacketType.C2S_GameReady, new EmptyPacket());
         }
-
-        public void SendBattleStart()
+        
+        private string[] battleStartDebug = new string[]
         {
-
+            "开始跳转场景了，通知服务器启动，准备同步",
+            "倒计时结束，出Fight，通知服务器第一帧同步",
+            "从暂停恢复游戏",
+        };
+        public void SendBattleStart(byte stage)
+        {
+            Debug.Log($"<color=yellow>[C] SendBattleStart: {stage}---{battleStartDebug[stage]}</color>");
+            var cmd = new C2S_BattleStartPacket { Stage = stage };
+            SendPacketSerializable(PacketType.C2S_BattleStart, cmd);
         }
 
         // 统一处理用户状态变化，并派发出去

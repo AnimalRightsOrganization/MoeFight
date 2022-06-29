@@ -33,6 +33,7 @@ namespace Code.Shared
         // C2S /////////////
         C2S_TestPVE         ,   //独立启动加入
         C2S_TestPVP         ,   //双人启动加入
+        C2S_Input           ,   //
         //
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
@@ -51,10 +52,10 @@ namespace Code.Shared
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
         C2S_Lockstep        ,   //帧同步
-        C2S_LackFrames      ,   //缺失帧
         // S2C /////////////
         S2C_TestPVE         ,   //独立启动加入
         S2C_TestPVP         ,   //双人启动加入
+        S2C_Input           ,   //
         //
         S2C_LoginResult     ,   //登录结果
         S2C_LogoutResult    ,   //登出结果
@@ -65,13 +66,12 @@ namespace Code.Shared
         S2C_MatchResult     ,   //匹配结果
         S2C_RoleSelect      ,   //选择角色
         S2C_GameReady       ,   //准备结果
-        S2C_LoadScene       ,   //跳转场景
+        S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         //
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
         S2C_BattleEnd       ,   //比赛结束，结算
         S2C_Lockstep        ,   //帧同步
-        S2C_LackFrames      ,   //丢失帧
     }
 
     public enum BattleStage
@@ -188,7 +188,6 @@ namespace Code.Shared
         }
     }
 
-    // 登录请求
     public struct C2S_LoginPacket : INetSerializable
     {
         public string UserName; //账号

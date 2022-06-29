@@ -9,16 +9,12 @@ namespace Code.Server
     public class ServerRoom : BaseRoom
     {
         #region 房间数据
-
         public ServerRoom(int roomId, ServerPlayer host, ServerPlayer guest) : base(roomId, host, guest)
         {
             //Debug.LogError("Order.ServerRoom"); //子类迟
             m_PlayerList = new ServerPlayer[] { host, guest };
             EndCount = 0;
         }
-
-        public override BasePlayer[] m_PlayerList { get; protected set; }
-        public override void Dispose() { }
         public ServerPlayer GetOtherPlayer(short peerId)
         {
             if (m_PlayerList[0].PeerId == peerId && m_PlayerList[1].PeerId != peerId)
@@ -31,14 +27,12 @@ namespace Code.Server
             }
             else
             {
-                return null;
+                return null; //要找的用户不在当前房间
             }
         }
-
         #endregion
 
         #region 帧同步
-
         // 开始战斗计数，重连时不需要
         private List<short> stage_0_list = new List<short>();
         public int Stage_0_Count => stage_0_list.Count;
@@ -65,7 +59,6 @@ namespace Code.Server
         public int EndCount = 0;
 
         // 独立的帧同步对象
-        private ushort Tick;
         private Dictionary<uint, Dictionary<int, uint>> dic_recv;
         protected NetPeer[] m_NetPeers;
 
@@ -86,6 +79,7 @@ namespace Code.Server
 
         }
 
+        // 打印服务器帧
         public void Dump()
         {
             string root = ConstValue.DUMP_FOLDER;
@@ -106,7 +100,6 @@ namespace Code.Server
             File.WriteAllLines(savePath, lines);
             Debug.Log($"saved in: {savePath}");
         }
-
         #endregion
     }
 }
