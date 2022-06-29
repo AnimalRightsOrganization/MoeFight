@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 using Code.Shared;
 using LiteNetLib;
@@ -16,9 +16,9 @@ namespace Code.Client
         public uint sendTick;
         public uint recvTick;
         public uint rendTick;
-        private Dictionary<uint, uint[]> ggpo_predict; //Ô¤²âÖ¡<Ö¡ºÅ, Ë«·½²Ù×÷[]>
-        private Dictionary<uint, uint[]> ggpo_recieve; //ÏÂ·¢Ö¡<Ö¡ºÅ, Ë«·½²Ù×÷[]>
-        private Dictionary<uint, byte[]> cache_buffer; //¿ìÕÕÖ¡<Ö¡ºÅ, ³¡¾°»º´æ[]>
+        private Dictionary<uint, uint[]> ggpo_predict; //é¢„æµ‹å¸§<å¸§å·, åŒæ–¹æ“ä½œ[]>
+        private Dictionary<uint, uint[]> ggpo_recieve; //ä¸‹å‘å¸§<å¸§å·, åŒæ–¹æ“ä½œ[]>
+        private Dictionary<uint, byte[]> cache_buffer; //å¿«ç…§å¸§<å¸§å·, åœºæ™¯ç¼“å­˜[]>
         private List<uint> predicted;
         private HitstunRunner runner;
 
@@ -54,7 +54,7 @@ namespace Code.Client
             sendTick = 0;
             recvTick = 0;
             rendTick = 0;
-            ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50Ö¡Ã¿Ãë = 85,899,346Ãë = 23,860Ğ¡Ê± = 994Ìì¡£4+4+4=12¸ö×Ö½Ú
+            ggpo_predict = new Dictionary<uint, uint[]>(); //4294967295 /50å¸§æ¯ç§’ = 85,899,346ç§’ = 23,860å°æ—¶ = 994å¤©ã€‚4+4+4=12ä¸ªå­—èŠ‚
             ggpo_recieve = new Dictionary<uint, uint[]>();
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
@@ -85,49 +85,49 @@ namespace Code.Client
         {
             if (!IsStart) return;
 
-            //¢ÙÊÕ¼¯±¾µØ°´¼ü£¬·¢ËÍ£¬Ô¤²â?
+            //â‘ æ”¶é›†æœ¬åœ°æŒ‰é”®ï¼Œå‘é€ï¼Œé¢„æµ‹?
             sendTick++;
             uint input = LocalSession.GetInput();
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             ClientNet.Get.SendInput(cmd);
             ggpo_predict[sendTick] = new uint[2];
             ggpo_predict[sendTick][mySeatId] = input;
-            //Debug.Log($"·¢ËÍ: {sendTick}---{input}");
+            //Debug.Log($"å‘é€: {sendTick}---{input}");
 
-            //¢ÚDelay-Based£¬ÒªÇó×Ô¼ºÒ²ÑÓ³Ù¡£
+            //â‘¡Delay-Basedï¼Œè¦æ±‚è‡ªå·±ä¹Ÿå»¶è¿Ÿã€‚
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
             {
                 rendTick = (uint)i;
 
-                //±¾´ÎUpdateÒªÇó±íÏÖµÄÖ¡£¬ÅĞ¶ÏÊÇ·ñÊÕµ½
+                //æœ¬æ¬¡Updateè¦æ±‚è¡¨ç°çš„å¸§ï¼Œåˆ¤æ–­æ˜¯å¦æ”¶åˆ°
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
-                    //ÒòÎªÑÓ³Ù±íÏÖ£¬´ËÊ±ÊÕµ½ÁË£¬È¡³öÀ´±íÏÖ
-                    //Debug.Log($"ÑÓ³Ù×ã¹»£¬±íÏÖ{rendTick}");
+                    //å› ä¸ºå»¶è¿Ÿè¡¨ç°ï¼Œæ­¤æ—¶æ”¶åˆ°äº†ï¼Œå–å‡ºæ¥è¡¨ç°
+                    //Debug.Log($"å»¶è¿Ÿè¶³å¤Ÿï¼Œè¡¨ç°{rendTick}");
                     var _inputs = ggpo_recieve[rendTick];
                     Process(rendTick, _inputs);
                 }
                 else
                 {
-                    //ÑÓ³Ù²»¹»£¬»¹Î´ÊÕµ½£¬Ô¤²â¡£±ê¼ÇÎªÊÇÔ¤²âµÄ¡£
-                    //Debug.Log($"ÑÓ³Ù²»¹»£¬·¢ËÍ{sendTick}Ê±£¬±íÏÖ{rendTick}£¬ÊÕµ½{recvTick}");
+                    //å»¶è¿Ÿä¸å¤Ÿï¼Œè¿˜æœªæ”¶åˆ°ï¼Œé¢„æµ‹ã€‚æ ‡è®°ä¸ºæ˜¯é¢„æµ‹çš„ã€‚
+                    //Debug.Log($"å»¶è¿Ÿä¸å¤Ÿï¼Œå‘é€{sendTick}æ—¶ï¼Œè¡¨ç°{rendTick}ï¼Œæ”¶åˆ°{recvTick}");
                     Predict(rendTick);
                     predicted.Add(rendTick);
                 }
             }
 
 
-            //¢Û´¦ÀíËùÓĞĞÂÊÕµ½µÄÖ¡
+            //â‘¢å¤„ç†æ‰€æœ‰æ–°æ”¶åˆ°çš„å¸§
             for (int x = (int)recvTick + 1; x < ggpo_recieve.Count; x++)
             {
                 uint i = (uint)x;
 
-                //Èç¹ûÕâÖ¡Ö®Ç°ÊÇÔ¤²âµÄ£¬¶Ô±È£¬»Ø¹ö
+                //å¦‚æœè¿™å¸§ä¹‹å‰æ˜¯é¢„æµ‹çš„ï¼Œå¯¹æ¯”ï¼Œå›æ»š
                 bool needToVerity = predicted.Contains(i);
                 if (needToVerity)
                 {
-                    //Debug.Log($"Ô¤²â¹ı{i}£¬ĞèÒªÑéÖ¤¡£{ggpo_predict.Count}");
-                    //Ö®Ç°±ê¼ÇÎªÔ¤²â£¬ÅĞ¶ÏÔ¤²âÊÇ·ñ×¼È·
+                    //Debug.Log($"é¢„æµ‹è¿‡{i}ï¼Œéœ€è¦éªŒè¯ã€‚{ggpo_predict.Count}");
+                    //ä¹‹å‰æ ‡è®°ä¸ºé¢„æµ‹ï¼Œåˆ¤æ–­é¢„æµ‹æ˜¯å¦å‡†ç¡®
 
                     uint recieve1 = ggpo_recieve[i][0];
                     uint recieve2 = ggpo_recieve[i][1];
@@ -135,20 +135,20 @@ namespace Code.Client
                     uint predict2 = ggpo_predict[i][1];
                     if (recieve1.Equals(predict1) && recieve2.Equals(predict2))
                     {
-                        //Ö®Ç°µÄÔ¤²â×¼È·¡£²»ÓÃ¸üĞÂ±íÏÖÁË£¬Ô¤²âÊ±ÒÑ¾­×ß¹ı±íÏÖÂß¼­¡£
+                        //ä¹‹å‰çš„é¢„æµ‹å‡†ç¡®ã€‚ä¸ç”¨æ›´æ–°è¡¨ç°äº†ï¼Œé¢„æµ‹æ—¶å·²ç»èµ°è¿‡è¡¨ç°é€»è¾‘ã€‚
                         recvTick = i;
                     }
                     else
                     {
-                        // ÑéÖ¤Ê§°Ü
+                        // éªŒè¯å¤±è´¥
                         uint badTick = i;
 
-                        // Ò»´ÎĞÔ»Ø¹öµ½×îÔç·¢Éú´íÎóµÄµØ·½¡£
-                        Debug.LogError($"{badTick}Ô¤²â´í({recieve1}:{recieve2})£¬»Ø¹ö");
+                        // ä¸€æ¬¡æ€§å›æ»šåˆ°æœ€æ—©å‘ç”Ÿé”™è¯¯çš„åœ°æ–¹ã€‚
+                        Debug.LogError($"{badTick}é¢„æµ‹é”™({recieve1}:{recieve2})ï¼Œå›æ»š");
                         Rollback(badTick - 1);
 
-                        //×·Ö¡µ½µ±Ç°äÖÈ¾Ö¡¡£
-                        Debug.Log($"<color=yellow>×·Ö¡£¬¸²¸Ç´íÎóµÄÔ¤²â: {badTick}~{rendTick}</color>");
+                        //è¿½å¸§åˆ°å½“å‰æ¸²æŸ“å¸§ã€‚
+                        Debug.Log($"<color=yellow>è¿½å¸§ï¼Œè¦†ç›–é”™è¯¯çš„é¢„æµ‹: {badTick}~{rendTick}</color>");
                         for (uint t = badTick; t <= rendTick; t++)
                         {
                             if (rendTick <= ggpo_recieve.Count)
@@ -159,52 +159,51 @@ namespace Code.Client
                             }
                             else
                             {
-                                //recv¼¯ºÏÖĞÊı¾İ²»¹»ÁË£¬¼ÌĞøÔ¤²â
+                                //recvé›†åˆä¸­æ•°æ®ä¸å¤Ÿäº†ï¼Œç»§ç»­é¢„æµ‹
                                 Predict(t);
                             }
                         }
 
-                        break; //Ìø³öÑ­»·
+                        break; //è·³å‡ºå¾ªç¯
                     }
                 }
             }
         }
 
-        // Ô¤²â
+        // é¢„æµ‹
         private void Predict(uint tick)
         {
             int remoteSeat = (mySeatId + 1) % 2;
 
-            uint lastRemoteInput = ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeat];
-            uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : lastRemoteInput;
+            uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeat];
             var _inputs = ggpo_predict[tick];
             _inputs[remoteSeat] = remoteInput;
-            //Debug.Log($"<color=blue>Ô¤²âµÚ{tick}Ö¡£¬Ô¶³Ì²Ù×÷ÊÇ{remoteInput}</color>");
+            //Debug.Log($"<color=blue>é¢„æµ‹ç¬¬{tick}å¸§ï¼Œè¿œç¨‹æ“ä½œæ˜¯{remoteInput}</color>");
 
-            //Ô¤²âÍê³Éºó£¬ÈÃ½ÇÉ«ÅÜÔ¤²âÖ¡¡£
+            //é¢„æµ‹å®Œæˆåï¼Œè®©è§’è‰²è·‘é¢„æµ‹å¸§ã€‚
             Process(tick, _inputs);
         }
-        // »Ø¹ö
+        // å›æ»š
         private void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
-            Debug.Log($"»Ø¹öµ½µÚ{tick}Ö¡×´Ì¬: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            Debug.Log($"å›æ»šåˆ°ç¬¬{tick}å¸§çŠ¶æ€: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
         }
-        // ×·Ö¡
-        private void Process(uint tick, uint[] inputs) //Ë«·½²Ù×÷
+        // è¿½å¸§
+        private void Process(uint tick, uint[] inputs) //åŒæ–¹æ“ä½œ
         {
             //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
             runner.OnFixedUpdate(inputs);
-            Debug.Log($"Ö´ĞĞÍêµÚ{tick}Ö¡Ö´ĞĞºó: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            Debug.Log($"æ‰§è¡Œå®Œç¬¬{tick}å¸§æ‰§è¡Œå: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
-        // ¿ìÕÕ
+        // å¿«ç…§
         private void Snapshot(uint tick)
         {
-            //Debug.Log($"¿ìÕÕ: {tick}");
+            //Debug.Log($"å¿«ç…§: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
 
@@ -212,7 +211,7 @@ namespace Code.Client
 
         private void OnTestPVE(INetSerializable reader)
         {
-            Debug.Log("[S2C] µ¥ÈË²âÊÔ");
+            Debug.Log("[S2C] å•äººæµ‹è¯•");
 
             mySeatId = 0;
 
@@ -224,7 +223,7 @@ namespace Code.Client
             //var packet = new S2C_JoinResultPacket();
             //packet.Deserialize(reader);
             var packet = (S2C_JoinResultPacket)reader;
-            Debug.Log($"[S2C] Ë«ÈË²âÊÔ: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
+            Debug.Log($"[S2C] åŒäººæµ‹è¯•: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
 
             if (packet.Code == 0)
             {
@@ -240,7 +239,7 @@ namespace Code.Client
 
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            Debug.Log($"<color=grey>---ÊÕµ½µÚ{server_tick}Ö¡</color>");
+            Debug.Log($"<color=grey>---æ”¶åˆ°ç¬¬{server_tick}å¸§</color>");
         }
 
         private void OnPause(INetSerializable reader)

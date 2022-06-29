@@ -1,8 +1,8 @@
-using Code.Shared;
+锘縰sing Code.Shared;
 
 namespace Code.Client
 {
-    /* 本地用户 */
+    /* 鏈湴鐢ㄦ埛 */
     [System.Serializable]
     public class ClientPlayer : BasePlayer
     {

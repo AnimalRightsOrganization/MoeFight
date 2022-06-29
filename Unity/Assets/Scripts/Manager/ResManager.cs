@@ -186,7 +186,7 @@ public class ResManager
         else
         {
             //Debug.Log($"新建：{key}");
-            obj = LoadPrefab(key);
+            obj = LoadPrefab($"Prefabs/{key}");
             GameObjectPool.Add(key, obj);
             return obj;
         }

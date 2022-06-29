@@ -1,16 +1,16 @@
-namespace Code.Client
+ï»¿namespace Code.Client
 {
-    // Ö»¹ÜÀí·¿¼äÄÚµÄ2¸öÍæ¼Ò
+    // åªç®¡ç†æˆ¿é—´å†…çš„2ä¸ªç©å®¶
     public class ClientPlayerManager
     {
         public ClientPlayerManager() { }
 
-        private ClientPlayer _localPlayer; //×Ô¼º
+        private ClientPlayer _localPlayer; //è‡ªå·±
         public ClientPlayer LocalPlayer => _localPlayer;
-        private ClientPlayer _rivalPlayer; //¶ÔÊÖ
+        private ClientPlayer _rivalPlayer; //å¯¹æ‰‹
         public ClientPlayer RivalPlayer => _rivalPlayer;
 
-        // ÖØÖÃ
+        // é‡ç½®
         public void Clear()
         {
             _localPlayer = null;
@@ -21,7 +21,7 @@ namespace Code.Client
             _rivalPlayer = null;
         }
 
-        // Ôö£¬µÇÂ¼³É¹¦£¬Æ¥Åä³É¹¦£¬µ÷ÓÃ
+        // å¢ï¼Œç™»å½•æˆåŠŸï¼ŒåŒ¹é…æˆåŠŸï¼Œè°ƒç”¨
         public void AddClientPlayer(ClientPlayer player, bool isSelf)
         {
             if (isSelf)

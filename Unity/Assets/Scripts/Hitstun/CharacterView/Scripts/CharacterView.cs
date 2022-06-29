@@ -40,7 +40,7 @@ public class CharacterView : MonoBehaviour
         projectileBoxView.spriteRenderer.color = new Color(1f, 0f, 0f, .5f);
         projectileBoxView.spriteRenderer.sortingLayerName = "HITBOX";
 
-        var prefab = ResManager.LoadPrefab("Aoi");
+        var prefab = ResManager.LoadPrefab("Prefabs/Aoi");
         model = Instantiate(prefab, transform).transform;
         model.name = "model";
         animator = model.GetComponentInChildren<Animator>();

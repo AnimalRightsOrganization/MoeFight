@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using System.Threading;
 
 namespace Code.Server
 {
@@ -352,7 +352,7 @@ namespace Code.Server
             {
                 m_WaitingPeers.Remove(player);
                 player.ResetToLobby();
-                UnityEngine.Debug.Log($"用户取消匹配，移除后排队人数为：{m_WaitingPeers.Count}");
+                UnityEngine.Debug.Log($"match cancel, waiting count={m_WaitingPeers.Count}");
             }
 
             var packet = new S2C_MatchResultPacket { Code = 1 };
@@ -511,7 +511,7 @@ namespace Code.Server
                 // 通知匹配成功
                 var serverRoom = m_RoomManager.CreateServerRoom(p1, p2);
                 short serverRoomID = (short)serverRoom.RoomID;
-                UnityEngine.Debug.Log($"match success, put {p1.PeerId}, {p1.PeerId} into Room#{serverRoomID}");
+                UnityEngine.Debug.Log($"match success, put {p1.PeerId}, {p2.PeerId} into Room#{serverRoomID}");
                 p1.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
                 p2.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
                 UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
