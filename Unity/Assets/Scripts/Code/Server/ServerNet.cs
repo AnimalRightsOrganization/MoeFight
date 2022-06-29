@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.Threading;
 
 namespace Code.Server
 {
@@ -25,6 +26,7 @@ namespace Code.Server
 
         public const int MaxPlayers = 64;
         public const int Port = 5000;
+        public const ushort TICK_RATE = 50;
         public const string Key = "ExampleGame";
 
         public NetManager _netManager;
@@ -35,7 +37,6 @@ namespace Code.Server
         public ushort Tick => _serverTick;
         private ushort _serverTick;
 
-        public List<ServerPlayer> m_WaitingPeers = new List<ServerPlayer>();
 
         #region Inner Method
         public async Task StartProgram()
@@ -64,6 +65,7 @@ namespace Code.Server
         public void Dispose()
         {
             _netManager.Stop();
+            CancelMatchTask();
         }
         #endregion
 
@@ -434,6 +436,128 @@ namespace Code.Server
             }
         }
 
+        #endregion
+
+
+        #region 服务器命令
+        public List<ServerPlayer> m_WaitingPeers = new List<ServerPlayer>(); private CancellationTokenSource tokenSource;
+        private void StartMatchTask()
+        {
+            tokenSource = new CancellationTokenSource();
+            CancellationToken token = tokenSource.Token;
+            ManualResetEvent resetEvent = new ManualResetEvent(true);
+            var matchLoop = new Task(async () => {
+                while (true)
+                {
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    // 初始化为true时执行WaitOne不阻塞
+                    resetEvent.WaitOne();
+
+                    // Doing something.......
+                    DoMatch();
+
+                    // 模拟等待3000ms
+                    await Task.Delay(3000);
+                }
+            }, token);
+            matchLoop.Start();
+        }
+        private void CancelMatchTask()
+        {
+            tokenSource?.Cancel();
+        }
+        private void DoMatch()
+        {
+            lock (m_WaitingPeers)
+            {
+                //UnityEngine.Debug.Log($"执行一次匹配，等待人数={m_WaitingPeers.Count}");
+                if (m_WaitingPeers.Count <= 1)
+                {
+                    //UnityEngine.Debug.LogError("匹配人数不足");
+                    return;
+                }
+                ServerPlayer p1 = m_WaitingPeers[0];
+                ServerPlayer p2 = m_WaitingPeers[1];
+
+                // 通知匹配成功
+                var serverRoom = m_RoomManager.CreateServerRoom(p1, p2);
+                short serverRoomID = (short)serverRoom.RoomID;
+                UnityEngine.Debug.Log($"p1, p2放进房间{serverRoomID}");
+                p1.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
+                p2.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
+                UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
+                UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
+                var packet = new S2C_MatchResultPacket { Code = 0, RoomId = serverRoomID, Host = hostPlayer, Guest = guestPlayer };
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+
+                m_WaitingPeers.Remove(p1);
+                m_WaitingPeers.Remove(p2);
+                UnityEngine.Debug.Log($"发送完成，列表中剩下：{m_WaitingPeers.Count}");
+
+                string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                int randSeed = System.Guid.NewGuid().GetHashCode();
+                serverRoom.BattleID = $"{timeStr}_{hostPlayer.PeerId}_{guestPlayer.PeerId}";
+                serverRoom.Seed = randSeed;
+                serverRoom.MapId = 0; //来自客户端
+                serverRoom.BattleMode = BattleMode.Matching;
+            }
+        }
+
+        public bool StartServer()
+        {
+            if (_netManager.IsRunning)
+            {
+                UnityEngine.Debug.LogError("服务器已经启动");
+                return false;
+            }
+            bool result = _netManager.Start(Port);
+            if (result == false)
+            {
+                UnityEngine.Debug.LogError("服务器启动失败，请检查端口");
+                return false;
+            }
+            // 设置参数
+            _netManager.BroadcastReceiveEnabled = true;
+            _netManager.UpdateTime = TICK_RATE; //library logic update (and send) period in milliseconds
+            UnityEngine.Debug.Log($"服务器参数：帧率={_netManager.UpdateTime}帧");
+
+            StartMatchTask();
+            return true;
+        }
+        public void StopServer()
+        {
+            _netManager.Stop();
+            CancelMatchTask();
+            m_RoomManager.RemoveAll();
+            m_PlayerManager.RemoveAll();
+            UnityEngine.Debug.LogError("服务器已经停止");
+        }
+
+        // 大厅内广播
+        public void BroadcastToLobby(NetDataWriter writer, DeliveryMethod method)
+        {
+            ServerPlayer[] array = m_PlayerManager.GetPlayersByLobby();
+            for (int i = 0; i < array.Length; i++)
+            {
+                NetPeer peer = _netManager.GetPeerById(array[i].PeerId);
+                peer?.Send(writer, method);
+            }
+        }
+        // 房间内广播
+        public void BroadcastToRoom(int roomId, NetDataWriter writer, DeliveryMethod method)
+        {
+            ServerRoom serverRoom = m_RoomManager.GetServerRoom(roomId);
+            var players = serverRoom.m_PlayerList; //直接从内存取
+            for (int i = 0; i < players.Length; i++)
+            {
+                short peedId = players[i].PeerId;
+                _netManager.GetPeerById(peedId).Send(writer, method);
+            }
+        }
         #endregion
     }
 }

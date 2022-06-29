@@ -219,17 +219,14 @@ namespace Code.Client
 
         public void SendLogout()
         {
+            Debug.Log($"[C] 登出请求");
             var cmd = new EmptyPacket();
             SendPacketSerializable(PacketType.C2S_LogoutReq, cmd);
-            //Debug.Log($"[C] 登出请求");
         }
 
         public void SendGetUserInfo(short peerId)
         {
-            C2S_GetUserInfoPacket cmd = new C2S_GetUserInfoPacket
-            {
-                PeerId = peerId
-            };
+            var cmd = new C2S_GetUserInfoPacket { PeerId = peerId };
             SendPacketSerializable(PacketType.C2S_UserInfo, cmd);
         }
 
@@ -241,8 +238,7 @@ namespace Code.Client
         public void SendMatchRequest()
         {
             Debug.Log($"[C] 请求匹配");
-            EmptyPacket cmd = new EmptyPacket();
-            SendPacketSerializable(PacketType.C2S_MatchRequest, cmd);
+            SendPacketSerializable(PacketType.C2S_MatchRequest, new EmptyPacket());
 
             m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.Matching);
             UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
@@ -251,18 +247,31 @@ namespace Code.Client
         public void SendMatchCancel()
         {
             Debug.Log($"[C] 取消匹配");
-            EmptyPacket cmd = new EmptyPacket();
-            SendPacketSerializable(PacketType.C2S_MatchCancel, cmd);
+            SendPacketSerializable(PacketType.C2S_MatchCancel, new EmptyPacket());
         }
 
-        public void SendSelection(int id) { }
+        public void SendSelection(int id)
+        {
+            if (m_PlayerManager.LocalPlayer.Status == PlayerStatus.AtRoomReady ||
+                m_PlayerManager.LocalPlayer.Status == PlayerStatus.AtBattle)
+            {
+                Debug.LogError("准备好了，不能再选择");
+                return;
+            }
+            Debug.Log($"[C] 我({m_PlayerManager.LocalPlayer.Status})，选择角色: {id}");
+            C2S_RoleSelectPacket cmd = new C2S_RoleSelectPacket { Index = (byte)id };
+            SendPacketSerializable(PacketType.C2S_RoleSelect, cmd);
+        }
 
         public void SendMatchQuit()
         {
             SendPacketSerializable(PacketType.C2S_MatchQuit, new EmptyPacket());
         }
 
-        public void SendGameReady() { }
+        public void SendGameReady()
+        {
+            SendPacketSerializable(PacketType.C2S_GameReady, new EmptyPacket());
+        }
 
         #endregion
     }

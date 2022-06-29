@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using Code.Shared;
 using Code.Client;
-using HotFix;
 
 namespace HotFix
 {
@@ -72,7 +69,6 @@ namespace HotFix
             //UI跳转到登录，关闭本页面
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_Login>();
-            //this.Pop();
         }
 
         #endregion
@@ -94,7 +90,7 @@ namespace HotFix
             }
             ClientNet.Get.SendMatchRequest();
             UIManager.Get().Push<UI_Matching>(2);
-            //localPlayer.SetStatus(PlayerStatus.Matching);
+            localPlayer.SetStatus(PlayerStatus.Matching);
         }
 
         void OnTrainingButtonClick()
@@ -110,12 +106,12 @@ namespace HotFix
 
         void OnSettingsButtonClick()
         {
-            //UIManager.Get().Push<UI_Settings>();
+            UIManager.Get().Push<UI_Settings>();
         }
 
         void OnExitButtonClick()
         {
-            //Client.GetInstance().SendLogout();
+            ClientNet.Get.SendLogout();
             return;
 
             Debug.Log("Exit");
@@ -123,7 +119,7 @@ namespace HotFix
             UnityEditor.EditorApplication.isPlaying = false;
             //UnityEditor.EditorApplication.isPaused = true; //编辑器暂停
 #else
-        Application.Quit();
+            Application.Quit();
 #endif
         }
 
