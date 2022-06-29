@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
+
     public void LoadScene(string sceneName)
     {
         StartCoroutine(AO(sceneName));
@@ -59,5 +60,40 @@ public class GameManager : MonoBehaviour
         AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
         yield return ao;
         ao.allowSceneActivation = true;
+    }
+
+
+    public void LoadScene(string sceneName, float delay = 0, System.Action action = null)
+    {
+        StartCoroutine(LoadSceneAsync(sceneName, delay, action));
+    }
+    IEnumerator LoadSceneAsync(string sceneName, float delay = 0, System.Action action = null)
+    {
+        yield return new WaitForSeconds(delay);
+        var asyncOperation = SceneManager.LoadSceneAsync(sceneName);
+        asyncOperation.allowSceneActivation = false;
+        yield return asyncOperation.isDone;
+        yield return new WaitForSeconds(1);
+        {
+            action?.Invoke();
+        }
+        asyncOperation.allowSceneActivation = true;
+    }
+
+
+    public void LoadBattle(float delay = 0, System.Action action = null)
+    {
+        StartCoroutine(LoadBattleAsync(delay, action));
+    }
+    IEnumerator LoadBattleAsync(float delay = 0, System.Action action = null)
+    {
+        yield return new WaitForSeconds(delay);
+        var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
+        UnityEngine.Object.Instantiate(asset);
+        //HotFix.UIManager.Get().PopAll();
+        yield return new WaitForSeconds(1);
+        {
+            action?.Invoke();
+        }
     }
 }

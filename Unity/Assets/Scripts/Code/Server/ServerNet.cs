@@ -506,7 +506,7 @@ namespace Code.Server
             // 解析客户端消息
             var cmd = new C2S_BattleStartPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] {player.ToString()}准备战斗，阶段：{cmd.Stage}");
+            UnityEngine.Debug.Log($"[S] {player.ToString()} start battle, Stage={cmd.Stage}");
 
             // 更新统计
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(player.RoomId);
@@ -542,7 +542,7 @@ namespace Code.Server
             {
                 var packet = new S2C_BattleStartPacket { Stage = 2 };
                 BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet), DeliveryMethod.ReliableOrdered);
-                UnityEngine.Debug.Log($"<color=red>服务器下发比赛恢复</color>");
+                UnityEngine.Debug.Log($"<color=red>server resume battle</color>");
             }
             else
             {
@@ -555,7 +555,7 @@ namespace Code.Server
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
 
-            UnityEngine.Debug.Log($"<color=red>[S] 房间#{player.RoomId}中的{player.ToString()}请求暂停</color>");
+            UnityEngine.Debug.Log($"<color=red>[S] {player.ToString()}@Room#{player.RoomId} command pause</color>");
 
             var serverRoom = m_RoomManager.GetServerRoom(player.RoomId);
 
@@ -567,7 +567,7 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] 房间#{player.RoomId}，{player.ToString()}请求退出比赛");
+            UnityEngine.Debug.Log($"[S] {player.ToString()} quit battle");
 
             // 结算比赛，返回结算结果（主动退出者判负）
             //TODO: 一方掉线后，另一方在超时时间内强退，一样判输。但是要出提示。
@@ -595,7 +595,7 @@ namespace Code.Server
             // 解析客户端消息
             var cmd = new C2S_BattleEndPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] {player.ToString()}上报赛果：主{cmd.HostHP}，客{cmd.GuestHP}，剩余{cmd.TimeLeft}s");
+            UnityEngine.Debug.Log($"[S] {player.ToString()}battle end, host:{cmd.HostHP} vs guest:{cmd.GuestHP}, time left:{cmd.TimeLeft}s");
 
             short serverRoomId = (short)player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomId);

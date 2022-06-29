@@ -160,7 +160,7 @@ namespace HotFix
         private void OnGameReady(INetSerializable reader)
         {
             var packet = (S2C_GameReadyPacket)reader;
-            Debug.Log($"[C] 准备回调, 座位1:{(PlayerStatus)packet.HostStatus}, 座位2:{(PlayerStatus)packet.GuestStatus}");
+            Debug.Log($"[C] OnGameReady, 座位1:{(PlayerStatus)packet.HostStatus}, 座位2:{(PlayerStatus)packet.GuestStatus}");
 
             var hostStatus = (PlayerStatus)packet.HostStatus;
             var guestStatus = (PlayerStatus)packet.GuestStatus;
@@ -195,7 +195,7 @@ namespace HotFix
                 //UIManager.Get().Push<UI_GameMenu>();
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
-            //ConfigManager.Get().LoadScene("Game", 2, action);
+            GameManager.Get.LoadBattle(2, action);
         }
 
         #endregion
