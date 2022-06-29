@@ -3,15 +3,13 @@ using LiteNetLib;
 
 namespace Code.Server
 {
+    /* ‘∂≥Ã”√ªß */
     public class ServerPlayer : BasePlayer
     {
-        private readonly ServerPlayerManager _playerManager;
         public readonly NetPeer AssociatedPeer;
-        public ushort LastProcessedCommandId { get; private set; }
 
-        public ServerPlayer(ServerPlayerManager playerManager, string name, NetPeer peer) : base(playerManager, name, (byte)peer.Id)
+        public ServerPlayer(string name, NetPeer peer) : base(name, peer.Id)
         {
-            _playerManager = playerManager;
             peer.Tag = this;
             AssociatedPeer = peer;
         }

@@ -74,6 +74,32 @@ namespace Code.Shared
         S2C_LackFrames      ,   //丢失帧
     }
 
+    public enum BattleStage
+    {
+        Ready       = 0, //准备
+        Running     = 1, //游戏
+        Pause       = 2, //暂停
+        End         = 3, //结束
+        Process     = 4, //追帧
+        LostNet     = 5, //掉线
+        Replaying   = 6, //回放中
+        ReplayPause = 7, //回放暂停
+    }
+    public enum BattleMode
+    {
+        Editor      = 0, //编辑器调试
+        Matching    = 1, //匹配
+        Replay      = 2, //回放
+        Training    = 3, //训练
+        Arcade      = 4, //剧情（人机）
+    }
+    public enum BattleResult
+    {
+        Lose        = 0,
+        Draw        = 1,
+        Win         = 2,
+    }
+
     #region 公用
     public struct EmptyPacket : INetSerializable
     {
@@ -179,6 +205,52 @@ namespace Code.Shared
             Password = reader.GetString();
         }
     }
+
+    // 请求用户信息
+    public struct C2S_GetUserInfoPacket : INetSerializable
+    {
+        public short PeerId;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(PeerId);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            PeerId = reader.GetShort();
+        }
+    }
+
+    // 选择角色
+    public struct C2S_RoleSelectPacket : INetSerializable
+    {
+        public byte Index;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Index);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Index = reader.GetByte();
+        }
+    }
+
+    // 准备请求
+    public struct C2S_GameReadyPacket : INetSerializable
+    {
+        public bool IsReady;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(IsReady);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            IsReady = reader.GetBool();
+        }
+    }
+
     #endregion
 
     #region 下行
@@ -258,6 +330,46 @@ namespace Code.Shared
         }
     }
 
+    public struct S2C_GetRoomPacket : INetSerializable
+    {
+        public short RoomId;       // 房间ID
+        public short[] Peers;    // 座位上的玩家PeerID
+
+        public const int Size = 2 + 2 * 2;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(RoomId);
+
+            if (Peers == null)
+                Peers = new short[2] { -1, -1 };
+
+            for (int i = 0; i < 2; i++)
+            {
+                writer.Put(Peers[i]);
+            }
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            RoomId = reader.GetShort();
+
+            if (Peers == null)
+                Peers = new short[2] { -1, -1 }; //注意点：嵌套结构体，内层数组默认是Null，要初始化一下！！
+
+            for (int i = 0; i < 2; i++)
+            {
+                var t = reader.GetShort();
+                Peers[i] = t;
+            }
+        }
+
+        public override string ToString()
+        {
+            string str = $"房间#{RoomId}, [主位]={Peers[0]}, [客位]={Peers[1]}";
+            return str;
+        }
+    }
+
     // 登录结果
     public struct S2C_LoginResultPacket : INetSerializable
     {
@@ -281,6 +393,106 @@ namespace Code.Shared
             NickName = reader.GetString();
         }
     }
+
+    // 下发用户信息
+    public struct S2C_GetUserInfoPacket : INetSerializable
+    {
+        public short PeerId;
+        public string UserName;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(PeerId);
+            writer.Put(UserName);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            PeerId = reader.GetShort();
+            UserName = reader.GetString();
+        }
+    }
+
+    // 请求匹配回包
+    public struct UserInfo : INetSerializable
+    {
+        public short PeerId;
+        public string UserName;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(PeerId);
+            writer.Put(UserName);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            PeerId = reader.GetShort();
+            UserName = reader.GetString();
+        }
+    }
+    public struct S2C_MatchResultPacket : INetSerializable
+    {
+        public byte Code; //结果码：匹配成功(0)，取消(1)，退出(2)
+        public short RoomId; //房间ID
+        public UserInfo Host;
+        public UserInfo Guest;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Code);
+            writer.Put(RoomId);
+            Host.Serialize(writer);
+            Guest.Serialize(writer);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Code = reader.GetByte();
+            RoomId = reader.GetShort();
+            Host.Deserialize(reader);
+            Guest.Deserialize(reader);
+        }
+
+        public override string ToString()
+        {
+            string str = $"匹配结果：{Code}，房间：{RoomId}, 主位：{Host.UserName}, 客位：{Guest.UserName}";
+            return str;
+        }
+    }
+
+    // 选择角色回包
+    public struct S2C_RoleSelectPacket : INetSerializable
+    {
+        public byte SeatId;     //操作者
+        public byte RoleIndex;  //选择的角色
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(SeatId);
+            writer.Put(RoleIndex);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            SeatId = reader.GetByte();
+            RoleIndex = reader.GetByte();
+        }
+    }
+
+    public struct S2C_GameReadyPacket : INetSerializable
+    {
+        public byte HostStatus; //主位状态
+        public byte GuestStatus; //客位状态
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(HostStatus);
+            writer.Put(GuestStatus);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            HostStatus = reader.GetByte();
+            GuestStatus = reader.GetByte();
+        }
+    }
+
     #endregion
 
     #region 帧同步

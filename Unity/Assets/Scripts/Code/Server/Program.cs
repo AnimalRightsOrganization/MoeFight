@@ -19,7 +19,7 @@ namespace Rollback
         {
             try
             {
-                using (server = new ServerNet())
+                using (server = ServerNet.Get)
                 {
                     Debug.Log($"StartServer, listen on {ServerNet.Port}");
                     await server.StartProgram();

@@ -12,10 +12,21 @@ namespace Code.Server
 {
     public class ServerNet : INetEventListener, IDisposable
     {
+        static ServerNet _get;
+        public static ServerNet Get
+        {
+            get
+            {
+                if (_get == null)
+                    _get = new ServerNet();
+                return _get;
+            }
+        }
+
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
-        private NetManager _netManager;
+        public NetManager _netManager;
         private readonly NetDataWriter _cachedWriter = new NetDataWriter();
 
         public const int MaxPlayers = 64;
@@ -27,7 +38,7 @@ namespace Code.Server
         #region Inner Method
         public async Task StartProgram()
         {
-            _playerManager = new ServerPlayerManager(this);
+            _playerManager = new ServerPlayerManager();
             _netManager = new NetManager(this)
             {
                 AutoRecycle = true
@@ -75,8 +86,8 @@ namespace Code.Server
 
             if (peer.Tag != null)
             {
-                byte playerId = (byte)peer.Id;
-                if (_playerManager.RemovePlayer(playerId))
+                //byte playerId = (byte)peer.Id;
+                if (_playerManager.RemovePlayer(peer.Id))
                 {
                     //var plp = new PlayerLeavedPacket { Id = (byte)peer.Id };
                     //_netManager.SendToAll(WritePacket(plp), DeliveryMethod.ReliableOrdered);
@@ -141,10 +152,10 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.TestPVE] {peer.Id}: {cmd.UserName}");
 
-            var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
+            var serverPlayer = new ServerPlayer(cmd.UserName, peer);
             _playerManager.AddPlayer(serverPlayer);
 
-            var host = _playerManager.GetPlayer(0);
+            var host = _playerManager.GetPlayerByPeerId(0);
             var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.PeerId, HostName = host.UserName, GuestId = 0, GuestName = "" };
             peer.Send(WriteSerializable(PacketType.S2C_TestPVE, packet), DeliveryMethod.ReliableOrdered);
         }
@@ -155,20 +166,20 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.TestPVP] {peer.Id}: {cmd.UserName}");
 
-            var serverPlayer = new ServerPlayer(_playerManager, cmd.UserName, peer);
+            var serverPlayer = new ServerPlayer(cmd.UserName, peer);
             _playerManager.AddPlayer(serverPlayer);
 
 
             if (_playerManager.Count == 2)
             {
-                var host = _playerManager.GetPlayer(0);
-                var guest = _playerManager.GetPlayer(1);
+                var host = _playerManager.GetPlayerByPeerId(0);
+                var guest = _playerManager.GetPlayerByPeerId(1);
 
                 for (int i = 0; i < _playerManager.Count; i++)
                 {
                     var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.PeerId, HostName = host.UserName, GuestId = guest.PeerId, GuestName = guest.UserName };
 
-                    var sp = _playerManager.GetPlayer(i);
+                    var sp = _playerManager.GetPlayerByPeerId((short)i);
                     //UnityEngine.Debug.Log($"send to: {sp.Id}---{sp.Name}");
                     sp.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_TestPVP, packet), DeliveryMethod.ReliableOrdered);
                 }
@@ -231,7 +242,7 @@ namespace Code.Server
 
             #region 登录逻辑
             // 新建玩家对象
-            var player = new ServerPlayer(_playerManager, cmd.UserName, peer);
+            var player = new ServerPlayer(cmd.UserName, peer);
             _playerManager.AddPlayer(player);
 
             // 第一个包，登录许可

@@ -1,17 +1,13 @@
 using Code.Shared;
-using UnityEngine;
 
 namespace Code.Client
 {
+    /* 本地用户 */
+    [System.Serializable]
     public class ClientPlayer : BasePlayer
     {
-        private readonly ClientNet _clientLogic;
-        private readonly ClientPlayerManager _playerManager;
+        public ClientPlayer(string name, short peerId) : base(name, peerId) { }
 
-        public ClientPlayer(ClientNet clientLogic, ClientPlayerManager manager, string name, byte id) : base(manager, name, id)
-        {
-            _playerManager = manager;
-            _clientLogic = clientLogic;
-        }
+        public Settings m_Settings;
     }
 }

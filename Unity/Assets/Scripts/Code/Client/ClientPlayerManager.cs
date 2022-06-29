@@ -1,69 +1,35 @@
-using System.Collections.Generic;
-using Code.Shared;
-using UnityEngine;
-
 namespace Code.Client
 {
-    public struct PlayerHandler
+    // 只管理房间内的2个玩家
+    public class ClientPlayerManager
     {
-        public readonly BasePlayer Player;
+        public ClientPlayerManager() { }
 
-        public PlayerHandler(BasePlayer player)
-        {
-            Player = player;
-        }
-    }
+        private ClientPlayer _localPlayer; //自己
+        public ClientPlayer LocalPlayer => _localPlayer;
+        private ClientPlayer _rivalPlayer; //对手
+        public ClientPlayer RivalPlayer => _rivalPlayer;
 
-    public class ClientPlayerManager : BasePlayerManager
-    {
-        private readonly Dictionary<byte, PlayerHandler> _players;
-        private readonly ClientNet _clientLogic;
-        private ClientPlayer _clientPlayer;
-
-        public ClientPlayer OurPlayer => _clientPlayer;
-        public override int Count => _players.Count;
-
-        public ClientPlayerManager(ClientNet clientLogic)
-        {
-            _clientLogic = clientLogic;
-            _players = new Dictionary<byte, PlayerHandler>();
-        }
-        
-        public override IEnumerator<BasePlayer> GetEnumerator()
-        {
-            foreach (var ph in _players)
-                yield return ph.Value.Player;
-        }
-
-        public BasePlayer GetById(byte id)
-        {
-            return _players.TryGetValue(id, out var ph) ? ph.Player : null;
-        }
-
-        public BasePlayer RemovePlayer(byte id)
-        {
-            if (_players.TryGetValue(id, out var handler))
-            {
-                _players.Remove(id);
-            }
-        
-            return handler.Player;
-        }
-
-        public override void LogicUpdate()
-        {
-            //foreach (var kv in _players)
-            //    kv.Value.Update(LogicTimer.FixedDelta);
-        }
-
-        public void AddClientPlayer(ClientPlayer player)
-        {
-            _clientPlayer = player;
-        }
-        
+        // 重置
         public void Clear()
         {
-            _players.Clear();
+            _localPlayer = null;
+            _rivalPlayer = null;
+        }
+        public void ResetRival()
+        {
+            _rivalPlayer = null;
+        }
+
+        // 增，登录成功，匹配成功，调用
+        public void AddClientPlayer(ClientPlayer player, bool isSelf)
+        {
+            if (isSelf)
+                _localPlayer = player;
+            else
+                _rivalPlayer = player;
+
+            player.ResetToLobby();
         }
     }
 }

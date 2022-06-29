@@ -3,76 +3,57 @@ using Code.Shared;
 
 namespace Code.Server
 {
-    public class ServerPlayerManager : BasePlayerManager
+    public class ServerPlayerManager
     {
-        private readonly ServerPlayer[] _players;
-
-        private int _playersCount;
-
-        public override int Count => _playersCount;
-
-        public ServerPlayerManager(ServerNet serverLogic)
+        public ServerPlayerManager()
         {
-            _players = new ServerPlayer[ServerNet.MaxPlayers];
+            playerList = new List<ServerPlayer>();
         }
 
-        public override IEnumerator<BasePlayer> GetEnumerator()
-        {
-            int i = 0;
-            while (i < _playersCount)
-            {
-                yield return _players[i];
-                i++;
-            }
-        }
+        private List<ServerPlayer> playerList;
+        public int Count => playerList.Count;
 
+        // 登录成功
         public void AddPlayer(ServerPlayer player)
         {
-            for (int i = 0; i < _playersCount; i++)
-            {
-                if (_players[i].PeerId == player.PeerId)
-                {
-                    _players[i] = player;
-                    return;
-                }
-            }
-
-            _players[_playersCount] = player;
-            _playersCount++;
+            playerList.Add(player);
+            player.ResetToLobby();
         }
-
-        public override void LogicUpdate()
+        // 登出/断线/踢人
+        public bool RemovePlayer(int peerId)
         {
-            for (int i = 0; i < _playersCount; i++)
+            var player = playerList.Find(x => x.PeerId == peerId);
+            if (player == null) 
+                return false;
+
+            playerList.Remove(player);
+            return true;
+        }
+        // 关服
+        public void RemoveAll()
+        {
+            for (int i = playerList.Count - 1; i >= 0; i--)
             {
-                var p = _players[i];
-                //p.Update(LogicTimer.FixedDelta);
+                playerList[i] = null;
+                playerList.RemoveAt(i);
             }
         }
 
-        public bool RemovePlayer(byte playerId)
+        // 获取指定玩家
+        public ServerPlayer GetPlayerByPeerId(short peerId)
         {
-            for (int i = 0; i < _playersCount; i++)
-            {
-                if (_players[i].PeerId == playerId)
-                {
-                    _playersCount--;
-                    _players[i] = _players[_playersCount];
-                    _players[_playersCount] = null;
-                    return true;
-                }
-            }
-            return false;
+            var player = playerList.Find(x => x.PeerId == peerId);
+            return player;
         }
-
-        public ServerPlayer GetPlayer(int playerId)
-        {
-            return _players[playerId];
-        }
-
+        // 获取所有玩家
         public ServerPlayer[] GetPlayersAll()
         {
-            return _players;
+            return playerList.ToArray();
+        }
+        // 获取大厅内玩家
+        public ServerPlayer[] GetPlayersByLobby()
+        {
+            return playerList.FindAll(x => x.Status == PlayerStatus.AtLobby).ToArray();
         }
     }
 }

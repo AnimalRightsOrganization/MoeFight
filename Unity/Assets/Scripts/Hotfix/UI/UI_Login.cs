@@ -69,7 +69,6 @@ namespace HotFix
 
         public void OnLoginResult(INetSerializable reader)
         {
-            /*
             var packet = (S2C_LoginResultPacket)reader;
             switch (packet.Code)
             {
@@ -80,7 +79,6 @@ namespace HotFix
                         ClientNet.Get.m_PlayerManager.AddClientPlayer(clientPlayer, true);
 
                         // 弹出大厅页，关闭本页面
-                        UIManager.Get().Push<UI_Topbar>();
                         UIManager.Get().Push<UI_Lobby>();
                         this.Pop();
                     }
@@ -92,7 +90,7 @@ namespace HotFix
                         toast.Show("登录失败");
                     }
                     break;
-            }*/
+            }
         }
 
         #endregion

@@ -31,7 +31,7 @@ namespace Code.Client
         private NetDataWriter _writer;
 
         private Action<DisconnectInfo> _onDisconnected;
-        private ClientPlayerManager _playerManager;
+        public ClientPlayerManager m_PlayerManager;
         public int _ping;
         public string myName;
 
@@ -42,7 +42,7 @@ namespace Code.Client
             DontDestroyOnLoad(gameObject);
 
             _writer = new NetDataWriter();
-            _playerManager = new ClientPlayerManager(this);
+            m_PlayerManager = new ClientPlayerManager();
             _netManager = new NetManager(this)
             {
                 AutoRecycle = true,
@@ -82,7 +82,7 @@ namespace Code.Client
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            _playerManager.Clear();
+            m_PlayerManager.Clear();
             _server = null;
 
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
@@ -127,6 +127,13 @@ namespace Code.Client
                 case PacketType.S2C_Lockstep:
                     {
                         var packet = new S2C_InputPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_LoginResult:
+                    {
+                        var packet = new S2C_LoginResultPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }
@@ -202,6 +209,38 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
             Debug.Log($"[C] 登录请求：用户名={cmd.UserName}，密码={cmd.Password}");
         }
+
+        public void SendLogout()
+        {
+            var cmd = new EmptyPacket();
+            SendPacketSerializable(PacketType.C2S_LogoutReq, cmd);
+            //Debug.Log($"[C] 登出请求");
+        }
+
+        public void SendGetUserInfo(short peerId)
+        {
+            C2S_GetUserInfoPacket cmd = new C2S_GetUserInfoPacket
+            {
+                PeerId = peerId
+            };
+            SendPacketSerializable(PacketType.C2S_UserInfo, cmd);
+        }
+
+        public void SendSettins(Settings cmd)
+        {
+            SendPacketSerializable(PacketType.C2S_Settings, cmd);
+        }
+        
+        public void SendMatchCancel() { }
+
+        public void SendSelection(int id) { }
+
+        public void SendMatchQuit()
+        {
+            SendPacketSerializable(PacketType.C2S_MatchQuit, new EmptyPacket());
+        }
+
+        public void SendGameReady() { }
 
         #endregion
     }
