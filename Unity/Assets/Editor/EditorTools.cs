@@ -18,10 +18,16 @@ public class TestWindow : EditorWindow
     
     void OnGUI()
     {
-        if (GUILayout.Button("登录.自动填写"))
+        if (GUILayout.Button("登录.自动填写.test1"))
         {
             var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
             login.m_UserNameField.text = "test1";
+            login.m_PasswordField.text = "123456";
+        }
+        if (GUILayout.Button("登录.自动填写.test2"))
+        {
+            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
+            login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
         }
     }

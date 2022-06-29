@@ -145,7 +145,7 @@ namespace HotFix
 
         private void OnMatchResult(INetSerializable reader)
         {
-            S2C_MatchResultPacket packet = (S2C_MatchResultPacket)reader;
+            var packet = (S2C_MatchResultPacket)reader;
             Debug.Log($"[UI_RoleSelect] {packet.ToString()}");
 
             if (packet.Code == 2) //匹配后退出

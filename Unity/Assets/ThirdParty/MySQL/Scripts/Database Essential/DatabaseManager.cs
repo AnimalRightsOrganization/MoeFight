@@ -15,17 +15,17 @@ namespace DatabaseEssential
         /// <returns></returns>
         public static bool Initialize()
         {
-            ServerConfiguration serverConfiguration = new ServerConfiguration
+            var config = new SQLConfiguration
             {
                 host = "localhost",
                 database = "db_user",
                 user = "seol",
                 password = "123456",
             };
-            string connectionString = $"Server={serverConfiguration.host};" +
-                $"Database={serverConfiguration.database};" +
-                $"User={serverConfiguration.user};" +
-                $"password={serverConfiguration.password};";
+            string connectionString = $"Server={config.host};" +
+                $"Database={config.database};" +
+                $"User={config.user};" +
+                $"password={config.password};";
 
             // Connect to Server using the connectionString and return true means connection stabled
             try
@@ -46,6 +46,9 @@ namespace DatabaseEssential
                         break;
                     case 1045:
                         Console.WriteLine("Invalid username/password, please try again.");
+                        break;
+                    default:
+                        UnityEngine.Debug.Log($"err: {e.Number}");
                         break;
                 }
                 return false;

@@ -26,7 +26,7 @@ namespace Code.Server
 
         public const int MaxPlayers = 64;
         public const int Port = 5000;
-        public const ushort TICK_RATE = 50;
+        public const ushort TICK_RATE = 10;
         public const string Key = "ExampleGame";
 
         public NetManager _netManager;
@@ -34,21 +34,13 @@ namespace Code.Server
 
         public ServerRoomManager m_RoomManager;
         public ServerPlayerManager m_PlayerManager;
-        public ushort Tick => _serverTick;
-        private ushort _serverTick;
 
 
         #region Inner Method
         public async Task StartProgram()
         {
-            m_PlayerManager = new ServerPlayerManager();
-            _netManager = new NetManager(this)
-            {
-                AutoRecycle = true
-            };
-            _netManager.Start(Port);
-
-            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
+            bool result = StartServer();
+            if (!result) return;
 
             while (true)
             {
@@ -56,16 +48,48 @@ namespace Code.Server
                 await Task.Delay(15);
             }
         }
-
-        public void Update()
+        public void Dispose()
         {
-            _netManager.PollEvents();
+            StopServer();
         }
 
-        public void Dispose()
+        protected bool StartServer()
+        {
+            if (_netManager != null && _netManager.IsRunning)
+            {
+                UnityEngine.Debug.LogError("服务器已经启动");
+                return false;
+            }
+
+            m_RoomManager = new ServerRoomManager();
+            m_PlayerManager = new ServerPlayerManager();
+            m_WaitingPeers = new List<ServerPlayer>();
+            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
+
+            _netManager = new NetManager(this);
+            _netManager.AutoRecycle = true;
+
+            bool result = _netManager.Start(Port);
+            if (result == false)
+            {
+                UnityEngine.Debug.LogError("服务器启动失败，请检查端口");
+                return false;
+            }
+
+            StartMatchTask();
+            return true;
+        }
+        protected void StopServer()
         {
             _netManager.Stop();
             CancelMatchTask();
+            m_RoomManager.RemoveAll();
+            m_PlayerManager.RemoveAll();
+            UnityEngine.Debug.LogError("服务器已经停止");
+        }
+        protected void Update()
+        {
+            _netManager.PollEvents();
         }
         #endregion
 
@@ -238,7 +262,7 @@ namespace Code.Server
 
         private void OnLoginReceived(NetPacketReader reader, NetPeer peer)
         {
-            C2S_LoginPacket cmd = new C2S_LoginPacket();
+            var cmd = new C2S_LoginPacket();
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"<color=green>[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}</color>");
 
@@ -307,7 +331,7 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] Match Request received: [{peer.Id}]{player.UserName}</color>");
+            UnityEngine.Debug.Log($"[S] Match Request received: [{peer.Id}]{player.UserName}");
 
             // 加入列表。
             lock (m_WaitingPeers)
@@ -339,14 +363,14 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] OnMatchQuitReceived: {player.UserName}，房间：{player.RoomId}");
+            UnityEngine.Debug.Log($"[S] OnMatchQuitReceived: [{peer.Id}]{player.UserName}@Room#{player.RoomId}");
 
             // 通知房间内的另一个人，并移除列表。
             short serverRoomId = (short)player.RoomId;
             var serverRoom = m_RoomManager.GetServerRoom(serverRoomId);
             var otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
             var packet = new S2C_MatchResultPacket { Code = 2, RoomId = serverRoomId };
-            //BroadcastToRoom(serverRoomId, WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(serverRoomId, WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
 
             lock (m_WaitingPeers)
             {
@@ -381,7 +405,7 @@ namespace Code.Server
                 serverRoom.guestPlayer.RoleIndex = cmd.Index;
 
             var packet = new S2C_RoleSelectPacket { SeatId = (byte)player.SeatId, RoleIndex = cmd.Index };
-            //BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_RoleSelect, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_RoleSelect, packet), DeliveryMethod.ReliableOrdered);
         }
 
         private void OnGameReadyReceived(NetPacketReader reader, NetPeer peer)
@@ -389,7 +413,7 @@ namespace Code.Server
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
             player.SetStatus(PlayerStatus.AtRoomReady);
-            UnityEngine.Debug.Log($"[S] {player.ToString()}，准备好了");
+            UnityEngine.Debug.Log($"[S] {player.ToString()} is Ready");
 
             short serverRoomID = (short)player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
@@ -405,14 +429,14 @@ namespace Code.Server
                 UnityEngine.Debug.Log("111---一个人准备好了，房间内广播。");
                 // 一个人准备好了，房间内广播。
                 var packet = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
-                //BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet), DeliveryMethod.ReliableOrdered);
             }
             else if (player.Status == PlayerStatus.AtRoomReady && otherPlayer.Status == player.Status)
             {
                 UnityEngine.Debug.Log("222---两人都准备好了，直接由服务器开始。");
                 // 两人都准备好了，直接由服务器开始。
                 var packet1 = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
-                //BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet1), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet1), DeliveryMethod.ReliableOrdered);
 
                 // 服务端立即下发，客户端做延迟表现
                 var packet2 = new S2C_LoadScenePacket
@@ -425,7 +449,7 @@ namespace Code.Server
                     Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = host.RoleIndex },
                     Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = guest.RoleIndex },
                 };
-                //BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_LoadScene, packet2), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_LoadScene, packet2), DeliveryMethod.ReliableOrdered);
 
                 player.SetStatus(PlayerStatus.AtBattle);
                 otherPlayer.SetStatus(PlayerStatus.AtBattle);
@@ -440,7 +464,8 @@ namespace Code.Server
 
 
         #region 服务器命令
-        public List<ServerPlayer> m_WaitingPeers = new List<ServerPlayer>(); private CancellationTokenSource tokenSource;
+        private List<ServerPlayer> m_WaitingPeers;
+        private CancellationTokenSource tokenSource;
         private void StartMatchTask()
         {
             tokenSource = new CancellationTokenSource();
@@ -474,10 +499,10 @@ namespace Code.Server
         {
             lock (m_WaitingPeers)
             {
-                //UnityEngine.Debug.Log($"执行一次匹配，等待人数={m_WaitingPeers.Count}");
+                //UnityEngine.Debug.Log($"match once，waiting count={m_WaitingPeers.Count}");
                 if (m_WaitingPeers.Count <= 1)
                 {
-                    //UnityEngine.Debug.LogError("匹配人数不足");
+                    //UnityEngine.Debug.LogError("not enough players");
                     return;
                 }
                 ServerPlayer p1 = m_WaitingPeers[0];
@@ -486,7 +511,7 @@ namespace Code.Server
                 // 通知匹配成功
                 var serverRoom = m_RoomManager.CreateServerRoom(p1, p2);
                 short serverRoomID = (short)serverRoom.RoomID;
-                UnityEngine.Debug.Log($"p1, p2放进房间{serverRoomID}");
+                UnityEngine.Debug.Log($"match success, put {p1.PeerId}, {p1.PeerId} into Room#{serverRoomID}");
                 p1.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
                 p2.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
                 UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
@@ -496,7 +521,7 @@ namespace Code.Server
 
                 m_WaitingPeers.Remove(p1);
                 m_WaitingPeers.Remove(p2);
-                UnityEngine.Debug.Log($"发送完成，列表中剩下：{m_WaitingPeers.Count}");
+                UnityEngine.Debug.Log($"send ok, waiting count={m_WaitingPeers.Count}");
 
                 string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 int randSeed = System.Guid.NewGuid().GetHashCode();
@@ -505,36 +530,6 @@ namespace Code.Server
                 serverRoom.MapId = 0; //来自客户端
                 serverRoom.BattleMode = BattleMode.Matching;
             }
-        }
-
-        public bool StartServer()
-        {
-            if (_netManager.IsRunning)
-            {
-                UnityEngine.Debug.LogError("服务器已经启动");
-                return false;
-            }
-            bool result = _netManager.Start(Port);
-            if (result == false)
-            {
-                UnityEngine.Debug.LogError("服务器启动失败，请检查端口");
-                return false;
-            }
-            // 设置参数
-            _netManager.BroadcastReceiveEnabled = true;
-            _netManager.UpdateTime = TICK_RATE; //library logic update (and send) period in milliseconds
-            UnityEngine.Debug.Log($"服务器参数：帧率={_netManager.UpdateTime}帧");
-
-            StartMatchTask();
-            return true;
-        }
-        public void StopServer()
-        {
-            _netManager.Stop();
-            CancelMatchTask();
-            m_RoomManager.RemoveAll();
-            m_PlayerManager.RemoveAll();
-            UnityEngine.Debug.LogError("服务器已经停止");
         }
 
         // 大厅内广播

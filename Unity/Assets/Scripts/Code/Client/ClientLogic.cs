@@ -248,8 +248,7 @@ namespace Code.Client
             IsStart = false;
         }
 
-#if UNITY_EDITOR
-        ///*
+
         private GUIStyle _style1;
         private GUIStyle style1
         {
@@ -288,7 +287,7 @@ namespace Code.Client
                 return _view1;
             }
         }
-
+#if UNITY_EDITOR
         void OnDrawGizmos()
         {
             //if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Client") return;
@@ -302,7 +301,6 @@ namespace Code.Client
             UnityEditor.Handles.Label(view0.position, x0, style1);
             UnityEditor.Handles.Label(view1.position, x1, style1);
         }
-        //*/
 #endif
     }
 }
