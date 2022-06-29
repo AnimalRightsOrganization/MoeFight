@@ -1,5 +1,6 @@
+using System.Collections;
 using UnityEngine;
-using Code.Shared;
+using UnityEngine.SceneManagement;
 using Code.Client;
 using HotFix;
 
@@ -47,5 +48,20 @@ public class GameManager : MonoBehaviour
         clientNet.AddComponent<ClientNet>();
 
         UIManager.Get().Push<UI_Login>();
+    }
+
+    public void LoadScene()
+    {
+        StartCoroutine(AO());
+    }
+    IEnumerator AO()
+    {
+        //var clientLogic = new GameObject("ClientLogic");
+        //clientLogic.transform.SetParent(this.transform);
+        //clientLogic.AddComponent<ClientLogic>();
+
+        AsyncOperation ao = SceneManager.LoadSceneAsync("Game");
+        yield return ao;
+        ao.allowSceneActivation = true;
     }
 }

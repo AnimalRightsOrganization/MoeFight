@@ -16,8 +16,6 @@ public class CustomHierarchy : Editor
     static void HandleHierarchyWindowItemOnGUI(int instanceID, Rect selectionRect)
     {
         var gameObject = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-
-        // Sceneはreturn
         if (gameObject == null)
             return;
 

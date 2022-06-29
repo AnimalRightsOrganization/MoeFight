@@ -149,6 +149,9 @@ namespace Code.Server
                 case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
                     break;
+                case PacketType.C2S_LogoutReq:
+                    OnLogoutReceived(reader, peer);
+                    break;
                 case PacketType.C2S_MatchRequest:
                     OnMatchRequestReceived(reader, peer);
                     break;
@@ -273,7 +276,7 @@ namespace Code.Server
             UnityEngine.Debug.Log($"check1: {check1}");
             if (check1 == 0)
             {
-                UnityEngine.Debug.LogError("账号或密码错误");
+                UnityEngine.Debug.LogError("username or password is incorrect");
                 var packet = new S2C_LoginResultPacket { Code = 1 };
                 peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
                 return;
@@ -309,6 +312,13 @@ namespace Code.Server
             //};
             //peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
             #endregion
+        }
+
+        private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)
+        {
+            //var cmd = new C2S_LoginPacket();
+            //cmd.Deserialize(reader);
+            //UnityEngine.Debug.Log($"<color=green>[S] Logout packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}</color>");
         }
 
         private void OnSettingsReceived(NetPacketReader reader, NetPeer peer)

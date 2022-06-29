@@ -203,21 +203,31 @@ namespace Code.Client
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
-        public void SendTestPVE(C2S_JoinPacket cmd)
+        public void SendTestPVE()
         {
+            System.Random rd = new System.Random();
+            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_JoinPacket { UserName = _userName };
+
             myName = cmd.UserName;
+
             SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
         }
 
-        public void SendTestPVP(C2S_JoinPacket cmd)
+        public void SendTestPVP()
         {
+            System.Random rd = new System.Random();
+            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_JoinPacket { UserName = _userName };
+
             myName = cmd.UserName;
+
             SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
 
-        public void SendReady(EmptyPacket cmd)
+        public void SendReady()
         {
-            SendPacketSerializable(PacketType.C2S_BattleStart, cmd);
+            SendPacketSerializable(PacketType.C2S_BattleStart, new EmptyPacket());
         }
 
         public void SendInput(C2S_InputPacket cmd)

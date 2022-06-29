@@ -7,7 +7,6 @@ namespace Code.Client
 {
     public class UI_Main : MonoBehaviour
     {
-        public ClientNet _clientLogic;
         private Button m_ConnectBtn;
         private Button m_TestX1Btn;
         private Button m_TestX2Btn;
@@ -36,33 +35,26 @@ namespace Code.Client
 
         void OnConnectClick()
         {
-            _clientLogic.Connect(OnDisconnected);
+            ClientNet.Get.Connect(OnDisconnected);
         }
 
         void OnTestX1Click()
         {
-            System.Random rd = new System.Random();
-            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
-            var cmd = new C2S_JoinPacket { UserName = _userName };
-            _clientLogic.SendTestPVE(cmd);
+            ClientNet.Get.SendTestPVE();
 
             gameObject.SetActive(false);
         }
 
         void OnTestX2Click()
         {
-            System.Random rd = new System.Random();
-            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
-            var cmd = new C2S_JoinPacket { UserName = _userName };
-            _clientLogic.SendTestPVP(cmd);
+            ClientNet.Get.SendTestPVP();
 
             gameObject.SetActive(false);
         }
 
         void OnReadyClick()
         {
-            var cmd = new EmptyPacket();
-            _clientLogic.SendReady(cmd);
+            ClientNet.Get.SendReady();
         }
 
         public void Ping(int latency)

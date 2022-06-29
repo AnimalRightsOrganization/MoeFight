@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
+using Code.Client;
 using Debug = UnityEngine.Debug;
 
 public class TestWindow : EditorWindow
@@ -29,6 +30,18 @@ public class TestWindow : EditorWindow
             var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
             login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
+        }
+        if (GUILayout.Button("跳转场景"))
+        {
+            GameManager.Get.LoadScene();
+        }
+        if (GUILayout.Button("PVE"))
+        {
+            ClientNet.Get.SendTestPVE();
+        }
+        if (GUILayout.Button("PVP"))
+        {
+            ClientNet.Get.SendTestPVP();
         }
     }
 }

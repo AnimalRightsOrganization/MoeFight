@@ -201,11 +201,11 @@ namespace HotFix
 
         static readonly int[][] ScreenSizeOptions = new int[][]
         {
-        new int[] { 640, 360 },
-        new int[] { 960, 540 },
-        new int[] { 1024, 576 },
-        new int[] { 1280, 720 },
-        new int[] { 1920, 1080 },
+            new int[] { 640, 360 },
+            new int[] { 960, 540 },
+            new int[] { 1024, 576 },
+            new int[] { 1280, 720 },
+            new int[] { 1920, 1080 },
         };
         void OnScreenSizeChanged(int index)
         {
