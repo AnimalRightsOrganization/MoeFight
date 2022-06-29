@@ -6,7 +6,7 @@ namespace Code.Shared
     {
         public BaseRoom(int id, BasePlayer host, BasePlayer guest)
         {
-            //UnityEngine.Debug.LogError("测试先执行.BaseRoom"); //基类先
+            //UnityEngine.Debug.LogError("Order.BaseRoom"); //基类先
             RoomID = id;
         }
 
@@ -34,7 +34,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string str = $"房间#{RoomID}，";
+            string str = $"Room#{RoomID}，";
             //str += $"[主位][{Players[0][PEER_ID_INDEX]}]({(PlayerStatus)Players[0][STATUS_INDEX]})，";
             //str += $"[客位][{Players[1][PEER_ID_INDEX]}]({(PlayerStatus)Players[1][STATUS_INDEX]})";
             return str;

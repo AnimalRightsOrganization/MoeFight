@@ -87,8 +87,8 @@ namespace HotFix
             }
             else if (packet.Code == 1) //匹配取消
             {
-                ClientPlayer localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
-                localPlayer.ResetToLobby();
+                //ClientPlayer localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
+                //localPlayer.ResetToLobby();
                 this.Pop();
             }
         }

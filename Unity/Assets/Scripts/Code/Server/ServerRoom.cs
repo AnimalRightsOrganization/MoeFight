@@ -6,14 +6,13 @@ using Debug = UnityEngine.Debug;
 
 namespace Code.Server
 {
-    /* 远程房间 */
     public class ServerRoom : BaseRoom
     {
         #region 房间数据
 
         public ServerRoom(int roomId, ServerPlayer host, ServerPlayer guest) : base(roomId, host, guest)
         {
-            //Debug.LogError("测试先执行.ServerRoom"); //子类迟
+            //Debug.LogError("Order.ServerRoom"); //子类迟
             m_PlayerList = new ServerPlayer[] { host, guest };
             EndCount = 0;
         }
@@ -145,11 +144,9 @@ namespace Code.Server
             };
         }
 
-        public const string DUMP_FOLDER = "";
-
         public void Dump()
         {
-            string root = DUMP_FOLDER;
+            string root = ConstValue.DUMP_FOLDER;
             if (!Directory.Exists(root))
             {
                 Directory.CreateDirectory(root);

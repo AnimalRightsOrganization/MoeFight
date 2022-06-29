@@ -152,7 +152,7 @@ namespace HotFix
             {
                 // 这里理论上只会收到2
                 Debug.Log("玩家离开，返回大厅");
-                localPlayer.ResetToLobby();
+                //localPlayer.ResetToLobby();
                 this.Pop();
             }
         }

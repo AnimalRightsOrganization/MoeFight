@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -57,7 +56,7 @@ namespace Code.Server
         {
             if (_netManager != null && _netManager.IsRunning)
             {
-                UnityEngine.Debug.LogError("服务器已经启动");
+                UnityEngine.Debug.LogError("server has been running");
                 return false;
             }
 
@@ -85,7 +84,7 @@ namespace Code.Server
             CancelMatchTask();
             m_RoomManager.RemoveAll();
             m_PlayerManager.RemoveAll();
-            UnityEngine.Debug.LogError("服务器已经停止");
+            UnityEngine.Debug.LogError("server was stopped");
         }
         protected void Update()
         {
@@ -473,7 +472,7 @@ namespace Code.Server
         #endregion
 
 
-        #region 服务器命令
+        #region Server Commands
         private List<ServerPlayer> m_WaitingPeers;
         private CancellationTokenSource tokenSource;
         private void StartMatchTask()

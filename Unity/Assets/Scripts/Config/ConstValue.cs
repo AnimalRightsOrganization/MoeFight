@@ -6,6 +6,8 @@ public class ConstValue
     #region 路径
     const string patchName = "Bundles";
 
+    public const string DUMP_FOLDER = "";
+
     // ab打包源文件
     static string _srcPath;
     public static string srcPath

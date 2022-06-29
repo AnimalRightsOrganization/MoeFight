@@ -137,8 +137,8 @@ namespace Code.Client
                         var packet = new S2C_LoginResultPacket();
                         packet.Deserialize(reader); //解包
                         EventManager.Trigger(pt, packet, peer); //派发
-                        //if (packet.Code == 0)
-                        //    OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
+                        if (packet.Code == 0)
+                            OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
                     }
                     break;
                 case PacketType.S2C_MatchResult:
@@ -146,7 +146,7 @@ namespace Code.Client
                         var packet = new S2C_MatchResultPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
-                        //OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet);
                     }
                     break;
                 case PacketType.S2C_RoleSelect:
@@ -161,7 +161,7 @@ namespace Code.Client
                         var packet = new S2C_GameReadyPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
-                        //OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet);
                     }
                     break;
                 case PacketType.S2C_LoadScene:
@@ -169,7 +169,7 @@ namespace Code.Client
                         var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
-                        //OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet);
                     }
                     break;
                 default:
@@ -313,6 +313,82 @@ namespace Code.Client
         public void SendBattleStart()
         {
 
+        }
+
+        // 统一处理用户状态变化，并派发出去
+        void OnUserStatusChanged(PacketType type, INetSerializable reader)
+        {
+            switch (type)
+            {
+                case PacketType.S2C_LoginResult:
+                    {
+                        var packet = (S2C_LoginResultPacket)reader;
+                        if (packet.Code == 0)
+                        {
+                            //ReconnectTimes = 2; //登录成功，补充重连次数
+                            m_PlayerManager.LocalPlayer.ResetToLobby();
+                        }
+                    }
+                    break;
+                case PacketType.S2C_MatchResult:
+                    {
+                        S2C_MatchResultPacket packet = (S2C_MatchResultPacket)reader;
+                        if (packet.Code == 0) //匹配成功
+                        {
+                            ClientPlayer host = new ClientPlayer(packet.Host.UserName, packet.Host.PeerId);
+                            ClientPlayer guest = new ClientPlayer(packet.Guest.UserName, packet.Guest.PeerId);
+                            m_ClientRoom = new ClientRoom(packet.RoomId, host, guest);
+                            m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtRoomWait);
+                        }
+                        else if (packet.Code == 1) //匹配取消
+                        {
+                            m_PlayerManager.LocalPlayer.ResetToLobby();
+                            m_ClientRoom?.Dispose();
+                            m_ClientRoom = null;
+                        }
+                        else if (packet.Code == 2) //匹配后退出
+                        {
+                            m_PlayerManager.LocalPlayer.ResetToLobby();
+                            m_PlayerManager.ResetRival();
+                            m_ClientRoom.Dispose();
+                            m_ClientRoom = null;
+                        }
+                    }
+                    break;
+                case PacketType.S2C_GameReady:
+                    {
+                        S2C_GameReadyPacket packet = (S2C_GameReadyPacket)reader;
+                        //Debug.Log($"<color=red>准备好了：[主位]{(PlayerStatus)packet.HostStatus}，[客位]{(PlayerStatus)packet.GuestStatus}。[我的座位]{m_PlayerManager.LocalPlayer.SeatId}</color>");
+                        if ((PlayerStatus)packet.HostStatus == PlayerStatus.AtRoomReady)
+                        {
+                            if (m_PlayerManager.LocalPlayer.SeatId == 0)
+                                m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtRoomReady);
+                            else if (m_PlayerManager.RivalPlayer.SeatId == 0)
+                                m_PlayerManager.RivalPlayer.SetStatus(PlayerStatus.AtRoomReady);
+                        }
+                        if ((PlayerStatus)packet.GuestStatus == PlayerStatus.AtRoomReady)
+                        {
+                            if (m_PlayerManager.LocalPlayer.SeatId == 1)
+                                m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtRoomReady);
+                            else if (m_PlayerManager.RivalPlayer.SeatId == 1)
+                                m_PlayerManager.RivalPlayer.SetStatus(PlayerStatus.AtRoomReady);
+                        }
+                    }
+                    break;
+                case PacketType.S2C_LoadScene:
+                    {
+                        m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtBattle);
+                    }
+                    break;
+                case PacketType.S2C_BattleEnd:
+                    {
+                        //GameManager.Instance.DumpInputs();
+                        m_PlayerManager.LocalPlayer.ResetToLobby();
+                        m_PlayerManager.ResetRival();
+                    }
+                    break;
+            }
+            UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
         }
         #endregion
     }
