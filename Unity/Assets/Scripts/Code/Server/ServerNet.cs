@@ -12,14 +12,14 @@ namespace Code.Server
 {
     public class ServerNet : INetEventListener, IDisposable
     {
-        static ServerNet _get;
+        static ServerNet _instance;
         public static ServerNet Get
         {
             get
             {
-                if (_get == null)
-                    _get = new ServerNet();
-                return _get;
+                if (_instance == null)
+                    _instance = new ServerNet();
+                return _instance;
             }
         }
 
@@ -637,10 +637,10 @@ namespace Code.Server
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
 
-            C2S_InputBufferPacket cmd = new C2S_InputBufferPacket();
+            var cmd = new C2S_InputPacket();
             cmd.Deserialize(reader);
             string time = System.DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss:fff");
-            UnityEngine.Debug.Log($"[S] 收到第{cmd.Tick}帧， P{player.SeatId + 1}---{time}");
+            UnityEngine.Debug.Log($"[S] 收到第{cmd.frameNumber}帧， P{player.SeatId + 1}---{time}");
 
             // 找到指定房间
             int serverRoomId = player.RoomId;

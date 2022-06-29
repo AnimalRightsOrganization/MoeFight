@@ -139,9 +139,12 @@ namespace HotFix
 
         private void OnBattleStart(INetSerializable reader)
         {
-            S2C_BattleStartPacket packet = (S2C_BattleStartPacket)reader;
+            var packet = (S2C_BattleStartPacket)reader;
             Debug.Log($"[UI] 开始战斗，阶段：{packet.Stage}");
 
+            //0:场景加载完成。
+            //1:倒计时完成。
+            //2:从暂停恢复。
             if (packet.Stage == 0)
             {
                 OnReadyToStart(); //此时场景肯定已经创建完成。

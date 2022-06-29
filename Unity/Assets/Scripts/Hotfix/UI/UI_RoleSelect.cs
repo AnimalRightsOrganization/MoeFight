@@ -195,7 +195,7 @@ namespace HotFix
                 UIManager.Get().Push<UI_GameMenu>();
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
-            GameManager.Get.LoadBattle(2, action);
+            GameManager.Get.LoadBattle(action);
         }
 
         #endregion

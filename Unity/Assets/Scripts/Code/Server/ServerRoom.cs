@@ -74,7 +74,7 @@ namespace Code.Server
         }
 
         // 收到帧数据
-        public void OnInputReceived(int seatId, C2S_InputBufferPacket cmd)
+        public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
 
         }

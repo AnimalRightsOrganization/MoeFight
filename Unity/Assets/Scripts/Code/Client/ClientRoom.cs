@@ -53,7 +53,7 @@ namespace Code.Client
         }
         void OnLockstep(INetSerializable reader)
         {
-            S2C_AllPlayerOperationPacket packet = (S2C_AllPlayerOperationPacket)reader;
+            var packet = (S2C_InputPacket)reader;
             //GameManager.Instance.RecvOperation(packet);
         }
 

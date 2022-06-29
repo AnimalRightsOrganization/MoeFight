@@ -11,14 +11,14 @@ namespace Code.Client
 {
     public class ClientNet : MonoBehaviour, INetEventListener
     {
-        static ClientNet _get;
+        static ClientNet _instance;
         public static ClientNet Get
         {
             get
             {
-                if (_get == null)
-                    _get = FindObjectOfType<ClientNet>();
-                return _get;
+                if (_instance == null)
+                    _instance = FindObjectOfType<ClientNet>();
+                return _instance;
             }
         }
 
@@ -205,10 +205,6 @@ namespace Code.Client
                         var packet = new S2C_BattleStartPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
-                        Debug.Log($"[UI] 开始战斗，阶段：{packet.Stage}");
-                        //0:场景加载完成。
-                        //1:倒计时完成。
-                        //2:从暂停恢复。
                     }
                     break;
                 case PacketType.S2C_BattlePause:
@@ -286,14 +282,21 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
 
-        public void SendReady()
-        {
-            SendPacketSerializable(PacketType.C2S_BattleStart, new EmptyPacket());
-        }
-
         public void SendInput(C2S_InputPacket cmd)
         {
             SendPacketSerializable(PacketType.C2S_Input, cmd);
+        }
+        //以上是测试，保留
+
+        public void SendRegister(string userName, string password)
+        {
+            Debug.Log($"[C] 注册请求");
+            var cmd = new C2S_LoginPacket
+            {
+                UserName = userName,
+                Password = password,
+            };
+            SendPacketSerializable(PacketType.C2S_RegisterReq, cmd);
         }
 
         public void SendLogin(string userName, string password)
@@ -318,8 +321,7 @@ namespace Code.Client
         public void SendLogout()
         {
             Debug.Log($"[C] 登出请求");
-            var cmd = new EmptyPacket();
-            SendPacketSerializable(PacketType.C2S_LogoutReq, cmd);
+            SendPacketSerializable(PacketType.C2S_LogoutReq, new EmptyPacket());
         }
 
         public void SendGetUserInfo(short peerId)
@@ -348,6 +350,11 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_MatchCancel, new EmptyPacket());
         }
 
+        public void SendMatchQuit()
+        {
+            SendPacketSerializable(PacketType.C2S_MatchQuit, new EmptyPacket());
+        }
+
         public void SendSelection(int id)
         {
             if (m_PlayerManager.LocalPlayer.Status == PlayerStatus.AtRoomReady ||
@@ -359,11 +366,6 @@ namespace Code.Client
             Debug.Log($"[C] 我({m_PlayerManager.LocalPlayer.Status})，选择角色: {id}");
             C2S_RoleSelectPacket cmd = new C2S_RoleSelectPacket { Index = (byte)id };
             SendPacketSerializable(PacketType.C2S_RoleSelect, cmd);
-        }
-
-        public void SendMatchQuit()
-        {
-            SendPacketSerializable(PacketType.C2S_MatchQuit, new EmptyPacket());
         }
 
         public void SendGameReady()
@@ -382,6 +384,28 @@ namespace Code.Client
             Debug.Log($"<color=yellow>[C] SendBattleStart: {stage}---{battleStartDebug[stage]}</color>");
             var cmd = new C2S_BattleStartPacket { Stage = stage };
             SendPacketSerializable(PacketType.C2S_BattleStart, cmd);
+        }
+
+        public void SendBattlePause()
+        {
+            SendPacketSerializable(PacketType.C2S_BattlePause, new EmptyPacket());
+        }
+
+        public void SendBattleQuit()
+        {
+            EmptyPacket cmd = new EmptyPacket();
+            SendPacketSerializable(PacketType.C2S_BattleQuit, cmd);
+        }
+
+        public void SendBattleEnd(int hp1, int hp2, int timeLeft)
+        {
+            var cmd = new C2S_BattleEndPacket { HostHP = (short)hp1, GuestHP = (short)hp2, TimeLeft = (short)timeLeft };
+            SendPacketSerializable(PacketType.C2S_BattleEnd, cmd);
+        }
+
+        public void SendLockstep(C2S_InputPacket cmd)
+        {
+            SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
 
         // 统一处理用户状态变化，并派发出去

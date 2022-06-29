@@ -63,34 +63,15 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void LoadScene(string sceneName, float delay = 0, System.Action action = null)
+    public void LoadBattle(System.Action action = null)
     {
-        StartCoroutine(LoadSceneAsync(sceneName, delay, action));
+        StartCoroutine(LoadBattleAsync(action));
     }
-    IEnumerator LoadSceneAsync(string sceneName, float delay = 0, System.Action action = null)
+    IEnumerator LoadBattleAsync(System.Action action = null)
     {
-        yield return new WaitForSeconds(delay);
-        var asyncOperation = SceneManager.LoadSceneAsync(sceneName);
-        asyncOperation.allowSceneActivation = false;
-        yield return asyncOperation.isDone;
-        yield return new WaitForSeconds(1);
-        {
-            action?.Invoke();
-        }
-        asyncOperation.allowSceneActivation = true;
-    }
-
-
-    public void LoadBattle(float delay = 0, System.Action action = null)
-    {
-        StartCoroutine(LoadBattleAsync(delay, action));
-    }
-    IEnumerator LoadBattleAsync(float delay = 0, System.Action action = null)
-    {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(2);
         var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
         UnityEngine.Object.Instantiate(asset);
-        //HotFix.UIManager.Get().PopAll();
         yield return new WaitForSeconds(1);
         {
             action?.Invoke();
