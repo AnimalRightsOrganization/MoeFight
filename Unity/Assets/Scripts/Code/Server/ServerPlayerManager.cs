@@ -30,7 +30,7 @@ namespace Code.Server
         {
             for (int i = 0; i < _playersCount; i++)
             {
-                if (_players[i].Id == player.Id)
+                if (_players[i].PeerId == player.PeerId)
                 {
                     _players[i] = player;
                     return;
@@ -54,7 +54,7 @@ namespace Code.Server
         {
             for (int i = 0; i < _playersCount; i++)
             {
-                if (_players[i].Id == playerId)
+                if (_players[i].PeerId == playerId)
                 {
                     _playersCount--;
                     _players[i] = _players[_playersCount];
@@ -68,6 +68,11 @@ namespace Code.Server
         public ServerPlayer GetPlayer(int playerId)
         {
             return _players[playerId];
+        }
+
+        public ServerPlayer[] GetPlayersAll()
+        {
+            return _players;
         }
     }
 }

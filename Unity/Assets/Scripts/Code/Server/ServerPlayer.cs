@@ -15,12 +15,5 @@ namespace Code.Server
             peer.Tag = this;
             AssociatedPeer = peer;
         }
-
-        public override void Update(float delta)
-        {
-            base.Update(delta);
-        }
-
-        public string UserName => base.Name;
     }
 }

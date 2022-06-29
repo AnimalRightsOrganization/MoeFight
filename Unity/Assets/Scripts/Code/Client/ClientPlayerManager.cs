@@ -12,11 +12,6 @@ namespace Code.Client
         {
             Player = player;
         }
-
-        public void Update(float delta)
-        {
-            Player.Update(delta);
-        }
     }
 
     public class ClientPlayerManager : BasePlayerManager
