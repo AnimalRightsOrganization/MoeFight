@@ -152,14 +152,15 @@ namespace HotFix
             {
                 // 这里理论上只会收到2
                 Debug.Log("玩家离开，返回大厅");
+                localPlayer.ResetToLobby();
                 this.Pop();
             }
         }
 
         private void OnGameReady(INetSerializable reader)
         {
-            S2C_GameReadyPacket packet = (S2C_GameReadyPacket)reader;
-            Debug.Log($"[C] 准备回调：座位1：{(PlayerStatus)packet.HostStatus}，座位2：{(PlayerStatus)packet.GuestStatus}");
+            var packet = (S2C_GameReadyPacket)reader;
+            Debug.Log($"[C] 准备回调, 座位1:{(PlayerStatus)packet.HostStatus}, 座位2:{(PlayerStatus)packet.GuestStatus}");
 
             var hostStatus = (PlayerStatus)packet.HostStatus;
             var guestStatus = (PlayerStatus)packet.GuestStatus;
@@ -178,9 +179,8 @@ namespace HotFix
 
         private void OnLoadScene(INetSerializable reader)
         {
-            /*
             var packet = (S2C_LoadScenePacket)reader;
-            ClientNet.Get.m_ClientRoom.DoInit(packet);
+            //ClientNet.Get.m_ClientRoom.DoInit(packet);
             Debug.Log($"[C] 比赛开始，跳转到比赛场景\n{packet}");
 
             // 先变化状态，让用户看到。再倒计时切换场景。
@@ -188,7 +188,7 @@ namespace HotFix
             m_ReadyText[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyText[1].SetActive(true);
-
+            /*
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();

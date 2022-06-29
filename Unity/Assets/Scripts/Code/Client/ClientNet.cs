@@ -31,6 +31,7 @@ namespace Code.Client
         private NetDataWriter _writer;
 
         private Action<DisconnectInfo> _onDisconnected;
+        public ClientRoom m_ClientRoom;
         public ClientPlayerManager m_PlayerManager;
         public int _ping;
         public string myName;
@@ -134,8 +135,10 @@ namespace Code.Client
                 case PacketType.S2C_LoginResult:
                     {
                         var packet = new S2C_LoginResultPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
+                        packet.Deserialize(reader); //解包
+                        EventManager.Trigger(pt, packet, peer); //派发
+                        //if (packet.Code == 0)
+                        //    OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
                     }
                     break;
                 case PacketType.S2C_MatchResult:
@@ -143,6 +146,30 @@ namespace Code.Client
                         var packet = new S2C_MatchResultPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
+                        //OnUserStatusChanged(pt, packet);
+                    }
+                    break;
+                case PacketType.S2C_RoleSelect:
+                    {
+                        var packet = new S2C_RoleSelectPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_GameReady:
+                    {
+                        var packet = new S2C_GameReadyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                        //OnUserStatusChanged(pt, packet);
+                    }
+                    break;
+                case PacketType.S2C_LoadScene:
+                    {
+                        var packet = new S2C_LoadScenePacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                        //OnUserStatusChanged(pt, packet);
                     }
                     break;
                 default:
@@ -273,6 +300,10 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_GameReady, new EmptyPacket());
         }
 
+        public void SendBattleStart()
+        {
+
+        }
         #endregion
     }
 }

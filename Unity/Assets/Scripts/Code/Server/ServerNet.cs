@@ -389,10 +389,10 @@ namespace Code.Server
 
             C2S_RoleSelectPacket cmd = new C2S_RoleSelectPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S]{player.UserName}选择了{cmd.Index}，房间{player.RoomId}内广播");
+            UnityEngine.Debug.Log($"[S]{player.UserName} select {cmd.Index}, @Room#{player.RoomId}");
             if (player.Status == PlayerStatus.AtRoomReady || player.Status == PlayerStatus.AtBattle)
             {
-                UnityEngine.Debug.LogError("准备好的人不能再选择");
+                UnityEngine.Debug.LogError("ready one cannot select");
                 return;
             }
 
@@ -426,14 +426,14 @@ namespace Code.Server
             if (host.Status == PlayerStatus.AtRoomReady && guest.Status == PlayerStatus.AtRoomWait ||
                 host.Status == PlayerStatus.AtRoomWait && guest.Status == PlayerStatus.AtRoomReady)
             {
-                UnityEngine.Debug.Log("111---一个人准备好了，房间内广播。");
+                UnityEngine.Debug.Log("111---one player ready");
                 // 一个人准备好了，房间内广播。
                 var packet = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
                 BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet), DeliveryMethod.ReliableOrdered);
             }
             else if (player.Status == PlayerStatus.AtRoomReady && otherPlayer.Status == player.Status)
             {
-                UnityEngine.Debug.Log("222---两人都准备好了，直接由服务器开始。");
+                UnityEngine.Debug.Log("222---one player ready, wait server start command");
                 // 两人都准备好了，直接由服务器开始。
                 var packet1 = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
                 BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet1), DeliveryMethod.ReliableOrdered);

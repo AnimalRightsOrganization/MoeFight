@@ -453,7 +453,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string str = $"匹配结果：{Code}，房间：{RoomId}, 主位：{Host.UserName}, 客位：{Guest.UserName}";
+            string str = $"匹配结果: {Code}, 房间#{RoomId}, 主位#{Host.UserName}, 客位#{Guest.UserName}";
             return str;
         }
     }
@@ -519,7 +519,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string stringBuild = $"{PeerId}选择了{RoleIndex}";
+            string stringBuild = $"{PeerId} select {RoleIndex}";
             return stringBuild;
         }
     }
