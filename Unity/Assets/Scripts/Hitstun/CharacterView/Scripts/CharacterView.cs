@@ -4,7 +4,7 @@ using HitstunConstants;
 
 public class CharacterView : MonoBehaviour
 {
-    public SpriteRenderer spriteRenderer;
+    //public SpriteRenderer spriteRenderer;
     public Projector shadowProjector;
     public HitboxView hitboxPrefab;
     public ProjectileView projectilePrefab;
@@ -99,22 +99,6 @@ public class CharacterView : MonoBehaviour
         currentState = character.state;
         currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
-        /*
-        int spriteIndex = 0;
-        for (int i = 0; i < currentAnimation.frameDuration.Length; i++)
-        {
-            currentFrame -= currentAnimation.frameDuration[i];
-            if (currentFrame <= 0)
-            {
-                spriteIndex = i;
-                break;
-            }
-        }
-        spriteRenderer.sprite = sprites[currentAnimation.animationName][spriteIndex % currentAnimation.totalFrames];
-        */
-        //动画帧
-        //animator.Play(currentAnimation.animationName);
-        //Debug.Log($"{currentAnimation.animationName} --- {currentFrame} / {currentAnimation.totalFrames}");
         animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
 
         // x and y position
@@ -127,21 +111,21 @@ public class CharacterView : MonoBehaviour
         shadowProjector.orthographicSize = shadowSize * (1.0f - normY) * (1.0f - normY);
 
         // sprite facing direction
-        spriteRenderer.flipX = character.facingRight;
+        //spriteRenderer.flipX = character.facingRight;
         float flipShadow = (character.facingRight) ? shadowOffset : -shadowOffset;
         shadowProjector.transform.position = new Vector3(viewX + flipShadow, viewY + 2.0f, zDistance + 0.15f);
         model.rotation = (character.facingRight) ? Quaternion.Euler(0, 90, 0) : Quaternion.Euler(0, -90, 0);
         model.localScale = (character.facingRight) ? Vector3.one : new Vector3(-1, 1, 1);
 
         // set correct drawing layer
-        if (character.onTop)
-        {
-            spriteRenderer.sortingLayerName = "PLAYER_TOP";
-        }
-        else
-        {
-            spriteRenderer.sortingLayerName = "PLAYER_BOTTOM";
-        }
+        //if (character.onTop)
+        //{
+        //    spriteRenderer.sortingLayerName = "PLAYER_TOP";
+        //}
+        //else
+        //{
+        //    spriteRenderer.sortingLayerName = "PLAYER_BOTTOM";
+        //}
 
         // projectile
         if (character.projectile.active)

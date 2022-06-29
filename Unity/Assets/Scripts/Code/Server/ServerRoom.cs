@@ -66,82 +66,24 @@ namespace Code.Server
 
         // 独立的帧同步对象
         private ushort Tick;
-        private Dictionary<ushort, Dictionary<int, InputBuffer>> dic_recv;
+        private Dictionary<uint, Dictionary<int, uint>> dic_recv;
         protected NetPeer[] m_NetPeers;
-
-        // 收到帧数据
-        public void OnInputReceived(int seatId, C2S_InputBufferPacket cmd)
-        {
-            int pid = seatId + 1;
-            if (dic_recv.ContainsKey(cmd.Tick) == false)
-            {
-                dic_recv[cmd.Tick] = new Dictionary<int, InputBuffer>();
-                dic_recv[cmd.Tick][pid] = cmd.Operation;
-            }
-            else
-            {
-                //<注意>不可靠模式下，这里可能收到重复的冗余帧，排除掉。
-                if (dic_recv[cmd.Tick].ContainsKey(pid))
-                    return;
-
-                // 之前建过了，是第二个玩家提交
-                dic_recv[cmd.Tick][pid] = cmd.Operation;
-
-                Tick = cmd.Tick; //纯转发，不计算
-                var keys1 = dic_recv[Tick][1];
-                var keys2 = dic_recv[Tick][2];
-
-                // 下发逻辑直接在这里写。
-                var packet = new S2C_AllPlayerOperationPacket
-                {
-                    ServerTick = Tick,
-                    HostOperation = keys1,
-                    GuestOperation = keys2,
-                };
-                //ServerNet.Get.BroadcastLockstep(m_NetPeers, packet);
-                string time = System.DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss:fff");
-                Debug.Log($"<color=green>服务器下发帧：{Tick}，缓存帧：{dic_recv.Count}/(余{dic_recv.Count - Tick})------{time}</color>");
-            }
-        }
-        // 收到缺失帧请求
-        public void OnLackFramesReceived(C2S_LackFramesPacket data)
-        {
-            ushort from = data.FromFrameID;
-
-            int count = Tick - from + 1;
-            Debug.Log($"[S]请求{from}~{Tick}，共{count}个缺失帧");
-            var ops = new S2C_AllPlayerOperationPacket[count];
-            for (ushort i = 0; i < count; i++)
-            {
-                ushort index = (ushort)(from + i);
-                //var role1 = dic_host[index];
-                //var role2 = dic_guest[index];
-                var op = new S2C_AllPlayerOperationPacket
-                {
-                    ServerTick = index,
-                    //HostOperation = role1,
-                    //GuestOperation = role2,
-                };
-                ops[i] = op;
-            }
-
-            S2C_LackFramesPacket packet = new S2C_LackFramesPacket
-            {
-                FrameCount = count,
-                Frames = ops,
-            };
-            //ServerNet.Get.BroadcastLackFrames(m_NetPeers, packet);
-        }
 
         public void DoInit()
         {
             var netManager = ServerNet.Get._netManager;
-            dic_recv = new Dictionary<ushort, Dictionary<int, InputBuffer>>();
+            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
             m_NetPeers = new NetPeer[]
             {
                 netManager.GetPeerById(hostPlayer.PeerId),
                 netManager.GetPeerById(guestPlayer.PeerId),
             };
+        }
+
+        // 收到帧数据
+        public void OnInputReceived(int seatId, C2S_InputBufferPacket cmd)
+        {
+
         }
 
         public void Dump()

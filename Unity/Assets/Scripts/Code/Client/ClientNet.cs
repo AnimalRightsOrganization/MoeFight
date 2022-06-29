@@ -99,7 +99,7 @@ namespace Code.Client
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
         {
             byte packetType = reader.GetByte();
-            if (packetType >= 1024) return;
+            if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
             switch (pt)
@@ -118,13 +118,6 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_BattlePause:
-                    {
-                        var packet = new EmptyPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
-                    }
-                    break;
                 case PacketType.S2C_Lockstep:
                     {
                         var packet = new S2C_InputPacket();
@@ -132,6 +125,7 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                //以上是测试，保留
                 case PacketType.S2C_LoginResult:
                     {
                         var packet = new S2C_LoginResultPacket();
@@ -139,6 +133,14 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer); //派发
                         if (packet.Code == 0)
                             OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
+                    }
+                    break;
+                case PacketType.S2C_LogoutResult:
+                    {
+                        EmptyPacket packet = new EmptyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                        OnLogoutResult(packet);
                     }
                     break;
                 case PacketType.S2C_MatchResult:
@@ -156,6 +158,32 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                case PacketType.S2C_ErrorOperate:
+                    {
+                        var packet = new S2C_ErrorPacket();
+                        packet.Deserialize(reader);
+                        OnErrorOperate(packet);
+                    }
+                    break;
+                case PacketType.S2C_UserInfo:
+                    {
+                        var packet = new S2C_GetUserInfoPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_Settings:
+                    {
+                        var packet = new Settings();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+
+                        m_PlayerManager.LocalPlayer.m_Settings = packet;
+                        AudioManager.musicVolume = packet.MusicVolume / 100f;
+                        AudioManager.soundVolume = packet.SoundVolume / 100f;
+                        AudioManager.Get().ApplyToCurrent();
+                    }
+                    break;
                 case PacketType.S2C_GameReady:
                     {
                         var packet = new S2C_GameReadyPacket();
@@ -169,6 +197,28 @@ namespace Code.Client
                         var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
+                        OnUserStatusChanged(pt, packet);
+                    }
+                    break;
+                case PacketType.S2C_BattleStart:
+                    {
+                        var packet = new S2C_BattleStartPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_BattlePause:
+                    {
+                        var packet = new EmptyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_BattleEnd:
+                    {
+                        var packet = new S2C_BattleEndPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer); //UI_GameResult这接收
                         OnUserStatusChanged(pt, packet);
                     }
                     break;
@@ -389,6 +439,22 @@ namespace Code.Client
                     break;
             }
             UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
+        }
+
+        // 自己登出
+        void OnLogoutResult(INetSerializable reader)
+        {
+            Debug.Log($"<color=red>[C] {m_PlayerManager.LocalPlayer.UserName}登出重置</color>");
+            m_PlayerManager.Clear();
+        }
+
+        void OnErrorOperate(INetSerializable reader)
+        {
+            var packet = (S2C_ErrorPacket)reader;
+            Debug.Log($"错误操作：{(ErrorCode)packet.ErrorCode}");
+
+            var toast = UIManager.Get().Push<UI_Toast>();
+            toast.Show($"{(ErrorCode)packet.ErrorCode}");
         }
         #endregion
     }

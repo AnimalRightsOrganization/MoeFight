@@ -50,17 +50,13 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
-    public void LoadScene()
+    public void LoadScene(string sceneName)
     {
-        StartCoroutine(AO());
+        StartCoroutine(AO(sceneName));
     }
-    IEnumerator AO()
+    IEnumerator AO(string sceneName)
     {
-        //var clientLogic = new GameObject("ClientLogic");
-        //clientLogic.transform.SetParent(this.transform);
-        //clientLogic.AddComponent<ClientLogic>();
-
-        AsyncOperation ao = SceneManager.LoadSceneAsync("Game");
+        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
         yield return ao;
         ao.allowSceneActivation = true;
     }

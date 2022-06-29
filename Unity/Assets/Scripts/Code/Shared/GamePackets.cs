@@ -251,6 +251,42 @@ namespace Code.Shared
         }
     }
 
+    // 战斗开始
+    public struct C2S_BattleStartPacket : INetSerializable
+    {
+        public byte Stage; //阶段：[0]倒计时前；[1]倒计时后；[2]战斗中暂停后继续
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Stage);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Stage = reader.GetByte();
+        }
+    }
+
+    // 战斗结束
+    public struct C2S_BattleEndPacket : INetSerializable
+    {
+        public short HostHP;
+        public short GuestHP;
+        public short TimeLeft;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(HostHP);
+            writer.Put(GuestHP);
+            writer.Put(TimeLeft);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            HostHP = reader.GetByte();
+            GuestHP = reader.GetByte();
+            TimeLeft = reader.GetByte();
+        }
+    }
+
     #endregion
 
     #region 下行
@@ -561,6 +597,37 @@ namespace Code.Shared
         {
             string stringBuild = $"RoomId={RoomId}, BattleId={BattleId}, Seed={Seed}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
             return stringBuild;
+        }
+    }
+
+    // 第一帧同步，战斗开始
+    public struct S2C_BattleStartPacket : INetSerializable
+    {
+        public byte Stage; //阶段：[0]加载场景完成；[1]倒计时后；[2]恢复战斗；
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Stage);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Stage = reader.GetByte();
+        }
+    }
+
+    // 比赛结算（认输/战死/时间到）
+    public struct S2C_BattleEndPacket : INetSerializable
+    {
+        public short WinnerSeatId; //获胜方的座位Id
+        //public int Score; //得分
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(WinnerSeatId);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            WinnerSeatId = reader.GetShort();
         }
     }
 
