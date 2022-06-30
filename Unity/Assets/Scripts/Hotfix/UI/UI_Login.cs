@@ -50,8 +50,6 @@ namespace HotFix
             ToLogin();
 
             ClientNet.Get.Connect(null);
-
-            UIManager.Get().Push<UI_Connect>();
         }
 
         void OnDisable()

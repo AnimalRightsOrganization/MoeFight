@@ -79,7 +79,9 @@ namespace Code.Client
         {
             Debug.Log("[C] Connected to server: " + peer.EndPoint);
             _server = peer;
-            NetEventManager.Trigger(NetStatus.Connected);
+
+            var connect = UIManager.Get().GetUI<UI_Connect>();
+            UIManager.Get().Pop(connect);
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -90,13 +92,14 @@ namespace Code.Client
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
             _onDisconnected?.Invoke(disconnectInfo);
             _onDisconnected = null;
-            NetEventManager.Trigger(NetStatus.Disconnected);
+
+            UIManager.Get().PopAll();
+            UIManager.Get().Push<UI_Login>();
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
             Debug.Log("[C] NetworkError: " + socketError);
-            NetEventManager.Trigger(NetStatus.Error);
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
@@ -249,11 +252,21 @@ namespace Code.Client
 
 
         #region Functions
+        public bool IsConnect()
+        {
+            if (_netManager.ConnectedPeersCount > 0)
+                return true;
+            return false;
+        }
+
         public void Connect(Action<DisconnectInfo> onDisconnected)
         {
+            if (IsConnect()) return;
             _onDisconnected = onDisconnected;
             _netManager.Connect(IP, Port, Key);
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
+
+            UIManager.Get().Push<UI_Connect>();
         }
 
         public void Disconnect()

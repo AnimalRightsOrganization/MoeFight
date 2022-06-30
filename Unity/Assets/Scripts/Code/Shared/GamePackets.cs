@@ -21,13 +21,6 @@ namespace Code.Shared
         Reconnect   = 6,    //异常掉线，等待重连
     }
 
-    public enum NetStatus : byte
-    {
-        Connected,
-        Disconnected,
-        Error,
-    }
-    
     public enum SeatInfo : short
     {
         NONE        = -1,   //没人或不在房间

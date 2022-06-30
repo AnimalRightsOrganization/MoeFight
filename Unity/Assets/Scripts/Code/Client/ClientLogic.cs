@@ -281,15 +281,11 @@ namespace Code.Client
             }
             else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
             {
-                // 客户端开始发送帧数据
-                //GameManager.Instance.GameStart();
-                IsStart = true;
+                IsStart = true; //开始发送帧数据
             }
             else if (packet.Stage == 2) //从暂停恢复
             {
-                Debug.Log($"<color=red>[C] 收到继续回应</color>");
-                //m_MenuPanel.SetActive(false);
-                //GameManager.Instance.GameResume();
+                IsStart = true;
             }
         }
 

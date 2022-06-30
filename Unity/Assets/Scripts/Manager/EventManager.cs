@@ -40,21 +40,3 @@ public class UserEventManager
         userEventList.Invoke(type);
     }
 }
-
-public class NetEvent<T0> : UnityEvent<T0> { }
-public class NetEventManager
-{
-    private static NetEvent<NetStatus> netEventList = new NetEvent<NetStatus>();
-    public static void RegisterEvent(UnityAction<NetStatus> action)
-    {
-        netEventList.AddListener(action);
-    }
-    public static void UnRegisterEvent(UnityAction<NetStatus> action)
-    {
-        netEventList.RemoveListener(action);
-    }
-    public static void Trigger(NetStatus type)
-    {
-        netEventList.Invoke(type);
-    }
-}

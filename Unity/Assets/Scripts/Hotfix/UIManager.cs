@@ -86,7 +86,7 @@ namespace HotFix
                 stack.Add(scriptName, ui);
                 //Debug.Log($"<color=yellow>ReUse{stack.Count}/{recyclePool.Count}</color>");
                 ui.gameObject.SetActive(true);
-                ui.transform.SetAsLastSibling();
+                ui.transform.SetAsLastSibling(); //排列在最下面，即渲染的最高层
                 return ui.GetComponent<T>();
             }
             else
@@ -115,6 +115,7 @@ namespace HotFix
             }
             stack.Remove(scriptName);
             recyclePool.Add(scriptName, ui);
+            //ui.transform.SetAsFirstSibling(); //有性能开销
             ui.gameObject.SetActive(false);
         }
         public void PopAll()
