@@ -39,6 +39,14 @@ namespace HotFix
             m_ReplayBtn.onClick.AddListener(OnReplayButtonClick);
             m_SettingsBtn.onClick.AddListener(OnSettingsButtonClick);
             m_ExitBtn.onClick.AddListener(OnExitButtonClick);
+
+
+            m_ArcadeText = transform.Find("Menu/Arcade/Text").GetComponent<Text>();
+            m_MatchText = transform.Find("Menu/Match/Text").GetComponent<Text>();
+            m_TrainingText = transform.Find("Menu/Training/Text").GetComponent<Text>();
+            m_ReplayText = transform.Find("Menu/Replay/Text").GetComponent<Text>();
+            m_SettingsText = transform.Find("Menu/Settings/Text").GetComponent<Text>();
+            m_ExitText = transform.Find("Menu/Exit/Text").GetComponent<Text>();
         }
 
         void OnEnable()
@@ -62,11 +70,11 @@ namespace HotFix
         public override void ApplyLanguage()
         {
             m_ArcadeText.text = "+ Arcade";
-            m_ArcadeText.text = "+ Match";
-            m_ArcadeText.text = "+ Training";
-            m_ArcadeText.text = "+ Replay";
-            m_ArcadeText.text = "+ Settings";
-            m_ArcadeText.text = "+ Exit";
+            m_MatchText.text = "+ Match";
+            m_TrainingText.text = "+ Training";
+            m_ReplayText.text = "+ Replay";
+            m_SettingsText.text = "+ Settings";
+            m_ExitText.text = "+ Exit";
         }
 
         #region 网络消息

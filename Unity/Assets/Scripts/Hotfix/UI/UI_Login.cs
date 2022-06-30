@@ -17,20 +17,20 @@ namespace HotFix
         public Button m_ToRegisterBtn;
         public Text m_UserNamePlaceholder; //输入用户名
         public Text m_PasswordPlaceholder; //输入密码
-        public Text m_LoginBtnText; //+登录
-        public Text m_ToRegisterBtnText; //+去注册
+        public Text m_LoginText; //+登录
+        public Text m_ToRegisterText; //+去注册
 
         public CanvasGroup m_RegisterPanel;
-        public InputField m_regUserNameField;
-        public InputField m_regPasswordField;
-        public InputField m_regPassword2Field;
+        public InputField m_RegUserNameField;
+        public InputField m_RegPasswordField;
+        public InputField m_RegPassword2Field;
         public Button m_RegisterBtn;
         public Button m_ToLoginBtn;
         public Text m_RegUserNamePlaceholder; //输入用户名
         public Text m_RegPasswordPlaceholder; //输入密码
         public Text m_RegPassword2Placeholder; //确认密码
-        public Text m_RegisterBtnText; //+注册
-        public Text m_ToLoginBtnText; //+去登录
+        public Text m_RegisterText; //+注册
+        public Text m_ToLoginText; //+去登录
 
         void Awake()
         {
@@ -38,18 +38,28 @@ namespace HotFix
             m_UserNameField = transform.Find("LoginPanel/UserName").GetComponent<InputField>();
             m_PasswordField = transform.Find("LoginPanel/Password").GetComponent<InputField>();
             m_LoginBtn = transform.Find("LoginPanel/LoginBtn").GetComponent<Button>();
-            m_LoginBtn.onClick.AddListener(SendLogin);
             m_ToRegisterBtn = transform.Find("LoginPanel/ToRegisterBtn").GetComponent<Button>();
+            m_LoginBtn.onClick.AddListener(SendLogin);
             m_ToRegisterBtn.onClick.AddListener(ToRegister);
+            m_UserNamePlaceholder = transform.Find("LoginPanel/UserName/Placeholder").GetComponent<Text>();
+            m_PasswordPlaceholder = transform.Find("LoginPanel/Password/Placeholder").GetComponent<Text>();
+            m_LoginText = transform.Find("LoginPanel/LoginBtn/Text").GetComponent<Text>();
+            m_ToRegisterText = transform.Find("LoginPanel/ToRegisterBtn/Text").GetComponent<Text>();
+
 
             m_RegisterPanel = transform.Find("RegisterPanel").GetComponent<CanvasGroup>();
-            m_regUserNameField = transform.Find("RegisterPanel/UserName").GetComponent<InputField>();
-            m_regPasswordField = transform.Find("RegisterPanel/Password").GetComponent<InputField>();
-            m_regPassword2Field = transform.Find("RegisterPanel/Password2").GetComponent<InputField>();
+            m_RegUserNameField = transform.Find("RegisterPanel/UserName").GetComponent<InputField>();
+            m_RegPasswordField = transform.Find("RegisterPanel/Password").GetComponent<InputField>();
+            m_RegPassword2Field = transform.Find("RegisterPanel/Password2").GetComponent<InputField>();
             m_RegisterBtn = transform.Find("RegisterPanel/RegisterBtn").GetComponent<Button>();
-            m_RegisterBtn.onClick.AddListener(SendRegister);
             m_ToLoginBtn = transform.Find("RegisterPanel/ToLoginBtn").GetComponent<Button>();
+            m_RegisterBtn.onClick.AddListener(SendRegister);
             m_ToLoginBtn.onClick.AddListener(ToLogin);
+            m_RegUserNamePlaceholder = transform.Find("RegisterPanel/UserName/Placeholder").GetComponent<Text>();
+            m_RegPasswordPlaceholder = transform.Find("RegisterPanel/Password/Placeholder").GetComponent<Text>();
+            m_RegPassword2Placeholder = transform.Find("RegisterPanel/Password2/Placeholder").GetComponent<Text>();
+            m_RegisterText = transform.Find("RegisterPanel/RegisterBtn/Text").GetComponent<Text>();
+            m_ToLoginText = transform.Find("RegisterPanel/ToLoginBtn/Text").GetComponent<Text>();
         }
 
         void OnEnable()
@@ -72,14 +82,14 @@ namespace HotFix
         {
             m_UserNamePlaceholder.text = "输入用户名";
             m_PasswordPlaceholder.text = "输入密码";
-            m_LoginBtnText.text = "+登录";
-            m_ToRegisterBtnText.text = "+去注册";
+            m_LoginText.text = "+登录";
+            m_ToRegisterText.text = "+去注册";
 
             m_RegUserNamePlaceholder.text = "输入用户名";
             m_RegPasswordPlaceholder.text = "输入密码";
             m_RegPassword2Placeholder.text = "确认密码";
-            m_RegisterBtnText.text = "+注册";
-            m_ToLoginBtnText.text = "+去登录";
+            m_RegisterText.text = "+注册";
+            m_ToLoginText.text = "+去登录";
         }
 
         #region 网络消息
@@ -136,27 +146,27 @@ namespace HotFix
         }
         private void SendRegister()
         {
-            if (string.IsNullOrEmpty(m_regUserNameField.text))
+            if (string.IsNullOrEmpty(m_RegUserNameField.text))
             {
                 var ui = UIManager.Get().Push<UI_Toast>();
                 ui.Show("请填写用户名");
                 return;
             }
-            if (string.IsNullOrEmpty(m_regPasswordField.text))
+            if (string.IsNullOrEmpty(m_RegPasswordField.text))
             {
                 var ui = UIManager.Get().Push<UI_Toast>();
                 ui.Show("请填写密码");
                 return;
             }
-            if (!m_regPassword2Field.text.Equals(m_regPasswordField.text))
+            if (!m_RegPassword2Field.text.Equals(m_RegPasswordField.text))
             {
                 var ui = UIManager.Get().Push<UI_Toast>();
                 ui.Show("两次密码不一致，请重新输入");
                 return;
             }
 
-            string UserName = m_regUserNameField.text;
-            string Password = m_regPasswordField.text;
+            string UserName = m_RegUserNameField.text;
+            string Password = m_RegPasswordField.text;
             try
             {
                 //ClientNet.Get.SendRegister(UserName, Password);

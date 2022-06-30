@@ -14,23 +14,25 @@ namespace HotFix
     public class UI_Matching : UIBase
     {
         public RectTransform m_Panel;
-        public Text m_UsedTime;
         public Image m_Rotate;
         public Button m_CancelBtn;
 
-        public Text m_UsedTimeText; //已用时间：0:00
+        public Text m_UsedTime; //已用时间：0:00
         public Text m_CancelText; //取消
 
         void Awake()
         {
             m_Panel = transform.Find("Panel").GetComponent<RectTransform>();
-            m_UsedTime = transform.Find("Panel/UsedTime").GetComponent<Text>();
             m_Rotate = transform.Find("Panel/Rotate").GetComponent<Image>();
             m_CancelBtn = transform.Find("Panel/CancelBtn").GetComponent<Button>();
 
             m_CancelBtn.onClick.AddListener(ClientNet.Get.SendMatchCancel);
 
             m_Panel.anchoredPosition = Vector3.zero;
+
+
+            m_UsedTime = transform.Find("Panel/UsedTime").GetComponent<Text>();
+            m_CancelText = transform.Find("Panel/CancelBtn/Text").GetComponent<Text>();
         }
 
         void OnEnable()
@@ -58,7 +60,7 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            m_UsedTimeText.text = "已用时间：0:00";
+            m_UsedTime.text = "已用时间：0:00";
             m_CancelText.text = "取消";
         }
 
