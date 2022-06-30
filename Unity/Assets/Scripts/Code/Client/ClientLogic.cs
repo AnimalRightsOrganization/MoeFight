@@ -8,7 +8,6 @@ namespace Code.Client
 {
     public class ClientLogic : MonoBehaviour
     {
-        public ClientRoom m_Room;
         private int mySeatId;
         private int remoteSeatId;
 
@@ -23,11 +22,8 @@ namespace Code.Client
         private List<uint> predicted;
         private HitstunRunner runner;
 
-
         void Awake()
         {
-            m_Room = ClientNet.Get.m_ClientRoom;
-
             IsStart = false;
             sendTick = 0;
             recvTick = 0;
@@ -57,6 +53,7 @@ namespace Code.Client
 
             string log = $"game: {LocalSession.gs.frameNumber}" +
                 $"\nping: {ClientNet.Get._ping}" +
+                $"\ninterval: {Time.fixedDeltaTime}" +
                 $"\nP0: {currentState0}: {currentFrame0}" +
                 $"\nP1: {currentState1}: {currentFrame1}";
             GUI.Label(new Rect(10, 10, 100, 50), log, style1);
@@ -102,6 +99,7 @@ namespace Code.Client
             for (int x = (int)recvTick + 1; x < ggpo_recieve.Count; x++)
             {
                 uint i = (uint)x;
+                recvTick = i;
 
                 //如果这帧之前是预测的，对比，回滚
                 bool needToVerity = predicted.Contains(i);
@@ -149,6 +147,8 @@ namespace Code.Client
                     }
                 }
             }
+
+            CheckGameEnd();
         }
 
         // 预测
@@ -172,11 +172,10 @@ namespace Code.Client
         // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
         {
-            //Debug.Log($"Process: <color=yellow>{LocalSession.gs.frameNumber}</color>");
             runner.SaveOldBuffer();
             LocalSession.RunFrameNext(inputs);
             runner.OnFixedUpdate(inputs);
-            Debug.Log($"执行完第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            //Debug.Log($"执行完第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
@@ -185,6 +184,31 @@ namespace Code.Client
         {
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
+        }
+
+        // 结束判定
+        const int TOTAL_SECOND = 90;
+        private void CheckGameEnd()
+        {
+            //①时间
+            int passedTime = (int)(rendTick * Time.fixedDeltaTime);
+            //Debug.Log($"{rendTick} * {Time.fixedDeltaTime}");
+            int leftTime = Mathf.Max(TOTAL_SECOND - passedTime, 0);
+            HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
+            if (passedTime >= TOTAL_SECOND)
+            {
+                //if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Matching && m_BattleStage != BattleStage.End)
+                //{
+                //    Debug.Log($"时间到，上报比赛结果：{p1.HP}，{p2.HP}");
+                //    ClientNet.Get.SendBattleEnd(p1.HP, p2.HP, 0);
+                //}
+                DoGameEnd();
+            }
+            //②血量
+        }
+        private void DoGameEnd()
+        {
+        
         }
 
 
@@ -243,7 +267,7 @@ namespace Code.Client
 
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            Debug.Log($"<color=grey>---收到第{server_tick}帧</color>");
+            //Debug.Log($"<color=grey>---收到第{server_tick}帧</color>");
         }
 
         private void OnBattleStart(INetSerializable reader)

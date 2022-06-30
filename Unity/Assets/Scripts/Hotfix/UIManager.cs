@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace HotFix
 {
+    public delegate void ShowSkillText(int pid, string content);
+    public delegate void SetTimeText(string second);
+    public delegate void SetCurrentHp(int pid, int hp);
     public class UIManager : MonoBehaviour
     {
         static UIManager _instance;
@@ -12,6 +15,12 @@ namespace HotFix
         }
 
         public Transform Parent;
+        //public Transform Top;
+
+        // 给UI的委托
+        public static ShowSkillText doShowSkillText;
+        public static SetTimeText doSetTimeText;
+        public static SetCurrentHp doSetCurrentHp;
 
         // UI存储栈
         public Dictionary<string, UIBase> stack;

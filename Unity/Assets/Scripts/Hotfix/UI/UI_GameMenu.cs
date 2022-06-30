@@ -57,12 +57,12 @@ namespace HotFix
 
             m_MenuPanel = transform.Find("MenuPanel").gameObject;
             m_MenuBtn = transform.Find("MenuBtn").GetComponent<Button>();
-            m_MenuBtn.onClick.AddListener(OpenMenu);
             m_ContinueBtn = transform.Find("MenuPanel/Panel/ContinueBtn").GetComponent<Button>();
-            m_ContinueBtn.onClick.AddListener(CloseMenu);
             m_SkillInfoBtn = transform.Find("MenuPanel/Panel/SkillInfoBtn").GetComponent<Button>();
-            m_SkillInfoBtn.onClick.AddListener(OnSkillInfo);
             m_QuitBtn = transform.Find("MenuPanel/Panel/QuitBtn").GetComponent<Button>();
+            m_MenuBtn.onClick.AddListener(OpenMenu);
+            m_ContinueBtn.onClick.AddListener(CloseMenu);
+            m_SkillInfoBtn.onClick.AddListener(OnSkillInfo);
             m_QuitBtn.onClick.AddListener(OnQuitBtnClick);
 
             m_SkillPanel = transform.Find("SkillPanel").gameObject;
@@ -104,6 +104,8 @@ namespace HotFix
         {
             EventManager.RegisterEvent(OnNetCallback);
 
+            BindDelegete();
+
             // 会在跳转场景前就执行到
             Reset();
         }
@@ -111,6 +113,8 @@ namespace HotFix
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
+
+            UnbindDelegete();
         }
 
         public static Transform GetParent(int index)
@@ -120,7 +124,6 @@ namespace HotFix
         }
 
         #region 网络消息
-
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -190,11 +193,9 @@ namespace HotFix
             //GameManager.Instance.GameEnd(); //对方掉线
             //GameManager.Instance.SaveReplay(packet.WinnerSeatId); //TODO:有卡顿，异步保存
         }
-
         #endregion
 
         #region 按钮事件
-
         void OnQuitBtnClick()
         {
             string titleStr = string.Empty;
@@ -272,33 +273,35 @@ namespace HotFix
 
         void OpenMenu()
         {
-            /*
-            if (GameManager.Instance.m_BattleMode == BattleMode.Matching)
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                Debug.Log($"[C] 请求暂停");
-                ClientNet.Get.SendBattlePause();
+                case BattleMode.Matching:
+                    Debug.Log($"[C] 请求暂停");
+                    ClientNet.Get.SendBattlePause();
+                    break;
+                case BattleMode.Replay:
+                    //m_MenuPanel.SetActive(true);
+                    //GameManager.Instance.PauseReplay();
+                    break;
+                default: //其他情况不会有UI
+                    break;
             }
-            else if (GameManager.Instance.m_BattleMode == BattleMode.Replay)
-            {
-                // 不用请求，直接执行暂停
-                m_MenuPanel.SetActive(true);
-                GameManager.Instance.PauseReplay();
-            }*/
         }
 
         void CloseMenu()
         {
-            /*
-            if (GameManager.Instance.m_BattleMode == BattleMode.Matching)
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                Debug.Log($"[C] 请求继续");
-                ClientNet.Get.SendBattleStart(2); //解除暂停，继续
+                case BattleMode.Matching:
+                    ClientNet.Get.SendBattleStart(2); //解除暂停，继续
+                    break;
+                case BattleMode.Replay:
+                    //m_MenuPanel.SetActive(false);
+                    //GameManager.Instance.PlayReplay();
+                    break;
+                default: //其他情况不会有UI
+                    break;
             }
-            else if (GameManager.Instance.m_BattleMode == BattleMode.Replay)
-            {
-                m_MenuPanel.SetActive(false);
-                GameManager.Instance.PlayReplay();
-            }*/
         }
 
         void OnSkillInfo()
@@ -315,28 +318,29 @@ namespace HotFix
             ClientNet.Get.m_ClientRoom.Dispose();
             ClientNet.Get.m_ClientRoom = null;
         }
-
         #endregion
 
         #region 委托
-
-        public void BindDelegete()
+        void BindDelegete()
         {
-            //UIManager.doShowSkillText = ShowSkill;
-            //UIManager.doSetTimeText = SetTime;
-            //UIManager.doSetCurrentHp = SetCurrentHp;
+            UIManager.doShowSkillText = ShowSkill;
+            UIManager.doSetTimeText = SetTime;
+            UIManager.doSetCurrentHp = SetCurrentHp;
         }
-
+        void UnbindDelegete()
+        {
+            UIManager.doShowSkillText = null;
+            UIManager.doSetTimeText = null;
+            UIManager.doSetCurrentHp = null;
+        }
         void ShowSkill(int pid, string content)
         {
             m_SkillName[pid - 1].text = content;
         }
-
         void SetTime(string second)
         {
             m_TimeText.text = second;
         }
-
         void SetCurrentHp(int pid, int hp)
         {
             CurrentHp[pid - 1].sizeDelta = new Vector2(hp * 0.25f, -10);
@@ -345,7 +349,6 @@ namespace HotFix
             tw.SetDelay(0.5f);
             tw.Play();
         }
-
         #endregion
     }
 }

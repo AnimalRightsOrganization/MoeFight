@@ -11,17 +11,17 @@ namespace Code.Shared
             RoomID = id;
         }
 
-        public readonly int RoomID; // 当前房间ID（1~65535）
-        public string BattleID;     // 服务器战斗编号
-        public int Seed;            // 随机种子
-        public byte MapId = 0;      // 地图编号（暂时用不到）
-        public BattleMode BattleMode;
+        public readonly int RoomID;     //当前房间ID（1~65535）
+        public string BattleID;         //服务器战斗编号
+        public int Seed;                //随机种子
+        public byte MapId = 0;          //地图编号
+        public BattleMode BattleMode;   //房间模式
 
         // 一个房间必须满足有2个人
         public virtual BasePlayer[] m_PlayerList { get; protected set; }
         public virtual BasePlayer hostPlayer => m_PlayerList[0];
         public virtual BasePlayer guestPlayer => m_PlayerList[1];
-        public virtual void Dispose() { }
+        public virtual void Dispose() { m_PlayerList = null; }
 
         public static int CheckWinnerSeatId(int hostHP, int guestHP)
         {

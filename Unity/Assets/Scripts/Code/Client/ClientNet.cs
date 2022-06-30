@@ -421,16 +421,16 @@ namespace Code.Client
                         }
                         else if (packet.Code == 1) //匹配取消
                         {
-                            m_PlayerManager.LocalPlayer.ResetToLobby();
                             m_ClientRoom?.Dispose();
                             m_ClientRoom = null;
+                            m_PlayerManager.LocalPlayer.ResetToLobby();
                         }
                         else if (packet.Code == 2) //匹配后退出
                         {
+                            m_ClientRoom?.Dispose();
+                            m_ClientRoom = null;
                             m_PlayerManager.LocalPlayer.ResetToLobby();
                             m_PlayerManager.ResetRival();
-                            m_ClientRoom.Dispose();
-                            m_ClientRoom = null;
                         }
                     }
                     break;

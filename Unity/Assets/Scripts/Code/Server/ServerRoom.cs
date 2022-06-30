@@ -36,10 +36,6 @@ namespace Code.Server
             (hostPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
             (guestPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
-        public override void Dispose()
-        {
-
-        }
         #endregion
 
         #region 帧同步
@@ -114,7 +110,7 @@ namespace Code.Server
                         else
                         {
                             // 同一个帧号，集齐两人份就下发
-                            Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                            //Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
                             dic_recv[cmd.frameNumber][seatId] = cmd.input;
 
                             var packet = new S2C_InputPacket

@@ -1,6 +1,5 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Code.Client;
 using HotFix;
 
@@ -22,11 +21,20 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        // 系统设置
+        Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = 0.02f;
+        Screen.fullScreen = false;
+        //Screen.SetResolution(540, 960);
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        //Application.targetFrameRate = 60; //锁定渲染帧
+        QualitySettings.vSyncCount = 0;
+
         if (!Initialized)
         {
             DontDestroyOnLoad(gameObject);
 
-            //TODO: ������
+            //TODO: 检查更新
             OnInit();
         }
         else

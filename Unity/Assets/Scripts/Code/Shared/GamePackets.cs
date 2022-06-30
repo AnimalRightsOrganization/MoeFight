@@ -551,11 +551,11 @@ namespace Code.Shared
     [System.Serializable]
     public struct S2C_LoadScenePacket : INetSerializable
     {
-        public short RoomId;    // 要加入的房间号
-        public string BattleId; // 服务器战斗编号
-        public int Seed;        // 随机种子
-        public byte MapId;      // 地图ID
-        public byte BattleMode; // 游戏模式
+        public short RoomId;    //要加入的房间号
+        public string BattleId; //服务器战斗编号
+        public int Seed;        //随机种子
+        public byte MapId;      //地图ID
+        public byte BattleMode; //游戏模式
         public PlayerLoadPacket Host;
         public PlayerLoadPacket Guest;
 
