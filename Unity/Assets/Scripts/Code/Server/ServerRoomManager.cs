@@ -14,8 +14,8 @@ namespace Code.Server
         public ServerRoomManager()
         {
             dic_rooms = new Dictionary<int, ServerRoom>();
-            //m_RoomList = new List<ServerRoom>();
-            m_BattleRoomList = new List<ServerRoom>();
+            //m_BattleRoomList = new List<ServerRoom>();
+            dic_battles = new Dictionary<int, ServerRoom>();
         }
 
         // 获取空闲房间Id
@@ -63,9 +63,9 @@ namespace Code.Server
             ServerRoom serverRoom = null;
             if (dic_rooms.TryGetValue(roomId, out serverRoom))
             {
-                if (m_BattleRoomList.Contains(serverRoom))
+                if (dic_battles.ContainsKey(roomId))
                 {
-                    RemoveBattleRoom(serverRoom);
+                    RemoveBattle(serverRoom);
                 }
                 serverRoom.Dispose();
                 dic_rooms.Remove(roomId);
@@ -102,30 +102,19 @@ namespace Code.Server
             return DictionaryToArray;
         }
 
-        // 战场逻辑
-        protected List<ServerRoom> m_BattleRoomList;
-        public List<ServerRoom> GetAllBattleRoom()
+
+        protected Dictionary<int, ServerRoom> dic_battles;
+        public Dictionary<int, ServerRoom> GetBattles()
         {
-            return m_BattleRoomList;
+            return dic_battles;
         }
-        public void SetAsBattle(ServerRoom room)
+        public void SetBattle(ServerRoom room)
         {
-            if (m_BattleRoomList.Contains(room))
-            {
-                UnityEngine.Debug.LogError("已经存在，无法添加战场");
-                return;
-            }
-            m_BattleRoomList.Add(room);
+            dic_battles.Add(room.RoomID, room);
         }
-        // 主动退出/断线/正常比赛结算
-        void RemoveBattleRoom(ServerRoom room)
+        public void RemoveBattle(ServerRoom room)
         {
-            if (m_BattleRoomList.Contains(room) == false)
-            {
-                UnityEngine.Debug.LogError("错误的战场房，无法移除");
-                return;
-            }
-            m_BattleRoomList.Remove(room);
+            dic_battles.Remove(room.RoomID);
         }
     }
 }

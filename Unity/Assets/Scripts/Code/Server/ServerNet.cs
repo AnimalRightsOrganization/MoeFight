@@ -94,7 +94,7 @@ namespace Code.Server
 
 
         #region Interface
-        private NetDataWriter WriteSerializable<T>(PacketType type, T packet) where T : struct, INetSerializable
+        public NetDataWriter WriteSerializable<T>(PacketType type, T packet) where T : struct, INetSerializable
         {
             _cachedWriter.Reset();
             _cachedWriter.Put((byte)type);
@@ -220,14 +220,21 @@ namespace Code.Server
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[C2S.TestPVE] {peer.Id}: {cmd.UserName}");
+            UnityEngine.Debug.Log($"[S] PVE [{peer.Id}]{cmd.UserName}");
 
-            var serverPlayer = new ServerPlayer(cmd.UserName, peer);
-            m_PlayerManager.AddPlayer(serverPlayer);
+            ServerPlayer player = new ServerPlayer(cmd.UserName, peer);
+            ServerPlayer bot = new ServerPlayer("BOT", peer);
+            m_PlayerManager.AddPlayer(player);
+            m_PlayerManager.AddPlayer(bot);
 
-            var host = m_PlayerManager.GetPlayerByPeerId(0);
-            var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.PeerId, HostName = host.UserName, GuestId = 0, GuestName = "" };
-            peer.Send(WriteSerializable(PacketType.S2C_TestPVE, packet), DeliveryMethod.ReliableOrdered);
+            ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
+            serverRoom.DoInit();
+            m_RoomManager.SetBattle(serverRoom);
+            UnityEngine.Debug.Log($"PVE create room#{serverRoom.RoomID}");
+
+            var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = 0, GuestName = "" };
+            var writer = WriteSerializable(PacketType.S2C_TestPVE, packet);
+            peer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
         private void OnTestPVP(NetPacketReader reader, NetPeer peer)
@@ -236,8 +243,8 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[C2S.TestPVP] {peer.Id}: {cmd.UserName}");
 
-            var serverPlayer = new ServerPlayer(cmd.UserName, peer);
-            m_PlayerManager.AddPlayer(serverPlayer);
+            var player = new ServerPlayer(cmd.UserName, peer);
+            m_PlayerManager.AddPlayer(player);
 
 
             if (m_PlayerManager.Count == 2)
@@ -258,30 +265,45 @@ namespace Code.Server
 
         private void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
-            var req = new C2S_InputPacket();
-            req.Deserialize(reader);
+            if (peer.Tag == null) return;
+            var player = (ServerPlayer)peer.Tag;
+
+            var cmd = new C2S_InputPacket();
+            cmd.Deserialize(reader);
 
 
+            /*
             int pid = peer.Id;
-            if (dic_recv.ContainsKey(req.frameNumber) == false)
+            if (dic_recv.ContainsKey(cmd.frameNumber) == false)
             {
-                UnityEngine.Debug.Log($"[C2S.Input.111] {pid}: {req.frameNumber}---{req.input}");
-                dic_recv[req.frameNumber] = new Dictionary<int, uint>();
-                dic_recv[req.frameNumber][pid] = req.input;
+                UnityEngine.Debug.Log($"[C2S.Input.111] {pid}: {cmd.frameNumber}---{cmd.input}");
+                dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
+                dic_recv[cmd.frameNumber][pid] = cmd.input;
             }
             else
             {
-                UnityEngine.Debug.Log($"[C2S.Input.222] {pid}: {req.frameNumber}---{req.input}");
+                UnityEngine.Debug.Log($"[C2S.Input.222] {pid}: {cmd.frameNumber}---{cmd.input}");
                 // 同一个帧号，集齐两人份就下发
-                dic_recv[req.frameNumber][pid] = req.input;
+                dic_recv[cmd.frameNumber][pid] = cmd.input;
 
                 // 发回给客户端
                 var packet = new S2C_InputPacket
                 {
-                    frameNumber = req.frameNumber,
-                    inputs = new uint[] { dic_recv[req.frameNumber][0], dic_recv[req.frameNumber][1] }
+                    frameNumber = cmd.frameNumber,
+                    inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
                 };
                 _netManager.SendToAll(WriteSerializable(PacketType.S2C_Lockstep, packet), DeliveryMethod.ReliableOrdered);
+            }
+            */
+
+            // 派发给指定房间
+            int serverRoomID = player.RoomId;
+            ServerRoom serverRoom = null;
+            var serverBattles = m_RoomManager.GetBattles();
+            if (serverBattles.TryGetValue(serverRoomID, out serverRoom))
+            {
+                UnityEngine.Debug.Log($"[S] OnInputReceived:{cmd.frameNumber}, dispatcher:#{serverRoomID}");
+                serverRoom.OnInputReceived(player.SeatId, cmd);
             }
         }
         //以上是测试，保留
@@ -445,7 +467,6 @@ namespace Code.Server
 
             var packet = new S2C_RoleSelectPacket { SeatId = (byte)player.SeatId, RoleIndex = cmd.Index };
             var writer = WriteSerializable(PacketType.S2C_RoleSelect, packet);
-            //BroadcastToRoom(serverRoomID, writer);
             serverRoom.Send(writer);
         }
 
@@ -531,7 +552,6 @@ namespace Code.Server
                     // 让客户端开始倒计时。
                     var packet = new S2C_BattleStartPacket { Stage = 0 };
                     var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
-                    //BroadcastToRoom(serverRoomID, writer);
                     serverRoom.Send(writer);
 
                     serverRoom.DoInit();
@@ -545,18 +565,16 @@ namespace Code.Server
                     // 此时客户端倒计时结束。服务器完成第一帧同步，同时下发。
                     var packet = new S2C_BattleStartPacket { Stage = 1 };
                     var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
-                    //BroadcastToRoom(serverRoomID, writer);
                     serverRoom.Send(writer);
 
                     // 标记为战场，方便主循环Update中取
-                    m_RoomManager.SetAsBattle(serverRoom);
+                    m_RoomManager.SetBattle(serverRoom);
                 }
             }
             else if (cmd.Stage == 2)
             {
                 var packet = new S2C_BattleStartPacket { Stage = 2 };
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
-                //BroadcastToRoom(serverRoomID, writer);
                 serverRoom.Send(writer);
                 UnityEngine.Debug.Log($"server resume battle");
             }
@@ -577,7 +595,6 @@ namespace Code.Server
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
 
             var writer = WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket());
-            //BroadcastToRoom(serverRoomID, writer);
             serverRoom.Send(writer);
         }
 
@@ -660,30 +677,18 @@ namespace Code.Server
 
             var cmd = new C2S_InputPacket();
             cmd.Deserialize(reader);
-            string time = System.DateTime.Now.ToString("yyyy-mm-dd hh:mm:ss:fff");
-            UnityEngine.Debug.Log($"[S] 收到第{cmd.frameNumber}帧， P{player.SeatId + 1}---{time}");
+            //UnityEngine.Debug.Log($"[S] tick:{cmd.frameNumber} from P{player.SeatId + 1}");
 
             // 找到指定房间
-            int serverRoomId = player.RoomId;
-            var battleRooms = m_RoomManager.GetAllBattleRoom();
+            int serverRoomID = player.RoomId;
             ServerRoom serverRoom = null;
-            foreach (var room in battleRooms)
+            var serverBattles = m_RoomManager.GetBattles();
+            if (serverBattles.TryGetValue(serverRoomID, out serverRoom))
             {
-                if (room.RoomID == serverRoomId)
-                {
-                    serverRoom = room;
-                    break;
-                }
+                // 派发给指定房间。
+                serverRoom.OnInputReceived(player.SeatId, cmd);
             }
-            if (serverRoom == null)
-            {
-                UnityEngine.Debug.LogError($"找不到战场房间：{serverRoomId}");
-                return;
-            }
-            // 派发给指定房间。
-            serverRoom.OnInputReceived(player.SeatId, cmd);
         }
-
         #endregion
 
 
@@ -742,7 +747,6 @@ namespace Code.Server
                 UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
                 var packet = new S2C_MatchResultPacket { Code = 0, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
                 var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
-                //BroadcastToRoom(serverRoomID, writer);
                 serverRoom.Send(writer);
 
                 lock (m_WaitingPeers)

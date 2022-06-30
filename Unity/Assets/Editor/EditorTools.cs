@@ -31,10 +31,6 @@ public class TestWindow : EditorWindow
             login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
         }
-        if (GUILayout.Button("跳转场景.Game"))
-        {
-            GameManager.Get.LoadScene("Game");
-        }
         if (GUILayout.Button("实例化战场"))
         {
             var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");

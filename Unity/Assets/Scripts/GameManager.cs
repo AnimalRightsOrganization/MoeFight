@@ -51,18 +51,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void LoadScene(string sceneName)
-    {
-        StartCoroutine(AO(sceneName));
-    }
-    IEnumerator AO(string sceneName)
-    {
-        AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName);
-        yield return ao;
-        ao.allowSceneActivation = true;
-    }
-
-
     public void LoadBattle(System.Action action = null)
     {
         StartCoroutine(LoadBattleAsync(action));

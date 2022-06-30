@@ -10,7 +10,7 @@ namespace Code.Server
     public class ServerRoom : BaseRoom
     {
         #region 房间数据
-        public ServerRoom(int roomId, ServerPlayer host, ServerPlayer guest) : base(roomId, host, guest)
+        public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id, host, guest)
         {
             //Debug.Log("子类迟");
             m_PlayerList = new ServerPlayer[] { host, guest };
@@ -35,6 +35,10 @@ namespace Code.Server
         {
             (hostPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
             (guestPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+        }
+        public override void Dispose()
+        {
+
         }
         #endregion
 
@@ -82,7 +86,26 @@ namespace Code.Server
         // 收到帧数据
         public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
+            if (dic_recv.ContainsKey(cmd.frameNumber) == false)
+            {
+                Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
+                dic_recv[cmd.frameNumber][seatId] = cmd.input;
+            }
+            else
+            {
+                // 同一个帧号，集齐两人份就下发
+                Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                dic_recv[cmd.frameNumber][seatId] = cmd.input;
 
+                var packet = new S2C_InputPacket
+                {
+                    frameNumber = cmd.frameNumber,
+                    inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
+                };
+                var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
+                Send(writer);
+            }
         }
 
         // 打印服务器帧

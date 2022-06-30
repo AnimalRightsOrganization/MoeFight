@@ -1,9 +1,8 @@
-using Code.Shared;
+Ôªøusing Code.Shared;
 using LiteNetLib;
 
 namespace Code.Server
 {
-    /* ‘∂≥Ã”√ªß */
     public class ServerPlayer : BasePlayer
     {
         public readonly NetPeer AssociatedPeer;

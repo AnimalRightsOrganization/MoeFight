@@ -260,25 +260,24 @@ namespace Code.Client
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
         }
 
+        public void Disconnect()
+        {
+            
+        }
+
         public void SendTestPVE()
         {
             System.Random rd = new System.Random();
-            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
-            var cmd = new C2S_JoinPacket { UserName = _userName };
-
-            myName = cmd.UserName;
-
+            myName = Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_JoinPacket { UserName = myName };
             SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
         }
 
         public void SendTestPVP()
         {
             System.Random rd = new System.Random();
-            string _userName = System.Environment.MachineName + " " + rd.Next(100000);
-            var cmd = new C2S_JoinPacket { UserName = _userName };
-
-            myName = cmd.UserName;
-
+            myName = Environment.MachineName + " " + rd.Next(100000);
+            var cmd = new C2S_JoinPacket { UserName = myName };
             SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
 

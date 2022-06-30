@@ -156,17 +156,14 @@ namespace Code.Shared
     public struct C2S_JoinPacket : INetSerializable
     {
         public string UserName; //账号
-        public string Password;
 
         public void Serialize(NetDataWriter writer)
         {
             writer.Put(UserName);
-            writer.Put(Password);
         }
         public void Deserialize(NetDataReader reader)
         {
             UserName = reader.GetString();
-            Password = reader.GetString();
         }
     }
 
@@ -205,7 +202,6 @@ namespace Code.Shared
         }
     }
 
-    // 请求用户信息
     public struct C2S_GetUserInfoPacket : INetSerializable
     {
         public short PeerId;
@@ -219,8 +215,7 @@ namespace Code.Shared
             PeerId = reader.GetShort();
         }
     }
-
-    // 选择角色
+    
     public struct C2S_RoleSelectPacket : INetSerializable
     {
         public byte Index;
@@ -235,7 +230,6 @@ namespace Code.Shared
         }
     }
 
-    // 准备请求
     public struct C2S_GameReadyPacket : INetSerializable
     {
         public bool IsReady;
@@ -250,7 +244,6 @@ namespace Code.Shared
         }
     }
 
-    // 战斗开始
     public struct C2S_BattleStartPacket : INetSerializable
     {
         public byte Stage; //阶段：[0]倒计时前；[1]倒计时后；[2]战斗中暂停后继续
@@ -265,7 +258,6 @@ namespace Code.Shared
         }
     }
 
-    // 战斗结束
     public struct C2S_BattleEndPacket : INetSerializable
     {
         public short HostHP;
@@ -285,11 +277,9 @@ namespace Code.Shared
             TimeLeft = reader.GetByte();
         }
     }
-
     #endregion
 
     #region 下行
-    // 错误码回包
     public struct S2C_ErrorPacket : INetSerializable
     {
         public byte ErrorCode; //错误码
@@ -429,7 +419,6 @@ namespace Code.Shared
         }
     }
 
-    // 下发用户信息
     public struct S2C_GetUserInfoPacket : INetSerializable
     {
         public short PeerId;
@@ -493,7 +482,6 @@ namespace Code.Shared
         }
     }
 
-    // 选择角色回包
     public struct S2C_RoleSelectPacket : INetSerializable
     {
         public byte SeatId;     //操作者
