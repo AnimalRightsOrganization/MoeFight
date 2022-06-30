@@ -407,7 +407,7 @@ namespace Code.Server
             var serverRoom = m_RoomManager.GetServerRoom(serverRoomId);
             var otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
             var packet = new S2C_MatchResultPacket { Code = 2, RoomId = serverRoomId };
-            BroadcastToRoom(serverRoomId, WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(serverRoomId, WriteSerializable(PacketType.S2C_MatchResult, packet));
 
             lock (m_WaitingPeers)
             {
@@ -442,7 +442,7 @@ namespace Code.Server
                 serverRoom.guestPlayer.RoleIndex = cmd.Index;
 
             var packet = new S2C_RoleSelectPacket { SeatId = (byte)player.SeatId, RoleIndex = cmd.Index };
-            BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_RoleSelect, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_RoleSelect, packet));
         }
 
         private void OnGameReadyReceived(NetPacketReader reader, NetPeer peer)
@@ -466,14 +466,14 @@ namespace Code.Server
                 UnityEngine.Debug.Log("111---one player ready");
                 // 一个人准备好了，房间内广播。
                 var packet = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
-                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet));
             }
             else if (player.Status == PlayerStatus.AtRoomReady && otherPlayer.Status == player.Status)
             {
                 UnityEngine.Debug.Log("222---one player ready, wait server start command");
                 // 两人都准备好了，直接由服务器开始。
                 var packet1 = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
-                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet1), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_GameReady, packet1));
 
                 // 服务端立即下发，客户端做延迟表现
                 var packet2 = new S2C_LoadScenePacket
@@ -486,7 +486,7 @@ namespace Code.Server
                     Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = host.RoleIndex },
                     Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = guest.RoleIndex },
                 };
-                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_LoadScene, packet2), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_LoadScene, packet2));
 
                 player.SetStatus(PlayerStatus.AtBattle);
                 otherPlayer.SetStatus(PlayerStatus.AtBattle);
@@ -520,7 +520,7 @@ namespace Code.Server
                 if (serverRoom.Stage_0_Count == 2)
                 {
                     var packet = new S2C_BattleStartPacket { Stage = 0 };
-                    BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet), DeliveryMethod.ReliableOrdered);
+                    BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet));
 
                     serverRoom.DoInit();
                 }
@@ -532,7 +532,7 @@ namespace Code.Server
                 if (serverRoom.Stage_1_Count == 2)
                 {
                     var packet = new S2C_BattleStartPacket { Stage = 1 };
-                    BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet), DeliveryMethod.ReliableOrdered);
+                    BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet));
 
                     // 标记为战场，方便主循环Update中取
                     m_RoomManager.AddBattleRoom(serverRoom);
@@ -541,7 +541,7 @@ namespace Code.Server
             else if (cmd.Stage == 2)
             {
                 var packet = new S2C_BattleStartPacket { Stage = 2 };
-                BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleStart, packet));
                 UnityEngine.Debug.Log($"<color=red>server resume battle</color>");
             }
             else
@@ -560,7 +560,7 @@ namespace Code.Server
             var serverRoom = m_RoomManager.GetServerRoom(player.RoomId);
 
             EmptyPacket packet = new EmptyPacket();
-            BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattlePause, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattlePause, packet));
         }
 
         private void OnBattleQuitReceived(NetPacketReader reader, NetPeer peer)
@@ -573,7 +573,7 @@ namespace Code.Server
             //TODO: 一方掉线后，另一方在超时时间内强退，一样判输。但是要出提示。
             short winnerSeatId = (short)(player.SeatId == 0 ? 1 : 0);
             var packet = new S2C_BattleEndPacket { WinnerSeatId = winnerSeatId };
-            BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
+            BroadcastToRoom(player.RoomId, WriteSerializable(PacketType.S2C_BattleEnd, packet));
 
             // 解散房间（因一方认输解散）
             m_RoomManager.RemoveServerRoom(player.RoomId);
@@ -720,7 +720,7 @@ namespace Code.Server
                 UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
                 UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
                 var packet = new S2C_MatchResultPacket { Code = 0, RoomId = serverRoomID, Host = hostPlayer, Guest = guestPlayer };
-                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+                BroadcastToRoom(serverRoomID, WriteSerializable(PacketType.S2C_MatchResult, packet));
 
                 m_WaitingPeers.Remove(p1);
                 m_WaitingPeers.Remove(p2);
@@ -736,24 +736,24 @@ namespace Code.Server
         }
 
         // 大厅内广播
-        public void BroadcastToLobby(NetDataWriter writer, DeliveryMethod method)
+        public void BroadcastToLobby(NetDataWriter writer)
         {
             ServerPlayer[] array = m_PlayerManager.GetPlayersByLobby();
             for (int i = 0; i < array.Length; i++)
             {
                 NetPeer peer = _netManager.GetPeerById(array[i].PeerId);
-                peer?.Send(writer, method);
+                peer?.Send(writer, DeliveryMethod.ReliableOrdered);
             }
         }
         // 房间内广播
-        public void BroadcastToRoom(int roomId, NetDataWriter writer, DeliveryMethod method)
+        public void BroadcastToRoom(int roomId, NetDataWriter writer)
         {
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(roomId);
             var players = serverRoom.m_PlayerList; //直接从内存取
             for (int i = 0; i < players.Length; i++)
             {
                 short peedId = players[i].PeerId;
-                _netManager.GetPeerById(peedId).Send(writer, method);
+                _netManager.GetPeerById(peedId).Send(writer, DeliveryMethod.ReliableOrdered);
             }
         }
         #endregion

@@ -364,7 +364,7 @@ namespace Code.Client
                 return;
             }
             Debug.Log($"[C] 我({m_PlayerManager.LocalPlayer.Status})，选择角色: {id}");
-            C2S_RoleSelectPacket cmd = new C2S_RoleSelectPacket { Index = (byte)id };
+            var cmd = new C2S_RoleSelectPacket { Index = (byte)id };
             SendPacketSerializable(PacketType.C2S_RoleSelect, cmd);
         }
 
@@ -393,8 +393,7 @@ namespace Code.Client
 
         public void SendBattleQuit()
         {
-            EmptyPacket cmd = new EmptyPacket();
-            SendPacketSerializable(PacketType.C2S_BattleQuit, cmd);
+            SendPacketSerializable(PacketType.C2S_BattleQuit, new EmptyPacket());
         }
 
         public void SendBattleEnd(int hp1, int hp2, int timeLeft)
@@ -425,7 +424,7 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_MatchResult:
                     {
-                        S2C_MatchResultPacket packet = (S2C_MatchResultPacket)reader;
+                        var packet = (S2C_MatchResultPacket)reader;
                         if (packet.Code == 0) //匹配成功
                         {
                             ClientPlayer host = new ClientPlayer(packet.Host.UserName, packet.Host.PeerId);
@@ -450,7 +449,7 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_GameReady:
                     {
-                        S2C_GameReadyPacket packet = (S2C_GameReadyPacket)reader;
+                        var packet = (S2C_GameReadyPacket)reader;
                         //Debug.Log($"<color=red>准备好了：[主位]{(PlayerStatus)packet.HostStatus}，[客位]{(PlayerStatus)packet.GuestStatus}。[我的座位]{m_PlayerManager.LocalPlayer.SeatId}</color>");
                         if ((PlayerStatus)packet.HostStatus == PlayerStatus.AtRoomReady)
                         {

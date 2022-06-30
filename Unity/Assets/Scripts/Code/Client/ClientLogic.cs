@@ -8,8 +8,9 @@ namespace Code.Client
 {
     public class ClientLogic : MonoBehaviour
     {
+        public ClientRoom m_Room;
         private int mySeatId;
-
+        private int remoteSeatId;
 
         public uint DELAY_FRAMES = 0;
         public bool IsStart;
@@ -25,31 +26,8 @@ namespace Code.Client
 
         void Awake()
         {
-            runner = FindObjectOfType<HitstunRunner>();
-            EventManager.RegisterEvent(OnNetCallback);
-        }
+            m_Room = ClientNet.Get.m_ClientRoom;
 
-        void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
-        {
-            switch (eventID)
-            {
-                case PacketType.S2C_TestPVE:
-                    OnTestPVE(reader);
-                    break;
-                case PacketType.S2C_TestPVP:
-                    OnTestPVP(reader);
-                    break;
-                case PacketType.S2C_BattlePause:
-                    OnPause(reader);
-                    break;
-                case PacketType.S2C_Input:
-                    OnRecvInput(reader);
-                    break;
-            }
-        }
-
-        void Start()
-        {
             IsStart = false;
             sendTick = 0;
             recvTick = 0;
@@ -58,6 +36,9 @@ namespace Code.Client
             ggpo_recieve = new Dictionary<uint, uint[]>();
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
+            runner = FindObjectOfType<HitstunRunner>();
+
+            EventManager.RegisterEvent(OnNetCallback);
         }
         
         void OnGUI()
@@ -173,11 +154,10 @@ namespace Code.Client
         // 预测
         private void Predict(uint tick)
         {
-            int remoteSeat = (mySeatId + 1) % 2;
-
-            uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeat];
+            //int remoteSeat = (mySeatId + 1) % 2;
+            uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];
             var _inputs = ggpo_predict[tick];
-            _inputs[remoteSeat] = remoteInput;
+            _inputs[remoteSeatId] = remoteInput;
             //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
 
             //预测完成后，让角色跑预测帧。
@@ -208,26 +188,51 @@ namespace Code.Client
         }
 
 
+        void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
+        {
+            switch (eventID)
+            {
+                case PacketType.S2C_TestPVE:
+                    OnTestPVE(reader);
+                    break;
+                case PacketType.S2C_TestPVP:
+                    OnTestPVP(reader);
+                    break;
+                case PacketType.S2C_Input:
+                case PacketType.S2C_Lockstep:
+                    OnRecvInput(reader);
+                    break;
+                case PacketType.S2C_BattleStart:
+                    OnBattleStart(reader);
+                    break;
+                case PacketType.S2C_BattlePause:
+                    //OnBattlePause(reader);
+                    break;
+                case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
+                    //OnBattleEnd(reader);
+                    break;
+            }
+        }
 
         private void OnTestPVE(INetSerializable reader)
         {
             Debug.Log("[S2C] 单人测试");
 
             mySeatId = 0;
+            remoteSeatId = 1;
 
             IsStart = true;
         }
 
         private void OnTestPVP(INetSerializable reader)
         {
-            //var packet = new S2C_JoinResultPacket();
-            //packet.Deserialize(reader);
             var packet = (S2C_JoinResultPacket)reader;
             Debug.Log($"[S2C] 双人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
 
             if (packet.Code == 0)
             {
                 mySeatId = packet.HostName.Equals(ClientNet.Get.myName) ? packet.HostId : packet.GuestId;
+                remoteSeatId = (mySeatId + 1) % 2;
 
                 IsStart = true;
             }
@@ -242,9 +247,27 @@ namespace Code.Client
             Debug.Log($"<color=grey>---收到第{server_tick}帧</color>");
         }
 
-        private void OnPause(INetSerializable reader)
+        private void OnBattleStart(INetSerializable reader)
         {
-            IsStart = false;
+            var packet = (S2C_BattleStartPacket)reader;
+            Debug.Log($"[C] 战斗开始, 阶段: {packet.Stage}");
+
+            if (packet.Stage == 0) //场景加载完成上报，服务器集齐后下发
+            {
+                //UI：3、2、1
+            }
+            else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
+            {
+                // 客户端开始发送帧数据
+                //GameManager.Instance.GameStart();
+                IsStart = true;
+            }
+            else if (packet.Stage == 2) //从暂停恢复
+            {
+                Debug.Log($"<color=red>[C] 收到继续回应</color>");
+                //m_MenuPanel.SetActive(false);
+                //GameManager.Instance.GameResume();
+            }
         }
 
 

@@ -5,7 +5,6 @@ using LiteNetLib.Utils;
 
 namespace Code.Client
 {
-    /* 本地房间 */
     public class ClientRoom : BaseRoom
     {
         #region 房间数据

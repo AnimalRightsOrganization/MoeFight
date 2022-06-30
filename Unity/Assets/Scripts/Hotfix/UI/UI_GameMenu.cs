@@ -46,13 +46,13 @@ namespace HotFix
             m_HpPanel = transform.Find("HpPanel").gameObject;
             LastHp = new RectTransform[]
             {
-            m_HpPanel.transform.Find("HP_P1/last").GetComponent<RectTransform>(),
-            m_HpPanel.transform.Find("HP_P2/last").GetComponent<RectTransform>(),
+                m_HpPanel.transform.Find("HP_P1/last").GetComponent<RectTransform>(),
+                m_HpPanel.transform.Find("HP_P2/last").GetComponent<RectTransform>(),
             };
             CurrentHp = new RectTransform[]
             {
-            m_HpPanel.transform.Find("HP_P1/current").GetComponent<RectTransform>(),
-            m_HpPanel.transform.Find("HP_P2/current").GetComponent<RectTransform>(),
+                m_HpPanel.transform.Find("HP_P1/current").GetComponent<RectTransform>(),
+                m_HpPanel.transform.Find("HP_P2/current").GetComponent<RectTransform>(),
             };
 
             m_MenuPanel = transform.Find("MenuPanel").gameObject;
@@ -70,13 +70,13 @@ namespace HotFix
             var Panel_P2 = transform.Find("SkillPanel/Panel_P2");
             m_SkillName = new Text[]
             {
-            Panel_P1.Find("MoveView/TextName").GetComponent<Text>(),
-            Panel_P2.Find("MoveView/TextName").GetComponent<Text>(),
+                Panel_P1.Find("MoveView/TextName").GetComponent<Text>(),
+                Panel_P2.Find("MoveView/TextName").GetComponent<Text>(),
             };
             MoveList = new Transform[]
             {
-            Panel_P1.Find("MoveList"),
-            Panel_P2.Find("MoveList")
+                Panel_P1.Find("MoveList"),
+                Panel_P2.Find("MoveList")
             };
 
             m_ResultPanel = transform.Find("ResultPanel").gameObject;
@@ -171,7 +171,7 @@ namespace HotFix
 
         private void OnBattleEnd(INetSerializable reader)
         {
-            S2C_BattleEndPacket packet = (S2C_BattleEndPacket)reader;
+            var packet = (S2C_BattleEndPacket)reader;
             Debug.Log($"[UI] 收到游戏结束，获胜者是座位#{packet.WinnerSeatId}");
 
             m_ResultPanel.gameObject.SetActive(true);
