@@ -222,13 +222,6 @@ namespace Code.Client
                         OnUserStatusChanged(pt, packet);
                     }
                     break;
-                case PacketType.S2C_Lockstep:
-                    {
-                        var packet = new S2C_InputPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
-                    }
-                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -399,11 +392,6 @@ namespace Code.Client
         {
             var cmd = new C2S_BattleEndPacket { HostHP = (short)hp1, GuestHP = (short)hp2, TimeLeft = (short)timeLeft };
             SendPacketSerializable(PacketType.C2S_BattleEnd, cmd);
-        }
-
-        public void SendLockstep(C2S_InputPacket cmd)
-        {
-            SendPacketSerializable(PacketType.C2S_Lockstep, cmd);
         }
 
         // 统一处理用户状态变化，并派发出去

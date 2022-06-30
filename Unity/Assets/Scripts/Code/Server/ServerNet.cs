@@ -109,17 +109,17 @@ namespace Code.Server
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            UnityEngine.Debug.Log("[S] Player disconnected: " + disconnectInfo.Reason);
+            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason}");
 
             if (peer.Tag != null)
             {
-                //byte playerId = (byte)peer.Id;
                 if (m_PlayerManager.RemovePlayer(peer.Id))
                 {
                     //var plp = new PlayerLeavedPacket { Id = (byte)peer.Id };
-                    //_netManager.SendToAll(WritePacket(plp), DeliveryMethod.ReliableOrdered);
+                    //_netManager.SendToAll(WritePacket(plp), DeliveryMethod.ReliableOrdered); //全服广播离线
                 }
             }
+            UnityEngine.Debug.Log($"Player count: {m_PlayerManager.Count}");
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
@@ -188,9 +188,6 @@ namespace Code.Server
                 case PacketType.C2S_BattleEnd:
                     OnBattleEndReceived(reader, peer);
                     break;
-                case PacketType.C2S_Lockstep:
-                    OnInputReceived(reader, peer);
-                    break;
                 default:
                     UnityEngine.Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -225,7 +222,6 @@ namespace Code.Server
             ServerPlayer player = new ServerPlayer(cmd.UserName, peer);
             ServerPlayer bot = new ServerPlayer("BOT", peer);
             m_PlayerManager.AddPlayer(player);
-            m_PlayerManager.AddPlayer(bot);
 
             ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
             serverRoom.BattleMode = BattleMode.TestPVE;

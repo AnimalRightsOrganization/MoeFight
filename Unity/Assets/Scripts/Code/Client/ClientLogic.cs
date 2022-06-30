@@ -199,7 +199,6 @@ namespace Code.Client
                     OnTestPVP(reader);
                     break;
                 case PacketType.S2C_Input:
-                case PacketType.S2C_Lockstep:
                     OnRecvInput(reader);
                     break;
                 case PacketType.S2C_BattleStart:

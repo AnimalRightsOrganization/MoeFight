@@ -51,7 +51,6 @@ namespace Code.Shared
         C2S_BattlePause     ,   //请求暂停战斗
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
-        C2S_Lockstep        ,   //帧同步
         // S2C /////////////
         S2C_TestPVE         ,   //独立启动加入
         S2C_TestPVP         ,   //双人启动加入
@@ -71,7 +70,6 @@ namespace Code.Shared
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
         S2C_BattleEnd       ,   //比赛结束，结算
-        S2C_Lockstep        ,   //帧同步
     }
 
     public enum BattleStage
@@ -397,7 +395,6 @@ namespace Code.Shared
         }
     }
 
-    // 登录结果
     public struct S2C_LoginResultPacket : INetSerializable
     {
         public byte Code; //255

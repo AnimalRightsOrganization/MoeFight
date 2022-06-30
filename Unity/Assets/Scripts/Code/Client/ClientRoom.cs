@@ -39,23 +39,6 @@ namespace Code.Client
         #endregion
 
         #region 帧同步
-
-        void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
-        {
-            switch (eventID)
-            {
-                case PacketType.S2C_Lockstep:
-                    OnLockstep(reader);
-                    break;
-            }
-        }
-        void OnLockstep(INetSerializable reader)
-        {
-            //var packet = (S2C_InputPacket)reader;
-            //GameManager.Instance.RecvOperation(packet);
-        }
-
-
         // 计时器，获得指定的更新频率
         //protected LogicTimer m_SendTimer;
         //public bool IsHost = true; //我是否房主
@@ -88,12 +71,12 @@ namespace Code.Client
         public void DoStart()
         {
             //Debug.Log($"<color=blue>客户端启动帧同步：</color>");
-            EventManager.RegisterEvent(OnNetCallback);
+            //EventManager.RegisterEvent(OnNetCallback);
             //m_SendTimer.Start();
         }
         public void DoStop()
         {
-            EventManager.UnRegisterEvent(OnNetCallback);
+            //EventManager.UnRegisterEvent(OnNetCallback);
             //m_SendTimer?.Stop();
         }
         public void DoUpdate()

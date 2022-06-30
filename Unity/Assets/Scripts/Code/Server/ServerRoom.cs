@@ -98,15 +98,16 @@ namespace Code.Server
                             frameNumber = cmd.frameNumber,
                             inputs = new uint[] { cmd.input, 0 }
                         };
-                        var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
+                        var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
                     }
                     break;
                 case BattleMode.TestPVP:
+                case BattleMode.Matching:
                     {
                         if (dic_recv.ContainsKey(cmd.frameNumber) == false)
                         {
-                            Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                            //Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
                             dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
                             dic_recv[cmd.frameNumber][seatId] = cmd.input;
                         }
@@ -121,12 +122,10 @@ namespace Code.Server
                                 frameNumber = cmd.frameNumber,
                                 inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
                             };
-                            var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
+                            var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                             Send(writer);
                         }
                     }
-                    break;
-                case BattleMode.Matching:
                     break;
             }
         }
