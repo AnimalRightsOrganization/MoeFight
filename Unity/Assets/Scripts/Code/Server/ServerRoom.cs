@@ -86,25 +86,48 @@ namespace Code.Server
         // 收到帧数据
         public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
-            if (dic_recv.ContainsKey(cmd.frameNumber) == false)
+            switch (BattleMode)
             {
-                Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
-                dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
-                dic_recv[cmd.frameNumber][seatId] = cmd.input;
-            }
-            else
-            {
-                // 同一个帧号，集齐两人份就下发
-                Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
-                dic_recv[cmd.frameNumber][seatId] = cmd.input;
+                case BattleMode.Editor:
+                    break;
+                case BattleMode.TestPVE:
+                    {
+                        // 只有一人，收到就下发
+                        var packet = new S2C_InputPacket
+                        {
+                            frameNumber = cmd.frameNumber,
+                            inputs = new uint[] { cmd.input, 0 }
+                        };
+                        var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
+                        Send(writer);
+                    }
+                    break;
+                case BattleMode.TestPVP:
+                    {
+                        if (dic_recv.ContainsKey(cmd.frameNumber) == false)
+                        {
+                            Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                            dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
+                            dic_recv[cmd.frameNumber][seatId] = cmd.input;
+                        }
+                        else
+                        {
+                            // 同一个帧号，集齐两人份就下发
+                            Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
+                            dic_recv[cmd.frameNumber][seatId] = cmd.input;
 
-                var packet = new S2C_InputPacket
-                {
-                    frameNumber = cmd.frameNumber,
-                    inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
-                };
-                var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
-                Send(writer);
+                            var packet = new S2C_InputPacket
+                            {
+                                frameNumber = cmd.frameNumber,
+                                inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
+                            };
+                            var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Lockstep, packet);
+                            Send(writer);
+                        }
+                    }
+                    break;
+                case BattleMode.Matching:
+                    break;
             }
         }
 
