@@ -13,10 +13,13 @@ namespace HotFix
 {
     public class UI_Matching : UIBase
     {
-        [SerializeField] RectTransform m_Panel;
-        [SerializeField] Text m_UsedTime;
-        [SerializeField] Image m_Rotate;
-        [SerializeField] Button m_CancelBtn;
+        public RectTransform m_Panel;
+        public Text m_UsedTime;
+        public Image m_Rotate;
+        public Button m_CancelBtn;
+
+        public Text m_UsedTimeText; //已用时间：0:00
+        public Text m_CancelText; //取消
 
         void Awake()
         {
@@ -32,6 +35,8 @@ namespace HotFix
 
         void OnEnable()
         {
+            ApplyLanguage();
+
             EventManager.RegisterEvent(OnNetCallback);
 
             SetTimer();
@@ -51,6 +56,12 @@ namespace HotFix
             m_UsedTime.text = $"已经用时：{deltaStr}";
         }
 
+        public override void ApplyLanguage()
+        {
+            m_UsedTimeText.text = "已用时间：0:00";
+            m_CancelText.text = "取消";
+        }
+
         #region 网络消息
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
@@ -64,7 +75,7 @@ namespace HotFix
         private void OnMatchResult(INetSerializable reader)
         {
             var packet = (S2C_MatchResultPacket)reader;
-            Debug.Log($"[UI_Matching] {packet.ToString()}");
+            Debug.Log($"[UI_Matching] {packet}");
 
             if (packet.Code == 0) //匹配成功
             {

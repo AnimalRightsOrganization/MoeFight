@@ -15,6 +15,10 @@ namespace HotFix
         public InputField m_PasswordField;
         public Button m_LoginBtn;
         public Button m_ToRegisterBtn;
+        public Text m_UserNamePlaceholder; //输入用户名
+        public Text m_PasswordPlaceholder; //输入密码
+        public Text m_LoginBtnText; //+登录
+        public Text m_ToRegisterBtnText; //+去注册
 
         public CanvasGroup m_RegisterPanel;
         public InputField m_regUserNameField;
@@ -22,6 +26,11 @@ namespace HotFix
         public InputField m_regPassword2Field;
         public Button m_RegisterBtn;
         public Button m_ToLoginBtn;
+        public Text m_RegUserNamePlaceholder; //输入用户名
+        public Text m_RegPasswordPlaceholder; //输入密码
+        public Text m_RegPassword2Placeholder; //确认密码
+        public Text m_RegisterBtnText; //+注册
+        public Text m_ToLoginBtnText; //+去登录
 
         void Awake()
         {
@@ -45,6 +54,8 @@ namespace HotFix
 
         void OnEnable()
         {
+            ApplyLanguage();
+
             EventManager.RegisterEvent(OnNetCallback);
 
             ToLogin();
@@ -55,6 +66,20 @@ namespace HotFix
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
+        }
+
+        public override void ApplyLanguage()
+        {
+            m_UserNamePlaceholder.text = "输入用户名";
+            m_PasswordPlaceholder.text = "输入密码";
+            m_LoginBtnText.text = "+登录";
+            m_ToRegisterBtnText.text = "+去注册";
+
+            m_RegUserNamePlaceholder.text = "输入用户名";
+            m_RegPasswordPlaceholder.text = "输入密码";
+            m_RegPassword2Placeholder.text = "确认密码";
+            m_RegisterBtnText.text = "+注册";
+            m_ToLoginBtnText.text = "+去登录";
         }
 
         #region 网络消息

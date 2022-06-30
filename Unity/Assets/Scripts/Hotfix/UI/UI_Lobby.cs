@@ -9,13 +9,20 @@ namespace HotFix
 {
     public class UI_Lobby : UIBase
     {
-        [SerializeField] Button m_ArcadeBtn;
-        [SerializeField] Button m_MatchBtn;
-        [SerializeField] Button m_TrainingBtn;
-        [SerializeField] Button m_ReplayBtn;
-        [SerializeField] Button m_SettingsBtn;
-        [SerializeField] Button m_ExitBtn;
+        public Button m_ArcadeBtn;
+        public Button m_MatchBtn;
+        public Button m_TrainingBtn;
+        public Button m_ReplayBtn;
+        public Button m_SettingsBtn;
+        public Button m_ExitBtn;
         private ClientPlayer localPlayer;
+
+        public Text m_ArcadeText;
+        public Text m_MatchText;
+        public Text m_TrainingText;
+        public Text m_ReplayText;
+        public Text m_SettingsText;
+        public Text m_ExitText;
 
         void Awake()
         {
@@ -36,6 +43,8 @@ namespace HotFix
 
         void OnEnable()
         {
+            ApplyLanguage();
+
             EventManager.RegisterEvent(OnNetCallback);
 
             localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
@@ -48,6 +57,16 @@ namespace HotFix
             EventManager.UnRegisterEvent(OnNetCallback);
 
             AudioManager.Get()?.StopAll();
+        }
+
+        public override void ApplyLanguage()
+        {
+            m_ArcadeText.text = "+ Arcade";
+            m_ArcadeText.text = "+ Match";
+            m_ArcadeText.text = "+ Training";
+            m_ArcadeText.text = "+ Replay";
+            m_ArcadeText.text = "+ Settings";
+            m_ArcadeText.text = "+ Exit";
         }
 
         #region 网络消息
