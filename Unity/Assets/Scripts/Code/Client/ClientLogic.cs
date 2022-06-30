@@ -229,10 +229,10 @@ namespace Code.Client
                     OnBattleStart(reader);
                     break;
                 case PacketType.S2C_BattlePause:
-                    //OnBattlePause(reader);
+                    OnBattlePause(reader);
                     break;
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
-                    //OnBattleEnd(reader);
+                    OnBattleEnd(reader);
                     break;
             }
         }
@@ -296,6 +296,12 @@ namespace Code.Client
         private void OnBattlePause(INetSerializable reader)
         {
             IsStart = false;
+        }
+
+        private void OnBattleEnd(INetSerializable reader)
+        {
+            DoGameEnd();
+            //SaveReplay();
         }
 
 

@@ -79,6 +79,7 @@ namespace Code.Client
         {
             Debug.Log("[C] Connected to server: " + peer.EndPoint);
             _server = peer;
+            NetEventManager.Trigger(NetStatus.Connected);
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -89,11 +90,13 @@ namespace Code.Client
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
             _onDisconnected?.Invoke(disconnectInfo);
             _onDisconnected = null;
+            NetEventManager.Trigger(NetStatus.Disconnected);
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
             Debug.Log("[C] NetworkError: " + socketError);
+            NetEventManager.Trigger(NetStatus.Error);
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
@@ -255,7 +258,7 @@ namespace Code.Client
 
         public void Disconnect()
         {
-            
+            Debug.Log("conn:" + _netManager.ConnectedPeersCount);
         }
 
         public void SendTestPVE()

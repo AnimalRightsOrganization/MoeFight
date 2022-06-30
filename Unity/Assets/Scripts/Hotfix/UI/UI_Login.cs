@@ -48,6 +48,10 @@ namespace HotFix
             EventManager.RegisterEvent(OnNetCallback);
 
             ToLogin();
+
+            ClientNet.Get.Connect(null);
+
+            UIManager.Get().Push<UI_Connect>();
         }
 
         void OnDisable()
@@ -160,8 +164,6 @@ namespace HotFix
         }
         private void ToLogin()
         {
-            ClientNet.Get.Connect((info) => { Debug.Log(info.Reason.ToString()); });
-
             Tweener tw1 = m_RegisterPanel.DOFade(0, 0.3f);
             tw1.Play();
             tw1.OnComplete(() =>

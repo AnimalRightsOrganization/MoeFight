@@ -20,6 +20,13 @@ namespace Code.Shared
         AtBattle    = 5,    //在战场
         Reconnect   = 6,    //异常掉线，等待重连
     }
+
+    public enum NetStatus : byte
+    {
+        Connected,
+        Disconnected,
+        Error,
+    }
     
     public enum SeatInfo : short
     {
