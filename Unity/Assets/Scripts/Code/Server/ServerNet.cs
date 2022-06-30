@@ -245,10 +245,10 @@ namespace Code.Server
         {
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{cmd.UserName}");
 
             ServerPlayer player = new ServerPlayer(cmd.UserName, peer);
             m_PlayerManager.AddPlayer(player);
+            UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{cmd.UserName}---{m_PlayerManager.Count}/2");
 
             if (m_PlayerManager.Count == 2)
             {
