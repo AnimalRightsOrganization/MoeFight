@@ -2,6 +2,14 @@
 
 namespace Code.Shared
 {
+    public enum Languages
+    {
+        English,
+        简体中文,
+        日本語,
+        Español,
+    }
+
     public enum ErrorCode : byte
     {
         LobbyIsFull,    //大厅爆满

@@ -118,7 +118,11 @@ namespace HitstunConstants
 
     public enum CharacterName
     {
-        KEN = 0
+        KEN = 0,
+        AOI = 1,
+        HONOKA = 2,
+        SATOMI = 3,
+        TAICHI = 4,
     }
 
     public enum CharacterState

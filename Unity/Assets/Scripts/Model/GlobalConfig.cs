@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-//using FPLibrary;
-using Unity.Collections;
 
 [System.Serializable]
 public class GlobalConfig : ScriptableObject

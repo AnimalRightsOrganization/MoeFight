@@ -12,7 +12,7 @@ public class HitstunRunner : MonoBehaviour
     public CharacterName player2Character;
 
     // Rendering
-    public CharacterView characterView;
+    public CharacterView characterView; //prefab asset
     CharacterView[] characterViews;
     public Camera mainCamera;
 

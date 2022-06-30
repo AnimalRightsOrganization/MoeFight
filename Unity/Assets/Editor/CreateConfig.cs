@@ -25,6 +25,12 @@ public class CreateConfig : Editor
         Selection.activeObject = asset;
     }
 
+    [MenuItem("Tools/CreateConfig/LanguageConfig")]
+    static void CreateLanguageConfig()
+    {
+        CreateAsset<LanguageConfig>();
+    }
+
     [MenuItem("Tools/CreateConfig/InputConfig")]
     static void CreateInputConfig()
     {
@@ -37,13 +43,8 @@ public class CreateConfig : Editor
         CreateAsset<GlobalConfig>();
     }
 
-    [MenuItem("Tools/CreateConfig/CharacterData")]
-    static void CreateCharacterConfig()
-    {
-        CreateAsset<CharacterConfig>();
-    }
     [MenuItem("Tools/CreateConfig/选中角色配置")]
-    static void LoadJson()
+    static void SelectCharacterConfig()
     {
         // 搜索 type:CharacterConfig
         var ids = AssetDatabase.FindAssets("* t:CharacterConfig");

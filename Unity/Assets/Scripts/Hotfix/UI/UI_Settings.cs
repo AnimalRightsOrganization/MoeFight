@@ -81,9 +81,10 @@ namespace HotFix
             m_LanguageName = transform.Find("Common/Language/Name").GetComponent<Text>();
             m_LanguageDrog = transform.Find("Common/Language/Dropdown").GetComponent<Dropdown>();
             m_LanguageDrog.options = new System.Collections.Generic.List<Dropdown.OptionData>();
-            for (int i = 0; i < LanguageOptions.Length; i++)
+            for (int i = 0; i < System.Enum.GetValues(typeof(Languages)).Length; i++)
             {
-                string option = LanguageOptions[i];
+                //string option = LanguageOptions[i];
+                string option = ((Languages)i).ToString();
                 var data = new Dropdown.OptionData(option);
                 m_LanguageDrog.options.Add(data);
             }
@@ -166,7 +167,7 @@ namespace HotFix
                 SoundVolume = (byte)m_SoundSlider.value,
                 Language = (byte)m_LanguageDrog.value,
             };
-            Debug.Log($"退出时：{cmd.ToString()}");
+            Debug.Log($"退出时：{cmd}");
             if (cmd.Equals(lastSettings))
             {
                 Debug.Log("没有改变，直接退出");
@@ -175,7 +176,7 @@ namespace HotFix
             else
             {
                 Debug.Log("设置变了，提交后退出");
-                //ClientNet.Get.SendSettins(cmd); //提交后退出
+                ClientNet.Get.SendSettins(cmd); //提交后退出
             }
         }
         void SwitchToCommon()
@@ -235,7 +236,7 @@ namespace HotFix
             m_SoundValue.text = $"{value}";
         }
 
-        static readonly string[] LanguageOptions = new string[] { "English", "简体中文", "日本語", "Español" };
+        //static readonly string[] LanguageOptions = new string[] { "English", "简体中文", "日本語", "Español" };
         void OnLanguageChanged(int index)
         {
             Debug.Log($"改变语言：{m_LanguageDrog.options[index].text}");

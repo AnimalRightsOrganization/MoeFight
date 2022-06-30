@@ -6,7 +6,6 @@ namespace DatabaseEssential
 {
     public class DatabaseManager
     {
-        //static ServerConfiguration serverConfiguration;
         static MySqlConnection con;
 
         /// <summary>
@@ -259,5 +258,10 @@ namespace DatabaseEssential
                 return count;
             }
         }
+    }
+
+    public class SQLConfiguration
+    {
+        public string host, database, user, password;
     }
 }

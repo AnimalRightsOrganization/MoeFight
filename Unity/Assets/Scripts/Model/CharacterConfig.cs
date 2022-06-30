@@ -3,7 +3,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 
 //class的名称要与file名称一致，不然会None (Mono script)
-[CreateAssetMenu(fileName = "Data", menuName = "Config/Character", order = 1)] //右键创建
+//[CreateAssetMenu(fileName = "Data", menuName = "Config/Character", order = 1)] //右键创建
 public class CharacterConfig : ScriptableObject
 {
     public string Name = string.Empty;
