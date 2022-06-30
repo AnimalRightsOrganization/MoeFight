@@ -371,7 +371,7 @@ namespace Code.Client
                 Debug.LogError("准备好了，不能再选择");
                 return;
             }
-            Debug.Log($"[C] 我({m_PlayerManager.LocalPlayer.Status})，选择角色: {id}");
+            //Debug.Log($"[C] 我({m_PlayerManager.LocalPlayer.Status})，选择角色: {id}");
             var cmd = new C2S_RoleSelectPacket { Index = (byte)id };
             SendPacketSerializable(PacketType.C2S_RoleSelect, cmd);
         }

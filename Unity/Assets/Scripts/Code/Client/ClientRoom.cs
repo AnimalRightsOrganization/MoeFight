@@ -36,6 +36,7 @@ namespace Code.Client
             BattleMode = (BattleMode)packet.BattleMode;
             hostPlayer.RoleIndex = packet.Host.RoleIndex;
             guestPlayer.RoleIndex = packet.Guest.RoleIndex;
+            Debug.Log($"客户端初始化: {hostPlayer.RoleIndex} vs {guestPlayer.RoleIndex}");
         }
     }
 }

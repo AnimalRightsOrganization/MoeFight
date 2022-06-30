@@ -146,13 +146,12 @@ namespace HotFix
         private void OnMatchResult(INetSerializable reader)
         {
             var packet = (S2C_MatchResultPacket)reader;
-            Debug.Log($"[UI_RoleSelect] {packet.ToString()}");
+            Debug.Log($"[UI_RoleSelect] {packet}");
 
             if (packet.Code == 2) //匹配后退出
             {
                 // 这里理论上只会收到2
                 Debug.Log("玩家离开，返回大厅");
-                //localPlayer.ResetToLobby();
                 this.Pop();
             }
         }
