@@ -108,7 +108,7 @@ namespace Code.Server
         {
             return m_BattleRoomList;
         }
-        public void AddBattleRoom(ServerRoom room)
+        public void SetAsBattle(ServerRoom room)
         {
             if (m_BattleRoomList.Contains(room))
             {

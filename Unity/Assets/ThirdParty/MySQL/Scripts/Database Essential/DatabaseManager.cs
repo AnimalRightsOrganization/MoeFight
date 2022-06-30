@@ -48,7 +48,7 @@ namespace DatabaseEssential
                         Console.WriteLine("Invalid username/password, please try again.");
                         break;
                     default:
-                        UnityEngine.Debug.Log($"err: {e.Number}");
+                        UnityEngine.Debug.Log($"err: {e.Number}, {e.Message}");
                         break;
                 }
                 return false;

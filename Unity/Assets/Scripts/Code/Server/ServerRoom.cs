@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
+using LiteNetLib.Utils;
 using Debug = UnityEngine.Debug;
 
 namespace Code.Server
@@ -11,7 +12,7 @@ namespace Code.Server
         #region 房间数据
         public ServerRoom(int roomId, ServerPlayer host, ServerPlayer guest) : base(roomId, host, guest)
         {
-            //Debug.LogError("Order.ServerRoom"); //子类迟
+            //Debug.Log("子类迟");
             m_PlayerList = new ServerPlayer[] { host, guest };
             EndCount = 0;
         }
@@ -29,6 +30,11 @@ namespace Code.Server
             {
                 return null; //要找的用户不在当前房间
             }
+        }
+        public void Send(NetDataWriter writer)
+        {
+            (hostPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+            (guestPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
         #endregion
 

@@ -10,7 +10,6 @@ namespace Code.Client
         #region 房间数据
         public ClientRoom(int roomId, ClientPlayer host, ClientPlayer guest) : base(roomId, host, guest)
         {
-            //Debug.LogError("测试先执行.ClientRoom"); //子类迟
             m_PlayerList = new ClientPlayer[] { host, guest };
         }
 
@@ -52,14 +51,14 @@ namespace Code.Client
         }
         void OnLockstep(INetSerializable reader)
         {
-            var packet = (S2C_InputPacket)reader;
+            //var packet = (S2C_InputPacket)reader;
             //GameManager.Instance.RecvOperation(packet);
         }
 
 
         // 计时器，获得指定的更新频率
         //protected LogicTimer m_SendTimer;
-        public bool IsHost = true; //我是否房主
+        //public bool IsHost = true; //我是否房主
         public S2C_LoadScenePacket sceneData;
 
         // 用于创建场景
@@ -81,7 +80,7 @@ namespace Code.Client
             // 判断我的主客位
             if (BattleMode == BattleMode.Matching)
             {
-                IsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId == 0;
+                //IsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId == 0;
             }
         }
 

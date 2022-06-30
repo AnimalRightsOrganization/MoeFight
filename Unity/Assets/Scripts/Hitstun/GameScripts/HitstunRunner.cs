@@ -104,7 +104,7 @@ public class HitstunRunner : MonoBehaviour
             nextStep = false;
 
 
-            // save new gamestate //TODO: 意义不明
+            // save new gamestate
             if (buffer.IsCreated)
             {
                 buffer.Dispose();
@@ -114,12 +114,9 @@ public class HitstunRunner : MonoBehaviour
             //Debug.Log($"OnFixed111: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
 
 
-            // 赋回旧的值，再计算一次？意义不明
-            // 两次传入的参数inputs, flag是一样的
             // oldBuffer是执行输入前一帧的 LocalSession.gs
             // load old gamestate and re-simulate
-            GameState.FromBytes(LocalSession.gs, oldBuffer);  //oldBuffer赋值给gs（回档）。再执行一次inputs
-            //Debug.Log($"导入inputs验证，input[0]={inputs[0]}");
+            GameState.FromBytes(LocalSession.gs, oldBuffer);
             LocalSession.gs.Update(inputs, 0);
 
 
@@ -165,6 +162,8 @@ public class HitstunRunner : MonoBehaviour
             characterViews[i].LoadResources(characterDatas[i]);
             characterViews[i].showHitboxes = showHitboxes;
         }
+        // setup position
+        UpdateGameView(LocalSession.gs);
     }
 
     void UpdateGameView(GameState gs)

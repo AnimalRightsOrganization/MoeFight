@@ -1,4 +1,5 @@
 ﻿using System;
+using Debug = UnityEngine.Debug;
 
 namespace Code.Shared
 {
@@ -6,7 +7,7 @@ namespace Code.Shared
     {
         public BaseRoom(int id, BasePlayer host, BasePlayer guest)
         {
-            //UnityEngine.Debug.LogError("Order.BaseRoom"); //基类先
+            //Debug.Log("基类先");
             RoomID = id;
         }
 

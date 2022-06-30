@@ -270,6 +270,11 @@ namespace Code.Client
             }
         }
 
+        private void OnBattlePause(INetSerializable reader)
+        {
+            IsStart = false;
+        }
+
 
         private GUIStyle _style1;
         private GUIStyle style1

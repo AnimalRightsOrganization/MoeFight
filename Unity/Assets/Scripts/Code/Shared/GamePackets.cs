@@ -558,6 +558,7 @@ namespace Code.Shared
             return stringBuild;
         }
     }
+
     // 双方准备后，服务器通知跳转场景。
     // 下发初始化场景所需的参数。服务器房间内也要备份。
     [System.Serializable]
