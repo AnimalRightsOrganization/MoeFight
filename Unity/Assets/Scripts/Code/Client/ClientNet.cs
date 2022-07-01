@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using Code.Shared;
-using HotFix;
+using UnityEngine;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using UnityEngine;
+using Code.Shared;
+using HotFix;
 
 namespace Code.Client
 {
@@ -80,6 +80,7 @@ namespace Code.Client
             Debug.Log("[C] Connected to server: " + peer.EndPoint);
             _server = peer;
 
+            if (UIManager.Get() == null) return;
             var connect = UIManager.Get().GetUI<UI_Connect>();
             UIManager.Get().Pop(connect);
         }
@@ -266,6 +267,7 @@ namespace Code.Client
             _netManager.Connect(IP, Port, Key);
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
 
+            if (UIManager.Get() == null) return;
             UIManager.Get().Push<UI_Connect>();
         }
 

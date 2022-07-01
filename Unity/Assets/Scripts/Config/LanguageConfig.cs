@@ -5,7 +5,6 @@ using UnityEngine;
 public class LanguageConfig : ScriptableObject
 {
     public List<UINode> uiList = new List<UINode>();
-
 }
 [System.Serializable]
 public class UINode
