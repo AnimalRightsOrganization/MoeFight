@@ -53,13 +53,22 @@ public class ExcelTools : EditorWindow
 	/// <summary>
 	/// 显示当前窗口	
 	/// </summary>
-	[MenuItem("Plugins/ExcelTools")]
+	[MenuItem("Tools/ExcelTools")]
 	static void ShowExcelTools()
 	{
 		Init();
 		//加载Excel文件
 		LoadExcel();
 		instance.Show();
+	}
+
+	[MenuItem("Tools/GenerateJson")]
+	static void GenerateJson()
+	{
+		excelList = new List<string>();
+		excelList.Add(@"D:\Documents\GitHub\MoeFight\Excel\TestExcel.xlsx");
+
+		Convert();
 	}
 
 	void OnGUI()
@@ -123,10 +132,12 @@ public class ExcelTools : EditorWindow
 	/// </summary>
 	private static void Convert()
 	{
-		foreach (string assetsPath in excelList)
+		foreach (string excelPath in excelList)
 		{
-			//获取Excel文件的绝对路径
-			string excelPath = pathRoot + "/" + assetsPath;
+			Debug.Log($"excelPath={excelPath}");
+			string output_dir = $"{Application.dataPath}/Bundles/Configs";
+			string srcName = (new System.IO.FileInfo(excelPath)).Name;
+
 			//构造Excel工具类
 			ExcelUtility excel = new ExcelUtility(excelPath);
 
@@ -145,22 +156,26 @@ public class ExcelTools : EditorWindow
 			string output = "";
 			if (indexOfFormat == 0)
 			{
-				output = excelPath.Replace(".xlsx", ".json");
+				//output = excelPath.Replace(".xlsx", ".json");
+				output = $"{output_dir}/{srcName.Replace(".xlsx", ".json")}";
 				excel.ConvertToJson(output, encoding);
 			}
 			else if (indexOfFormat == 1)
 			{
-				output = excelPath.Replace(".xlsx", ".csv");
+				//output = excelPath.Replace(".xlsx", ".csv");
+				output = $"{output_dir}/{srcName.Replace(".xlsx", ".csv")}";
 				excel.ConvertToCSV(output, encoding);
 			}
 			else if (indexOfFormat == 2)
 			{
-				output = excelPath.Replace(".xlsx", ".xml");
+				//output = excelPath.Replace(".xlsx", ".xml");
+				output = $"{output_dir}/{srcName.Replace(".xlsx", ".xml")}";
 				excel.ConvertToXml(output);
 			}
 			else if (indexOfFormat == 3)
 			{
-				output = excelPath.Replace(".xlsx", ".lua");
+				//output = excelPath.Replace(".xlsx", ".lua");
+				output = $"{output_dir}/{srcName.Replace(".xlsx", ".lua")}";
 				excel.ConvertToLua(output, encoding);
 			}
 
@@ -177,7 +192,7 @@ public class ExcelTools : EditorWindow
 		//转换完后关闭插件
 		//这样做是为了解决窗口
 		//再次点击时路径错误的Bug
-		instance.Close();
+		instance?.Close();
 	}
 
 	/// <summary>
@@ -195,7 +210,7 @@ public class ExcelTools : EditorWindow
 		//遍历每一个对象判断不是Excel文件
 		foreach (Object obj in selection)
 		{
-			string objPath = AssetDatabase.GetAssetPath(obj);
+			string objPath = pathRoot + "/" + AssetDatabase.GetAssetPath(obj);
 			if (objPath.EndsWith(".xlsx"))
 			{
 				excelList.Add(objPath);
