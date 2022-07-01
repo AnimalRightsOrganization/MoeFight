@@ -9,17 +9,21 @@ namespace HotFix
 {
     public class UI_RoleSelect : UIBase
     {
-        [SerializeField] Button m_BackBtn;
-        [SerializeField] Text[] m_Rolename;
-        [SerializeField] Text[] m_Username;
-        [SerializeField] Button[] m_ConfirmBtn;
-        [SerializeField] GameObject[] m_ReadyText;
-        [SerializeField] Transform[] m_Selectors;
-        [SerializeField] Image[] m_HeadImages;
-        [SerializeField] Button[] m_Charactors;
+        public Button m_BackBtn;
+        public Text[] m_Rolename;
+        public Text[] m_Username;
+        public Button[] m_ConfirmBtn;
+        public GameObject[] m_ReadyObj;
+        public Transform[] m_Selectors;
+        public Image[] m_HeadImages;
+        public Button[] m_Charactors;
 
         private ClientPlayer localPlayer;
         private ClientPlayer rivalPlayer;
+
+        public Text m_BackText;
+        public Text[] m_ConfirmText;
+        public Text[] m_ReadyText;
 
         void Awake()
         {
@@ -40,9 +44,9 @@ namespace HotFix
             m_ConfirmBtn[0].onClick.AddListener(OnSendReady);
             m_ConfirmBtn[1].onClick.AddListener(OnSendReady);
 
-            m_ReadyText = new GameObject[2];
-            m_ReadyText[0] = transform.Find("RoomPanel/P1_Ready").gameObject;
-            m_ReadyText[1] = transform.Find("RoomPanel/P2_Ready").gameObject;
+            m_ReadyObj = new GameObject[2];
+            m_ReadyObj[0] = transform.Find("RoomPanel/P1_Ready").gameObject;
+            m_ReadyObj[1] = transform.Find("RoomPanel/P2_Ready").gameObject;
 
             var headPanel = transform.Find("HeadPanel");
             m_HeadImages = new Image[headPanel.childCount];
@@ -69,6 +73,8 @@ namespace HotFix
                     ClientNet.Get.SendSelection(id);
                 });
             }
+
+            m_BackText = transform.Find("Background/BackBtn/Text").GetComponent<Text>();
         }
 
         void OnEnable()
@@ -84,8 +90,8 @@ namespace HotFix
 
             m_ConfirmBtn[0].gameObject.SetActive(localIsHost);
             m_ConfirmBtn[1].gameObject.SetActive(!localIsHost);
-            m_ReadyText[0].SetActive(false);
-            m_ReadyText[1].SetActive(false);
+            m_ReadyObj[0].SetActive(false);
+            m_ReadyObj[1].SetActive(false);
 
             for (int i = 0; i < 2; i++)
             {
@@ -105,6 +111,11 @@ namespace HotFix
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
+        }
+
+        public override void ApplyLanguage()
+        {
+            m_BackText.text = "- BACK";
         }
 
         #region 网络消息
@@ -167,12 +178,12 @@ namespace HotFix
             if (hostStatus == PlayerStatus.AtRoomReady)
             {
                 m_ConfirmBtn[0].gameObject.SetActive(false);
-                m_ReadyText[0].SetActive(true);
+                m_ReadyObj[0].SetActive(true);
             }
             if (guestStatus == PlayerStatus.AtRoomReady)
             {
                 m_ConfirmBtn[1].gameObject.SetActive(false);
-                m_ReadyText[1].SetActive(true);
+                m_ReadyObj[1].SetActive(true);
             }
         }
 
@@ -184,9 +195,9 @@ namespace HotFix
 
             // 先变化状态，让用户看到。再倒计时切换场景。
             m_ConfirmBtn[0].gameObject.SetActive(false);
-            m_ReadyText[0].SetActive(true);
+            m_ReadyObj[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
-            m_ReadyText[1].SetActive(true);
+            m_ReadyObj[1].SetActive(true);
 
             System.Action action = () =>
             {

@@ -80,6 +80,9 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
+            //LanguageConfig lang = ConfigManager.m_LanguageConfig;
+            //lang.uiList[0].itemList[0].Word;
+
             m_UserNamePlaceholder.text = "输入用户名";
             m_PasswordPlaceholder.text = "输入密码";
             m_LoginText.text = "+登录";

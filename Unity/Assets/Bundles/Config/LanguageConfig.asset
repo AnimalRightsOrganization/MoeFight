@@ -93,7 +93,34 @@ MonoBehaviour:
       JapaneseWord: 
       EpanishWord: 
   - Title: UI_Matching
-    itemList: []
+    itemList:
+    - Word: m_UsedTime
+      EnglishWord: 'Used Time: '
+      ChineseWord: "\u5DF2\u7528\u65F6\u95F4\uFF1A"
+      JapaneseWord: 
+      EpanishWord: 
+    - Word: m_CancelText
+      EnglishWord: Cancel
+      ChineseWord: "\u53D6\u6D88"
+      JapaneseWord: 
+      EpanishWord: 
+  - Title: UI_RoleSelect
+    itemList:
+    - Word: m_BackText
+      EnglishWord: '- BACK'
+      ChineseWord: "- \u8FD4\u56DE"
+      JapaneseWord: 
+      EpanishWord: 
+    - Word: m_ConfirmText
+      EnglishWord: OK
+      ChineseWord: "\u786E\u8BA4"
+      JapaneseWord: 
+      EpanishWord: 
+    - Word: m_ReadyText
+      EnglishWord: Ready
+      ChineseWord: "\u51C6\u5907"
+      JapaneseWord: 
+      EpanishWord: 
   - Title: UI_Settings
     itemList:
     - Word: m_UsedTimeText
@@ -106,7 +133,5 @@ MonoBehaviour:
       ChineseWord: "\u53D6\u6D88"
       JapaneseWord: 
       EpanishWord: 
-  - Title: UI_RoleSelect
-    itemList: []
   - Title: UI_GameMenu
     itemList: []

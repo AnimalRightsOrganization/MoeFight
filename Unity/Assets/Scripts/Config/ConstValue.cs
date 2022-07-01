@@ -3,11 +3,10 @@ using UnityEngine;
 
 public class ConstValue
 {
-    #region 路径
-    const string patchName = "Bundles";
-
-    public const string DUMP_FOLDER = "";
-
+    #region AssetBundle
+    public const string patchName = "Bundles";
+    public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
+    public const string CONFIG_FOLDER = "Assets/Bundles/Configs";
     // ab打包源文件
     static string _srcPath;
     public static string srcPath
@@ -83,7 +82,9 @@ public class ConstValue
     public static string GetDeployRes { get { return $"{GetDeployRoot}\\res"; } }
     #endregion
 
-    public static string BuildDir = System.Environment.CurrentDirectory + "\\Build\\";
+
+    #region Application
+    public static string BuildDir = System.Environment.CurrentDirectory + "\\Build";
 #if UNITY_ANDROID
     public const string PLATFORM_NAME = "Android";
     public static string LocationPath = BuildDir + $"{Application.productName}.apk";
@@ -92,12 +93,25 @@ public class ConstValue
     public static string LocationPath = BuildDir;
 #else
     public const string PLATFORM_NAME = "StandaloneWindows64";
-    public static string LocationPath = BuildDir + $"{Application.productName}.exe";
+    public static string LocationPath =  $"{BuildDir}\\{Application.productName}.exe";
 #endif
+    #endregion
 
+
+    #region URL
     //public const string PRESENT_URL = "http://app.moegijinka.cn/turtlerace/present.json"; //（不要文件配置了，使用Http请求）
     public const string API_BASE = "http://restapi.moegijinka.cn";
     public const string GAME_DATA = "api/v1/GameCenter/game_data";
     public const string PRESENT_GET = "moefight/v1/GetPresent/get";
     public const string PRESENT_DEPLOY = "moefight/v1/GetPresent/deploy";
+    #endregion
+
+
+#if UNITY_EDITOR
+    public static string REPLAY_FOLDER = $"{Directory.GetParent(Application.dataPath)}/Replay";
+    public static string DUMP_FOLDER = $"{Directory.GetParent(Application.dataPath)}/Dump";
+#else
+    public static string REPLAY_FOLDER = $"{Application.persistentDataPath}/Replay";
+    public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
+#endif
 }

@@ -25,25 +25,31 @@ public class CreateConfig : Editor
         Selection.activeObject = asset;
     }
 
-    [MenuItem("Tools/CreateConfig/LanguageConfig")]
-    static void CreateLanguageConfig()
-    {
-        CreateAsset<LanguageConfig>();
-    }
-
-    [MenuItem("Tools/CreateConfig/InputConfig")]
-    static void CreateInputConfig()
-    {
-        CreateAsset<InputConfig>();
-    }
-
-    [MenuItem("Tools/CreateConfig/GlobalConfig")]
+    [MenuItem("Tools/创建配置/GlobalConfig")]
     static void CreateGlobalConfig()
     {
         CreateAsset<GlobalConfig>();
     }
 
-    [MenuItem("Tools/CreateConfig/选中角色配置")]
+    [MenuItem("Tools/创建配置/InputConfig")]
+    static void CreateInputConfig()
+    {
+        CreateAsset<InputConfig>();
+    }
+
+    [MenuItem("Tools/创建配置/RoleConfig")]
+    static void CreateRoleConfig()
+    {
+        CreateAsset<RoleConfig>();
+    }
+
+    [MenuItem("Tools/创建配置/LanguageConfig")]
+    static void CreateLanguageConfig()
+    {
+        CreateAsset<LanguageConfig>();
+    }
+
+    [MenuItem("Tools/创建配置/选中角色配置")]
     static void SelectCharacterConfig()
     {
         // 搜索 type:CharacterConfig
@@ -58,7 +64,7 @@ public class CreateConfig : Editor
         }
         else
         {
-            Debug.Log("Couldn't find a CharacterConfig");
+            Debug.LogError("Couldn't find a CharacterConfig");
         }
     }
 }

@@ -28,7 +28,8 @@ public class GameManager : MonoBehaviour
         //Screen.SetResolution(540, 960);
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         //Application.targetFrameRate = 60; //锁定渲染帧
-        QualitySettings.vSyncCount = 0;
+        QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
+        //Debug.unityLogger.logEnabled = false; //release版关闭
 
         if (!Initialized)
         {
@@ -47,13 +48,21 @@ public class GameManager : MonoBehaviour
     {
         Initialized = true;
 
-        GameObject uimanager = new GameObject("UIManager");
-        uimanager.transform.SetParent(this.transform);
-        uimanager.AddComponent<UIManager>();
-
         GameObject clientNet = new GameObject("ClientNet");
         clientNet.transform.SetParent(this.transform);
         clientNet.AddComponent<ClientNet>();
+
+        GameObject uiManager = new GameObject("UIManager");
+        uiManager.transform.SetParent(this.transform);
+        uiManager.AddComponent<UIManager>();
+
+        GameObject configManager = new GameObject("ConfigManager");
+        configManager.transform.SetParent(this.transform);
+        configManager.AddComponent<ConfigManager>();
+
+        GameObject audioManager = new GameObject("AudioManager");
+        audioManager.transform.SetParent(this.transform);
+        audioManager.AddComponent<AudioManager>();
 
         UIManager.Get().Push<UI_Login>();
     }
