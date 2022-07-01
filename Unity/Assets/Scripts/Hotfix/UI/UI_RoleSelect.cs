@@ -115,7 +115,9 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            m_BackText.text = "- BACK";
+            var config = ConfigManager.Get();
+
+            m_BackText.text = config.GetWord(15);
         }
 
         #region 网络消息

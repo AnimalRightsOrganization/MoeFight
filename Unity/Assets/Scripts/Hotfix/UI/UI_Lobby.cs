@@ -69,12 +69,14 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            m_ArcadeText.text = "+ Arcade";
-            m_MatchText.text = "+ Match";
-            m_TrainingText.text = "+ Training";
-            m_ReplayText.text = "+ Replay";
-            m_SettingsText.text = "+ Settings";
-            m_ExitText.text = "+ Exit";
+            var config = ConfigManager.Get();
+
+            m_ArcadeText.text = config.GetWord(7);
+            m_MatchText.text = config.GetWord(8);
+            m_TrainingText.text = config.GetWord(9);
+            m_ReplayText.text = config.GetWord(10);
+            m_SettingsText.text = config.GetWord(11);
+            m_ExitText.text = config.GetWord(12);
         }
 
         #region 网络消息

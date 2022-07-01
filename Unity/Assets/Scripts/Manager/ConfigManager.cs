@@ -26,6 +26,7 @@ public class ConfigManager : MonoBehaviour
 
 #if UNITY_EDITOR
         var ta = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Editor/ExcelTool/Excel/Language.json");
+        //Debug.Log(ta.text);
         m_NodeList = JsonMapper.ToObject<LanguageNode[]>(ta.text);
 #endif
     }

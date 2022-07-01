@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
+﻿using System.Text;
 using System.Collections.Generic;
-using System.Text;
+using UnityEngine;
+using UnityEditor;
 
 public class ExcelTools : EditorWindow
 {
@@ -29,27 +28,27 @@ public class ExcelTools : EditorWindow
 	/// <summary>
 	/// 输出格式索引
 	/// </summary>
-	private static int indexOfFormat=0;
+	private static int indexOfFormat = 0;
 
 	/// <summary>
 	/// 输出格式
 	/// </summary>
-	private static readonly string[] formatOption=new string[]{"JSON","CSV","XML","LUA"};
+	private static readonly string[] formatOption = new string[] { "JSON", "CSV", "XML", "LUA" };
 
 	/// <summary>
 	/// 编码索引
 	/// </summary>
-	private static int indexOfEncoding=0;
+	private static int indexOfEncoding = 0;
 
 	/// <summary>
 	/// 编码选项
 	/// </summary>
-	private static readonly string[] encodingOption=new string[]{"UTF-8","GB2312"};
+	private static readonly string[] encodingOption = new string[] { "UTF-8", "GB2312" };
 
 	/// <summary>
 	/// 是否保留原始文件
 	/// </summary>
-	private static bool keepSource=true;
+	private static bool keepSource = true;
 
 	/// <summary>
 	/// 显示当前窗口	
@@ -75,46 +74,44 @@ public class ExcelTools : EditorWindow
 	private void DrawOptions()
 	{
 		GUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField("请选择格式类型:",GUILayout.Width(85));
-		indexOfFormat=EditorGUILayout.Popup(indexOfFormat,formatOption,GUILayout.Width(125));
+		EditorGUILayout.LabelField("请选择格式类型:", GUILayout.Width(85));
+		indexOfFormat = EditorGUILayout.Popup(indexOfFormat, formatOption, GUILayout.Width(125));
 		GUILayout.EndHorizontal();
 
 		GUILayout.BeginHorizontal();
-		EditorGUILayout.LabelField("请选择编码类型:",GUILayout.Width(85));
-		indexOfEncoding=EditorGUILayout.Popup(indexOfEncoding,encodingOption,GUILayout.Width(125));
+		EditorGUILayout.LabelField("请选择编码类型:", GUILayout.Width(85));
+		indexOfEncoding = EditorGUILayout.Popup(indexOfEncoding, encodingOption, GUILayout.Width(125));
 		GUILayout.EndHorizontal();
 
-		keepSource=GUILayout.Toggle(keepSource,"保留Excel源文件");
+		keepSource = GUILayout.Toggle(keepSource, "保留Excel源文件");
 	}
-   
-    /// <summary>
-    /// 绘制插件界面输出项
-    /// </summary>
-    private void DrawExport()
-	{
 
-		if(excelList==null) return;
-		if(excelList.Count<1)
+	/// <summary>
+	/// 绘制插件界面输出项
+	/// </summary>
+	private void DrawExport()
+	{
+		if (excelList == null) return;
+		if (excelList.Count < 1)
 		{
 			EditorGUILayout.LabelField("目前没有Excel文件被选中哦!");
-
 		}
 		else
 		{
 			EditorGUILayout.LabelField("下列项目将被转换为" + formatOption[indexOfFormat] + ":");
 			GUILayout.BeginVertical();
-			scrollPos=GUILayout.BeginScrollView(scrollPos,false,true,GUILayout.Height(150));
-			foreach(string s in excelList)
+			scrollPos = GUILayout.BeginScrollView(scrollPos, false, true, GUILayout.Height(150));
+			foreach (string s in excelList)
 			{
 				GUILayout.BeginHorizontal();
-				GUILayout.Toggle(true,s);
+				GUILayout.Toggle(true, s);
 				GUILayout.EndHorizontal();
 			}
 			GUILayout.EndScrollView();
 			GUILayout.EndVertical();
 
 			//输出
-			if(GUILayout.Button("转换"))
+			if (GUILayout.Button("转换"))
 			{
 				Convert();
 			}
@@ -126,41 +123,49 @@ public class ExcelTools : EditorWindow
 	/// </summary>
 	private static void Convert()
 	{
-		foreach(string assetsPath in excelList)
+		foreach (string assetsPath in excelList)
 		{
 			//获取Excel文件的绝对路径
-			string excelPath=pathRoot + "/" + assetsPath;
+			string excelPath = pathRoot + "/" + assetsPath;
 			//构造Excel工具类
-			ExcelUtility excel=new ExcelUtility(excelPath);
+			ExcelUtility excel = new ExcelUtility(excelPath);
 
 			//判断编码类型
-			Encoding encoding=null;
-			if(indexOfEncoding==0 || indexOfEncoding==3)
-            {
-				encoding=Encoding.GetEncoding("utf-8");
-			}else if(indexOfEncoding==1){
-				encoding=Encoding.GetEncoding("gb2312");
+			Encoding encoding = null;
+			if (indexOfEncoding == 0 || indexOfEncoding == 3)
+			{
+				encoding = Encoding.GetEncoding("utf-8");
+			}
+			else if (indexOfEncoding == 1)
+			{
+				encoding = Encoding.GetEncoding("gb2312");
 			}
 
 			//判断输出类型
-			string output="";
-			if(indexOfFormat==0){
-				output=excelPath.Replace(".xlsx",".json");
-				excel.ConvertToJson(output,encoding);
-			}else if(indexOfFormat==1){
-				output=excelPath.Replace(".xlsx",".csv");
-				excel.ConvertToCSV(output,encoding);
-			}else if(indexOfFormat==2){
-				output=excelPath.Replace(".xlsx",".xml");
+			string output = "";
+			if (indexOfFormat == 0)
+			{
+				output = excelPath.Replace(".xlsx", ".json");
+				excel.ConvertToJson(output, encoding);
+			}
+			else if (indexOfFormat == 1)
+			{
+				output = excelPath.Replace(".xlsx", ".csv");
+				excel.ConvertToCSV(output, encoding);
+			}
+			else if (indexOfFormat == 2)
+			{
+				output = excelPath.Replace(".xlsx", ".xml");
 				excel.ConvertToXml(output);
-			}else if (indexOfFormat == 3)
-            {
-                output = excelPath.Replace(".xlsx", ".lua");
-                excel.ConvertToLua(output, encoding);
-            }
+			}
+			else if (indexOfFormat == 3)
+			{
+				output = excelPath.Replace(".xlsx", ".lua");
+				excel.ConvertToLua(output, encoding);
+			}
 
 			//判断是否保留源文件
-			if(!keepSource)
+			if (!keepSource)
 			{
 				FileUtil.DeleteFileOrDirectory(excelPath);
 			}
@@ -173,7 +178,6 @@ public class ExcelTools : EditorWindow
 		//这样做是为了解决窗口
 		//再次点击时路径错误的Bug
 		instance.Close();
-
 	}
 
 	/// <summary>
@@ -181,18 +185,18 @@ public class ExcelTools : EditorWindow
 	/// </summary>
 	private static void LoadExcel()
 	{
-		if(excelList==null) excelList=new List<string>();
+		if (excelList == null) excelList = new List<string>();
 		excelList.Clear();
 		//获取选中的对象
-		object[] selection=(object[])Selection.objects;
+		object[] selection = (object[])Selection.objects;
 		//判断是否有对象被选中
-		if(selection.Length==0)
+		if (selection.Length == 0)
 			return;
 		//遍历每一个对象判断不是Excel文件
-		foreach(Object obj in selection)
+		foreach (Object obj in selection)
 		{
-			string objPath=AssetDatabase.GetAssetPath(obj);
-			if(objPath.EndsWith(".xlsx"))
+			string objPath = AssetDatabase.GetAssetPath(obj);
+			if (objPath.EndsWith(".xlsx"))
 			{
 				excelList.Add(objPath);
 			}
@@ -201,20 +205,19 @@ public class ExcelTools : EditorWindow
 
 	private static void Init()
 	{
-	    
 		//获取当前实例
-		instance=EditorWindow.GetWindow<ExcelTools>();
+		instance = EditorWindow.GetWindow<ExcelTools>();
 		//初始化
-		pathRoot=Application.dataPath;
+		pathRoot = Application.dataPath;
 		//注意这里需要对路径进行处理
 		//目的是去除Assets这部分字符以获取项目目录
 		//我表示Windows的/符号一直没有搞懂
-		pathRoot=pathRoot.Substring(0,pathRoot.LastIndexOf("/"));
-		excelList=new List<string>();
-		scrollPos=new Vector2(instance.position.x,instance.position.y+75);
+		pathRoot = pathRoot.Substring(0, pathRoot.LastIndexOf("/"));
+		excelList = new List<string>();
+		scrollPos = new Vector2(instance.position.x, instance.position.y + 75);
 	}
 
-	void OnSelectionChange() 
+	void OnSelectionChange()
 	{
 		//当选择发生变化时重绘窗体
 		Show();

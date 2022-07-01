@@ -60,8 +60,10 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            m_UsedTime.text = "已用时间：0:00";
-            m_CancelText.text = "取消";
+            var config = ConfigManager.Get();
+
+            m_UsedTime.text = config.GetWord(13);
+            m_CancelText.text = config.GetWord(14);
         }
 
         #region 网络消息
