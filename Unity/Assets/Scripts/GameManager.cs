@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     private static bool Initialized = false;
     public static string Token { get; private set; }
 
-    void Start()
+    void Awake()
     {
         // 系统设置
         Time.timeScale = 1.0f;
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
         //Application.targetFrameRate = 60; //锁定渲染帧
         QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
         //Debug.unityLogger.logEnabled = false; //release版关闭
+        //Application.systemLanguage;
 
         if (!Initialized)
         {
@@ -44,10 +45,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    async void GetConfig() { }
+
+    async void CheckUpdateAsync() { }
+
     void OnInit()
     {
         Initialized = true;
 
+        // 进入HotFix代码
+
+        // 初始化各种管理器
         GameObject clientNet = new GameObject("ClientNet");
         clientNet.transform.SetParent(this.transform);
         clientNet.AddComponent<ClientNet>();
@@ -64,9 +72,9 @@ public class GameManager : MonoBehaviour
         audioManager.transform.SetParent(this.transform);
         audioManager.AddComponent<AudioManager>();
 
+        // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
     }
-
 
     public void LoadBattle(System.Action action = null)
     {

@@ -39,16 +39,16 @@ public class CharacterView : MonoBehaviour
         projectileBoxView = Instantiate(hitboxPrefab, transform);
         projectileBoxView.spriteRenderer.color = new Color(1f, 0f, 0f, .5f);
         projectileBoxView.spriteRenderer.sortingLayerName = "HITBOX";
-
-        var prefab = ResManager.LoadPrefab("Prefabs/Aoi");
-        model = Instantiate(prefab, transform).transform;
-        model.name = "model";
-        animator = model.GetComponentInChildren<Animator>();
     }
 
     public void LoadResources(CharacterData _data)
     {
         data = _data;
+
+        var prefab = ResManager.LoadPrefab($"Prefabs/{data.name}");
+        model = Instantiate(prefab, transform).transform;
+        model.name = "model";
+        animator = model.GetComponentInChildren<Animator>();
 
         // load sprites from animation data and store them into dictionary
         foreach (KeyValuePair<string, Animation> kvp in data.animations)
@@ -90,14 +90,11 @@ public class CharacterView : MonoBehaviour
         }
     }
 
-    public CharacterState currentState;
-    public Animation currentAnimation;
-
     public void UpdateCharacterView(Character character)
     {
         // display correct sprite based on state
-        currentState = character.state;
-        currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
+        CharacterState currentState = character.state;
+        Animation currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
         animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
 
