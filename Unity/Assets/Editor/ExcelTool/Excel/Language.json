@@ -1,0 +1,44 @@
+﻿[
+  {
+    "Id": "ui_login.username",
+    "English": "Username",
+    "Chinese": "输入用户名",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.password",
+    "English": "Password",
+    "Chinese": "输入密码",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.login",
+    "English": "LOGIN",
+    "Chinese": "登录",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.toregister",
+    "English": "Don't have an account? Sign Up",
+    "Chinese": "去注册",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.password2",
+    "English": "Repeat Password",
+    "Chinese": "确认密码",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.register",
+    "English": "CREATE ACCOUNT",
+    "Chinese": "注册",
+    "Japanese": null
+  },
+  {
+    "Id": "ui_login.tologin",
+    "English": "Already have an account? Login here",
+    "Chinese": "去登录",
+    "Japanese": null
+  }
+]

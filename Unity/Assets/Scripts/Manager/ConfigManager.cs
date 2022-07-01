@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using LitJson;
 
 public class ConfigManager : MonoBehaviour
 {
@@ -13,13 +14,24 @@ public class ConfigManager : MonoBehaviour
     //public static GlobalConfig m_GlobalConfig;
     //public static InputConfig m_InputConfig;
     //public static RoleConfig m_RoleConfig;
-    public static LanguageConfig m_LanguageConfig;
+
+    public LanguageNode[] m_NodeList;
+    public Languages currentLanguage = Languages.Chinese;
 
     void Awake()
     {
         //m_GlobalConfig = ResManager.LoadConfig("configs/globalconfig") as GlobalConfig;
         //m_InputConfig = ResManager.LoadConfig("configs/inputconfig") as InputConfig;
         //m_RoleConfig = ResManager.LoadConfig("configs/roleconfig") as RoleConfig;
-        m_LanguageConfig = ResManager.LoadConfig("configs/languageconfig") as LanguageConfig;
+
+#if UNITY_EDITOR
+        var ta = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Editor/ExcelTool/Excel/Language.json");
+        m_NodeList = JsonMapper.ToObject<LanguageNode[]>(ta.text);
+#endif
+    }
+
+    public string GetWord(int key)
+    {
+        return m_NodeList[key].Word[(int)currentLanguage];
     }
 }

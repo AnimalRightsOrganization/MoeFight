@@ -80,19 +80,17 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            //LanguageConfig lang = ConfigManager.m_LanguageConfig;
-            //lang.uiList[0].itemList[0].Word;
+            var config = ConfigManager.Get();
 
-            m_UserNamePlaceholder.text = "输入用户名";
-            m_PasswordPlaceholder.text = "输入密码";
-            m_LoginText.text = "+登录";
-            m_ToRegisterText.text = "+去注册";
-
-            m_RegUserNamePlaceholder.text = "输入用户名";
-            m_RegPasswordPlaceholder.text = "输入密码";
-            m_RegPassword2Placeholder.text = "确认密码";
-            m_RegisterText.text = "+注册";
-            m_ToLoginText.text = "+去登录";
+            m_UserNamePlaceholder.text = config.GetWord(0);
+            m_PasswordPlaceholder.text = config.GetWord(1);
+            m_LoginText.text = config.GetWord(2);
+            m_ToRegisterText.text = config.GetWord(3);
+            m_RegUserNamePlaceholder.text = config.GetWord(0);
+            m_RegPasswordPlaceholder.text = config.GetWord(1);
+            m_RegPassword2Placeholder.text = config.GetWord(4);
+            m_RegisterText.text = config.GetWord(5);
+            m_ToLoginText.text = config.GetWord(6);
         }
 
         #region 网络消息

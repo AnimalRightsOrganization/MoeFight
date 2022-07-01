@@ -43,12 +43,6 @@ public class CreateConfig : Editor
         CreateAsset<RoleConfig>();
     }
 
-    [MenuItem("Tools/创建配置/LanguageConfig")]
-    static void CreateLanguageConfig()
-    {
-        CreateAsset<LanguageConfig>();
-    }
-
     [MenuItem("Tools/创建配置/选中角色配置")]
     static void SelectCharacterConfig()
     {
@@ -59,8 +53,6 @@ public class CreateConfig : Editor
             var readmeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GUIDToAssetPath(ids[0]));
 
             Selection.objects = new UnityEngine.Object[] { readmeObject };
-
-            (Selection.objects[0] as CharacterConfig).FromJson();
         }
         else
         {

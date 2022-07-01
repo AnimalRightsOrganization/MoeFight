@@ -76,6 +76,8 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
+    public LanguageNode[] nodes;
+
     public void LoadBattle(System.Action action = null)
     {
         StartCoroutine(LoadBattleAsync(action));
