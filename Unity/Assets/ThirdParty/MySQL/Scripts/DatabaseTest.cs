@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_SERVER
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using DatabaseEssential;
@@ -69,3 +70,4 @@ public class DatabaseTest : MonoBehaviour
         }
     }
 }
+#endif

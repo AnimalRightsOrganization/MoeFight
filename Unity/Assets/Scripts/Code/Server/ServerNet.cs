@@ -290,6 +290,7 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
+#if UNITY_SERVER
             #region 检查逻辑
             // 校验账号密码
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}' AND password='{cmd.Password}'";
@@ -333,6 +334,7 @@ namespace Code.Server
             //};
             //peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
             #endregion
+#endif
         }
 
         private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)

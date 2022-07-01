@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_SERVER
+using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
@@ -265,3 +266,4 @@ namespace DatabaseEssential
         public string host, database, user, password;
     }
 }
+#endif
