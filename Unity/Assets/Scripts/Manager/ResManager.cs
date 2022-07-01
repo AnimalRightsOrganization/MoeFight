@@ -85,6 +85,20 @@ public class ResManager
         return clip;
     }
 
+    public static string LoadBytes(string fileName)
+    {
+#if UNITY_EDITOR && !USE_ASSETBUNDLE
+        string filePath = $"{BUNDLES_FOLDER}/{fileName}.bytes";
+        TextAsset ta = AssetDatabase.LoadAssetAtPath<TextAsset>(filePath);
+#else
+        string filePath = GetFilePath($"{fileName}.unity3d");
+        AssetBundle asset = AssetBundle.LoadFromFile(filePath);
+        TextAsset ta = asset.LoadAllAssets()[0] as TextAsset;
+        asset.Unload(false);
+#endif
+        return ta.text;
+    }
+
     public static object LoadConfig(string configName)
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE

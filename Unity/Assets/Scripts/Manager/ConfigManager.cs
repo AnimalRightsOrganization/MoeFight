@@ -24,11 +24,8 @@ public class ConfigManager : MonoBehaviour
         //m_InputConfig = ResManager.LoadConfig("configs/inputconfig") as InputConfig;
         //m_RoleConfig = ResManager.LoadConfig("configs/roleconfig") as RoleConfig;
 
-#if UNITY_EDITOR
-        var ta = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/Editor/ExcelTool/Excel/Language.json");
-        //Debug.Log(ta.text);
-        m_NodeList = JsonMapper.ToObject<LanguageNode[]>(ta.text);
-#endif
+        var json = ResManager.LoadBytes("Configs/Language");
+        m_NodeList = JsonMapper.ToObject<LanguageNode[]>(json);
     }
 
     public string GetWord(int key)

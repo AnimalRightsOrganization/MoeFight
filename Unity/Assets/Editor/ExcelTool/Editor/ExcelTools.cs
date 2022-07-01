@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -65,8 +66,11 @@ public class ExcelTools : EditorWindow
 	[MenuItem("Tools/GenerateJson")]
 	static void GenerateJson()
 	{
-		excelList = new List<string>();
-		excelList.Add(@"D:\Documents\GitHub\MoeFight\Excel\TestExcel.xlsx");
+		string curr_dir = System.Environment.CurrentDirectory;
+		var curr_info = new DirectoryInfo(curr_dir);
+		string excel_root = $"{curr_info.Parent.FullName}/Excel";
+		string[] array = Directory.GetFiles(excel_root);
+		excelList = new List<string>(array);
 
 		Convert();
 	}
@@ -134,9 +138,11 @@ public class ExcelTools : EditorWindow
 	{
 		foreach (string excelPath in excelList)
 		{
-			Debug.Log($"excelPath={excelPath}");
+			//Debug.Log($"excelPath: {excelPath}");
 			string output_dir = $"{Application.dataPath}/Bundles/Configs";
-			string srcName = (new System.IO.FileInfo(excelPath)).Name;
+			string srcName = (new FileInfo(excelPath)).Name;
+			//string output = "";
+			string output = $"{output_dir}/{srcName.Replace(".xlsx", ".bytes")}";
 
 			//构造Excel工具类
 			ExcelUtility excel = new ExcelUtility(excelPath);
@@ -153,29 +159,28 @@ public class ExcelTools : EditorWindow
 			}
 
 			//判断输出类型
-			string output = "";
 			if (indexOfFormat == 0)
 			{
 				//output = excelPath.Replace(".xlsx", ".json");
-				output = $"{output_dir}/{srcName.Replace(".xlsx", ".json")}";
+				//output = $"{output_dir}/{srcName.Replace(".xlsx", ".json")}";
 				excel.ConvertToJson(output, encoding);
 			}
 			else if (indexOfFormat == 1)
 			{
 				//output = excelPath.Replace(".xlsx", ".csv");
-				output = $"{output_dir}/{srcName.Replace(".xlsx", ".csv")}";
+				//output = $"{output_dir}/{srcName.Replace(".xlsx", ".csv")}";
 				excel.ConvertToCSV(output, encoding);
 			}
 			else if (indexOfFormat == 2)
 			{
 				//output = excelPath.Replace(".xlsx", ".xml");
-				output = $"{output_dir}/{srcName.Replace(".xlsx", ".xml")}";
+				//output = $"{output_dir}/{srcName.Replace(".xlsx", ".xml")}";
 				excel.ConvertToXml(output);
 			}
 			else if (indexOfFormat == 3)
 			{
 				//output = excelPath.Replace(".xlsx", ".lua");
-				output = $"{output_dir}/{srcName.Replace(".xlsx", ".lua")}";
+				//output = $"{output_dir}/{srcName.Replace(".xlsx", ".lua")}";
 				excel.ConvertToLua(output, encoding);
 			}
 

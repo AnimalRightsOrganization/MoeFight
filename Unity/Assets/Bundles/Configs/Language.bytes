@@ -1,0 +1,98 @@
+﻿[
+  {
+    "Id": "UI_Login.username",
+    "English": "Username",
+    "Chinese": "输入用户名",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.password",
+    "English": "Password",
+    "Chinese": "输入密码",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.login",
+    "English": "LOGIN",
+    "Chinese": "登录",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.toregister",
+    "English": "Go Register",
+    "Chinese": "去注册",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.password2",
+    "English": "Repeat Password",
+    "Chinese": "确认密码",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.register",
+    "English": "CREATE ACCOUNT",
+    "Chinese": "注册",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Login.tologin",
+    "English": "Login here",
+    "Chinese": "去登录",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Arcade",
+    "English": "Arcade",
+    "Chinese": "剧情",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Match",
+    "English": "Match",
+    "Chinese": "匹配",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Match",
+    "English": "Training",
+    "Chinese": "训练",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Match",
+    "English": "Replay",
+    "Chinese": "回放",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Match",
+    "English": "Settings",
+    "Chinese": "设置",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Lobby.Match",
+    "English": "Exit",
+    "Chinese": "退出",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Matching.UsedTime",
+    "English": "Used Time:",
+    "Chinese": "已用时间：",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Matching.Cancel",
+    "English": "Cancel",
+    "Chinese": "取消",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_RoleSelect.Back",
+    "English": "BACK",
+    "Chinese": "返回",
+    "Japanese": null
+  }
+]
