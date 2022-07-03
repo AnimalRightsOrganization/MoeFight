@@ -3,6 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Build;
 using Code.Client;
 using Debug = UnityEngine.Debug;
 
@@ -80,65 +81,79 @@ public class EditorTools : Editor
     }
 
     [MenuItem("Tools/打包/客户端", false)]
-    static void BuildClient()
+    static void BuildWindows()
     {
-        string curr_dir = Environment.CurrentDirectory;
-        var curr_info = new DirectoryInfo("build_dir");
+        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Client.unity", true) };
+        //EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
 
-        string build_root = $"{curr_info.Parent}/Build";
+        string curr_dir = Environment.CurrentDirectory;
+        var curr_info = new DirectoryInfo(curr_dir);
+        string build_root = $"{curr_info}/Build";
         if (!Directory.Exists(build_root))
             Directory.CreateDirectory(build_root);
-
         string build_dir = $"{build_root}/Client";
         if (Directory.Exists(build_dir))
             Directory.Delete(build_dir, true);
         Directory.CreateDirectory(build_dir);
-
-        //BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
 
         BuildPlayerOptions opt = new BuildPlayerOptions();
         opt.scenes = new string[] { "Assets/Scenes/Client.unity" };
         opt.locationPathName = $"{build_dir}/{Application.productName}.exe";
         opt.target = BuildTarget.StandaloneWindows64;
         opt.options = BuildOptions.None;
-
         BuildPipeline.BuildPlayer(opt);
-
         Debug.Log($"打包成功: {opt.locationPathName}");
     }
     [MenuItem("Tools/打包/服务器", false)]
     static void BuildServer()
     {
-        string curr_dir = Environment.CurrentDirectory;
-        var curr_info = new DirectoryInfo("build_dir");
+        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Server.unity", true) };
+        //EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
 
-        string build_root = $"{curr_info.Parent}/Build";
+        string curr_dir = Environment.CurrentDirectory;
+        var curr_info = new DirectoryInfo(curr_dir);
+        string build_root = $"{curr_info}/Build";
         if (!Directory.Exists(build_root))
             Directory.CreateDirectory(build_root);
-
         string build_dir = $"{build_root}/Server";
-        try
-        {
-            if (Directory.Exists(build_dir))
-                Directory.Delete(build_dir, true);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"无法删除: {e}");
-        }
+        if (Directory.Exists(build_dir))
+            Directory.Delete(build_dir, true);
         Directory.CreateDirectory(build_dir);
-
-        //BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
 
         BuildPlayerOptions opt = new BuildPlayerOptions();
         opt.scenes = new string[] { "Assets/Scenes/Server.unity" };
         opt.locationPathName = $"{build_dir}/{Application.productName}.exe";
         opt.target = BuildTarget.StandaloneWindows64;
-        opt.options = BuildOptions.EnableHeadlessMode;
-
+        opt.options = BuildOptions.None;
         BuildPipeline.BuildPlayer(opt);
-
         Debug.Log($"打包成功: {opt.locationPathName}");
+    }
+    static void BuildAndroid()
+    {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Android, BuildTarget.Android);
+
+        string defines = "USE_ASSETBUNDLE;CHANNEL_11011";
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.Android, defines);
+        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.Android, "com.moegijinka.moefight"); //不同渠道包名不一样
+        //PlayerSettings.bundleVersion = string.Format("{0}.{1}.{2}", GameConfig.clientVersions[0],
+        //    GameConfig.clientVersions[1] * 100 + GameConfig.clientVersions[2], GameConfig.clientVersions[3]);
+    }
+    static void BuildiOS()
+    {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.iOS, BuildTarget.iOS);
+
+        string defines = "USE_ASSETBUNDLE;CHANNEL_11011";
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(BuildTargetGroup.iOS, defines);
+        PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.moegijinka.moefight"); //不同渠道包名不一样
+        //PlayerSettings.bundleVersion = string.Format("{0}.{1}.{2}", GameConfig.clientVersions[0],
+        //    GameConfig.clientVersions[1] * 100 + GameConfig.clientVersions[2], GameConfig.clientVersions[3]);
+
+        int code;
+        if (int.TryParse(PlayerSettings.iOS.buildNumber, out code) == false)
+        {
+            code = 0;
+        }
+        PlayerSettings.iOS.buildNumber = (code + 1).ToString();
     }
     [MenuItem("Tools/打包/资源", false)]
     static void BuildRes()
