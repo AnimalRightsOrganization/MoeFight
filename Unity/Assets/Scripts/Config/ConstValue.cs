@@ -4,7 +4,7 @@ using UnityEngine;
 public class ConstValue
 {
     #region AssetBundle
-    public const string patchName = "Bundles";
+    public const string PATCH_NAME = "Bundles";
     public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
     public const string CONFIG_FOLDER = "Assets/Bundles/Configs";
     // ab打包源文件
@@ -15,40 +15,41 @@ public class ConstValue
         {
             if (string.IsNullOrEmpty(_srcPath))
             {
-                _srcPath = Path.Combine(Application.dataPath, patchName);
+                _srcPath = Path.Combine(Application.dataPath, PATCH_NAME);
             }
             return _srcPath;
         }
     }
-    // ab打包输出（部署后删除）
-    static string _outputPath;
-    public static string outputPath
+    // ab第一次输出（MD5命名后删除）
+    static string _outputPath1st;
+    public static string outputPath1st
     {
         get
         {
-            if (string.IsNullOrEmpty(_outputPath))
+            if (string.IsNullOrEmpty(_outputPath1st))
             {
-                _outputPath = Path.Combine(Application.streamingAssetsPath, patchName);
+                _outputPath1st = Path.Combine(UnityDir, PATCH_NAME);
             }
-            return _outputPath;
+            return _outputPath1st;
         }
     }
-    // ab包远程部署地址
-    static string ab_url;
-    public static string AB_URL
+    // ab第二次输出（App、Web部署后删除）
+    static string _outputPath2nd;
+    public static string outputPath2nd
     {
         get
         {
-            if (string.IsNullOrEmpty(ab_url))
+            if (string.IsNullOrEmpty(_outputPath2nd))
             {
-                //ab_url = Path.Combine(GameManager.present.res_url, PLATFORM_NAME);
+                _outputPath2nd = Path.Combine(UnityDir, PLATFORM_NAME);
             }
-            return ab_url;
+            return _outputPath2nd;
         }
     }
+
     // ab包本地下载位置
     static string ab_path;
-    public static string AB_FilePath
+    public static string AB_AppPath
     {
         get
         {
@@ -59,14 +60,32 @@ public class ConstValue
             return ab_path;
         }
     }
-
-    // Unity工程根目录
-    public static string GetUnityDir
+    // ab包远程部署地址
+    static string ab_url;
+    public static string AB_WebURL
     {
         get
         {
-            var direction = new DirectoryInfo("Assets");
-            return direction.Parent.ToString();
+            if (string.IsNullOrEmpty(ab_url))
+            {
+                //ab_url = Path.Combine(GameManager.present.res_url, PLATFORM_NAME);
+            }
+            return ab_url;
+        }
+    }
+
+    // Unity工程根目录
+    static string _unity_dir;
+    public static string UnityDir
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_unity_dir))
+            {
+                var direction = new DirectoryInfo("Assets");
+                _unity_dir = direction.Parent.ToString();
+            }
+            return _unity_dir;
         }
     }
     // 远程部署根目录

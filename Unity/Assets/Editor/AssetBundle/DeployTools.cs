@@ -192,7 +192,7 @@ public class DeployTools : EditorWindow
     // 打包
     static void BuildApp()
     {
-        BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
+        BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
         if (Directory.Exists(ConstValue.BuildDir))
             Directory.Delete(ConstValue.BuildDir, true);
         Directory.CreateDirectory(ConstValue.BuildDir);
@@ -200,7 +200,7 @@ public class DeployTools : EditorWindow
         BuildPlayerOptions opt = new BuildPlayerOptions();
         opt.scenes = new string[] { "Assets/Scenes/Init.unity" };
         opt.locationPathName = ConstValue.LocationPath;
-        opt.target = buildTarget;
+        opt.target = target;
         opt.options = BuildOptions.None;
 
         BuildPipeline.BuildPlayer(opt);
@@ -209,18 +209,15 @@ public class DeployTools : EditorWindow
     }
     static void BuildRes()
     {
-        BuildTarget type = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
-        BundleTools.Build_Target(type);
-        AssetDatabase.Refresh();
+        BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
+        BundleTools.Build_Target(target);
     }
 
     // 压缩
     static async void PackAppZip()
     {
         string app_path = ConstValue.BuildDir;
-        //string file_name = Application.productName;
-        string file_name = ConstValue.PLATFORM_NAME;
-        string app_zip = Path.Combine(Environment.CurrentDirectory, $"{file_name}.app.zip").Replace("/", "\\");
+        string app_zip = Path.Combine(Environment.CurrentDirectory, $"{ConstValue.PLATFORM_NAME}.app.zip").Replace("/", "\\");
         Debug.Log($"压缩应用：{app_path} --->\n{app_zip}");
 
         EditorUtility.DisplayProgressBar("压缩", "压缩中...", 0f);
@@ -239,9 +236,7 @@ public class DeployTools : EditorWindow
     static async void PackResZip()
     {
         string res_path = Path.Combine(Application.persistentDataPath, ConstValue.PLATFORM_NAME).Replace("/", "\\");
-        //string file_name = Application.productName;
-        string file_name = ConstValue.PLATFORM_NAME;
-        string res_zip = Path.Combine(Environment.CurrentDirectory, $"{file_name}.res.zip").Replace("/", "\\");
+        string res_zip = Path.Combine(Environment.CurrentDirectory, $"{ConstValue.PLATFORM_NAME}.res.zip").Replace("/", "\\");
         Debug.Log($"压缩资源：{res_path} --->\n{res_zip}");
 
         EditorUtility.DisplayProgressBar("压缩", "压缩中...", 0f);

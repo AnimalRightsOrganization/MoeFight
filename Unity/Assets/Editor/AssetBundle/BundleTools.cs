@@ -139,35 +139,41 @@ public partial class BundleTools : Editor
     #region 打包
     private static void BuildAssetBundles()
     {
+        //设置标签
         SetLabels();
 
-        if (!Directory.Exists(ConstValue.outputPath))
-            Directory.CreateDirectory(ConstValue.outputPath);
+        //删除/创建目录
+        if (Directory.Exists(ConstValue.outputPath1st))
+            Directory.Delete(ConstValue.outputPath1st, true);
+        Directory.CreateDirectory(ConstValue.outputPath1st);
 
-        BuildPipeline.BuildAssetBundles(ConstValue.outputPath, 0, EditorUserBuildSettings.activeBuildTarget);
-        AssetDatabase.Refresh();
+        //打包
+        BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, EditorUserBuildSettings.activeBuildTarget);
+        Debug.Log($"第一次打包到: {ConstValue.outputPath1st}");
 
-        //打包完成后
-
-        //清理AssetLabel
+        //清理标签
         CleanLabels();
 
         //生成配置文件assets.bytes
         MakeVersion();
 
-        //转移到根目录
-        ExportBundles();
+        //转移到新目录
+        MakeMD5();
+
+        //删除第一次打包目录
+        Directory.Delete(ConstValue.outputPath1st, true);
     }
 
+    //manifest生成配置，资源版本
     private static void MakeVersion()
     {
-        string assetBundlePath = Path.Combine(Application.streamingAssetsPath, "Bundles/Bundles");
+        string assetBundlePath = Path.Combine(ConstValue.outputPath1st, ConstValue.PATCH_NAME);
         if (!File.Exists(assetBundlePath))
         {
-            Debug.LogError("assetBundle不存在");
+            Debug.LogError($"assetBundle不存在: {assetBundlePath}");
             return;
         }
-        string manifestPath = Path.Combine(Application.streamingAssetsPath, "Bundles/Bundles.manifest");
+        string manifestPath = Path.Combine(ConstValue.outputPath1st, $"{ConstValue.PATCH_NAME}.manifest");
         if (!File.Exists(manifestPath))
         {
             Debug.LogError("manifest不存在");
@@ -189,8 +195,8 @@ public partial class BundleTools : Editor
         for (int i = 0; i < bundles.Length; i++)
         {
             //计算文件md5，写入json
-            string filePath = Path.Combine(Application.streamingAssetsPath, "Bundles/" + bundles[i]);
-            string md5 = GetMD5HashFromFile(filePath);
+            string filePath = Path.Combine(ConstValue.outputPath1st, bundles[i]);
+            string md5 = Md5Utils.GetMD5HashFromFile(filePath);
             string[] depends = manifest.GetAllDependencies(bundles[i]);
             ABInfo fs = new ABInfo(bundles[i], md5, depends);
             ABInfoList.Add(fs);
@@ -203,71 +209,40 @@ public partial class BundleTools : Editor
         bundle.Unload(false);
         bundle = null;
 
-        string assetsPath = Path.Combine(Application.streamingAssetsPath, "Bundles/assets.bytes");
+        string assetsPath = Path.Combine(ConstValue.outputPath1st, "assets.bytes");
         File.WriteAllText(assetsPath, jsonStr);
         File.WriteAllText(res_version_txt, res_version.ToString());
     }
 
-    //移动到根目录，删除*.manifest
-    private static void ExportBundles()
+    //MD5重命名导出
+    private static void MakeMD5()
     {
-        string fullPath = "Assets/StreamingAssets";
-        DirectoryInfo direction = new DirectoryInfo(fullPath);
-        if (!Directory.Exists(fullPath))
+        DirectoryInfo dirInfo = new DirectoryInfo(ConstValue.outputPath1st);
+        if (!Directory.Exists(ConstValue.outputPath1st))
         {
             Debug.LogError("路径不存在");
             return;
         }
-        FileInfo[] files = direction.GetFiles("*", SearchOption.AllDirectories);
-        //Debug.Log(files.Length);
+        FileInfo[] files = dirInfo.GetFiles("*", SearchOption.AllDirectories);
+        Debug.Log($"文件总数={files.Length}，预计完成后文件数={(files.Length - 1) / 2 + 1}");
 
-        string outputPath = Path.Combine(ConstValue.GetUnityDir, EditorUserBuildSettings.activeBuildTarget.ToString());
-        if (Directory.Exists(outputPath))
-            Directory.Delete(outputPath, true);
-        Directory.CreateDirectory(outputPath);
+        if (Directory.Exists(ConstValue.outputPath2nd))
+            Directory.Delete(ConstValue.outputPath2nd, true);
+        Directory.CreateDirectory(ConstValue.outputPath2nd);
 
         for (int i = 0; i < files.Length; i++)
         {
-            if (files[i].Name.EndsWith(".meta") || files[i].Name.EndsWith(".manifest")) continue;
+            if (files[i].Name.EndsWith(".meta") || 
+                files[i].Name.EndsWith(".manifest")) continue;
             //Debug.Log(i + "---" + files[i].FullName + "\n" + GetMD5HashFromFile(files[i].FullName));
 
             string srcFilePath = files[i].FullName;
-            string dstFilePath = Path.Combine(outputPath, files[i].Name);
+            string dstFilePath = Path.Combine(ConstValue.outputPath2nd, files[i].Name);
             if (files[i].Name.EndsWith(".unity3d"))
             {
-                dstFilePath = Path.Combine(outputPath, GetMD5HashFromFile(files[i].FullName) + ".unity3d");
+                dstFilePath = Path.Combine(ConstValue.outputPath2nd, Md5Utils.GetMD5HashFromFile(files[i].FullName) + ".unity3d");
             }
             File.Copy(srcFilePath, dstFilePath);
-        }
-    }
-
-    private static void CleanStreamingAssets()
-    {
-        //string filePath = Path.Combine(Application.streamingAssetsPath, "Bundles");
-        //Directory.Delete(filePath, true);
-        if (Directory.Exists(Application.streamingAssetsPath))
-            Directory.Delete(Application.streamingAssetsPath, true);
-    }
-
-    private static string GetMD5HashFromFile(string filePath)
-    {
-        try
-        {
-            FileStream file = new FileStream(filePath, FileMode.Open);
-            System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
-            byte[] retVal = md5.ComputeHash(file);   //计算指定Stream 对象的哈希值  
-            file.Close();
-
-            StringBuilder Ac = new StringBuilder();
-            for (int i = 0; i < retVal.Length; i++)
-            {
-                Ac.Append(retVal[i].ToString("x2"));
-            }
-            return Ac.ToString();
-        }
-        catch (System.Exception ex)
-        {
-            throw new System.Exception("GetMD5HashFromFile() fail,error:" + ex.Message);
         }
     }
     #endregion
@@ -282,40 +257,36 @@ public partial class BundleTools : Editor
             return;
         }
 
-        // 清空streamingAssets
-        CleanStreamingAssets();
-
         BuildAssetBundles();
 
-        CleanStreamingAssets();
-
         Deploy(target);
-        AssetDatabase.Refresh();
 
         Debug.Log("打包完成");
     }
     private static void Deploy(BuildTarget target)
     {
-        string srcPath = Path.Combine(ConstValue.GetUnityDir, target.ToString());
-        if (!Directory.Exists(srcPath))
+        if (!Directory.Exists(ConstValue.outputPath2nd))
         {
-            Debug.LogError($"src不存在：{srcPath}");
+            Debug.LogError($"目录不存在：{ConstValue.outputPath2nd}");
             return;
         }
 
-        string dstPath = $@"{Application.persistentDataPath}\{target}"; //本地部署
-        if (Directory.Exists(dstPath))
-            Directory.Delete(dstPath, true);
-        CopyFolder(srcPath, dstPath);
-        Debug.Log($"本地部署完成\n{srcPath}--->\n{dstPath}");
+        //本地部署
+        string appPath = $@"{Application.persistentDataPath}\{target}";
+        if (Directory.Exists(appPath))
+            Directory.Delete(appPath, true);
+        CopyFolder(ConstValue.outputPath2nd, appPath);
+        Debug.Log($"本地部署完成\n{ConstValue.outputPath2nd}--->\n{appPath}");
 
-        string wwwPath = $@"{ConstValue.GetDeployRes}\{target}"; //远程部署
+        //远程部署
+        string wwwPath = $@"{ConstValue.GetDeployRes}\{target}";
         if (Directory.Exists(wwwPath))
             Directory.Delete(wwwPath, true);
-        CopyFolder(srcPath, wwwPath);
-        Debug.Log($"远程部署完成\n{srcPath}--->\n{wwwPath}");
+        CopyFolder(ConstValue.outputPath2nd, wwwPath);
+        Debug.Log($"远程部署完成\n{ConstValue.outputPath2nd}--->\n{wwwPath}");
 
-        Directory.Delete(srcPath, true);
+        //删除输出目录
+        Directory.Delete(ConstValue.outputPath2nd, true);
     }
     private static void CopyFolder(string strFromPath, string strToPath)
     {
@@ -324,9 +295,6 @@ public partial class BundleTools : Editor
         {
             Directory.CreateDirectory(strFromPath);
         }
-        //取得要拷贝的文件夹名
-        //string strFolderName = strFromPath.Substring(strFromPath.LastIndexOf("\\") + 1, strFromPath.Length - strFromPath.LastIndexOf("\\") - 1);
-        //如果目标文件夹中没有源文件夹则在目标文件夹中创建源文件夹
         if (!Directory.Exists(strToPath))
         {
             Directory.CreateDirectory(strToPath);

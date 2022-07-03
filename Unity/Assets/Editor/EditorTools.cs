@@ -143,8 +143,8 @@ public class EditorTools : Editor
     [MenuItem("Tools/打包/资源", false)]
     static void BuildRes()
     {
-        BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
-        Debug.Log(buildTarget);
-        BundleTools.Build_Target(buildTarget);
+        BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
+        Debug.Log($"打包{target}平台资源");
+        BundleTools.Build_Target(target);
     }
 }

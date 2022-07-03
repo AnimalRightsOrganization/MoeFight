@@ -8,12 +8,10 @@
 /[Bb]uild/
 /[Bb]uilds/
 /[Ll]ogs/
-/[Uu]serSettings/
 /[Mm]emoryCaptures/
+/[Uu]serSettings/
+/[Bb]in/
 /Assets/StreamingAssets/
-/StandaloneWindows64/
-/Replay/
-/Dump/
 /Packages/*
 ~$*
 
