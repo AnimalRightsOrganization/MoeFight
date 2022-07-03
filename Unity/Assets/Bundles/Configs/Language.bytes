@@ -94,5 +94,59 @@
     "English": "BACK",
     "Chinese": "返回",
     "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.Back",
+    "English": "BACK",
+    "Chinese": "返回",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.Common",
+    "English": "Common",
+    "Chinese": "常规",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.Input",
+    "English": "Input",
+    "Chinese": "输入",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.ScreenSize",
+    "English": "Screen Size",
+    "Chinese": "分辨率",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.FullScreen",
+    "English": "Full Screen",
+    "Chinese": "全屏",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.MusicVolume",
+    "English": "Music Volume",
+    "Chinese": "背景音量",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.SoundVolume",
+    "English": "Sound Volume",
+    "Chinese": "音效音量",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.Language",
+    "English": "Language",
+    "Chinese": "语言",
+    "Japanese": null
+  },
+  {
+    "Id": "UI_Settings.Reset",
+    "English": "Reset to Defualt",
+    "Chinese": "重置默认",
+    "Japanese": null
   }
 ]

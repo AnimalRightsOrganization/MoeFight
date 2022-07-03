@@ -7,7 +7,7 @@ using LitJson;
 
 public class DeployTools : EditorWindow
 {
-    [MenuItem("Tools/Deploy")]
+    [MenuItem("Tools/打包/AllInOne")]
     static void AddWindow()
     {
         Rect rect = new Rect(0, 0, 600, 400);
@@ -257,6 +257,11 @@ public class DeployTools : EditorWindow
     static async Task<string> GetVersionAsync()
     {
         string responseBody = await HttpHelper.TryGetAsync(ConstValue.GAME_DATA);
+        if (string.IsNullOrEmpty(responseBody))
+        {
+            Debug.LogError("获取远程资源版本失败");
+            return null;
+        }
         var obj = JsonMapper.ToObject<ServerResponse>(responseBody);
         var model = JsonMapper.ToObject<DBApp>(obj.data);
         Debug.Log(obj.data);

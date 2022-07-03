@@ -79,6 +79,8 @@ namespace HotFix
 
         void OnEnable()
         {
+            ApplyLanguage();
+
             EventManager.RegisterEvent(OnNetCallback);
 
             localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;

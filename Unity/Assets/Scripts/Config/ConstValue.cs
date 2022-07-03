@@ -5,8 +5,8 @@ public class ConstValue
 {
     #region AssetBundle
     public const string PATCH_NAME = "Bundles";
-    public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
-    public const string CONFIG_FOLDER = "Assets/Bundles/Configs";
+    //public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
+    //public const string CONFIG_FOLDER = "Assets/Bundles/Configs";
     // ab打包源文件
     static string _srcPath;
     public static string srcPath

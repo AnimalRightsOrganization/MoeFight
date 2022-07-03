@@ -63,6 +63,19 @@ public class ExcelTools : EditorWindow
 	//	instance.Show();
 	//}
 
+	static string _configs_dir;
+	static string ConfigsDir
+	{
+		get
+		{
+			if (string.IsNullOrEmpty(_configs_dir))
+			{
+				_configs_dir = $"{Application.dataPath}/Bundles/Configs";
+			}
+			return _configs_dir;
+		}
+	}
+
 	[MenuItem("Tools/打包/导表")]
 	static void GenerateJson()
 	{
@@ -73,6 +86,8 @@ public class ExcelTools : EditorWindow
 		excelList = new List<string>(array);
 
 		Convert();
+
+		Debug.Log($"导出{array.Length}个配置到: {ConfigsDir}");
 	}
 
 	void OnGUI()
@@ -138,11 +153,8 @@ public class ExcelTools : EditorWindow
 	{
 		foreach (string excelPath in excelList)
 		{
-			//Debug.Log($"excelPath: {excelPath}");
-			string output_dir = $"{Application.dataPath}/Bundles/Configs";
 			string srcName = (new FileInfo(excelPath)).Name;
-			//string output = "";
-			string output = $"{output_dir}/{srcName.Replace(".xlsx", ".bytes")}";
+			string output = $"{ConfigsDir}/{srcName.Replace(".xlsx", ".bytes")}";
 
 			//构造Excel工具类
 			ExcelUtility excel = new ExcelUtility(excelPath);

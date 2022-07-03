@@ -12,24 +12,18 @@ namespace HotFix
     {
         //[SerializeField] Text m_TitleText;
         [SerializeField] Button m_BackBtn;
-        [SerializeField] Text m_BackText;
         [SerializeField] Button m_ToCommonBtn;
         [SerializeField] Button m_ToInputBtn;
 
         [SerializeField] Transform m_CommonPanel;
-        [SerializeField] Text m_ScreenSizeName;
         [SerializeField] Dropdown m_ScreenSizeDrog;
         [SerializeField] Text m_ScreenSizeValue;
-        [SerializeField] Text m_FullScreenName;
         [SerializeField] Toggle m_FullScreenTog;
         [SerializeField] Text m_FullScreenValue;
-        [SerializeField] Text m_MusicName;
         [SerializeField] Slider m_MusicSlider;
         [SerializeField] Text m_MusicValue;
-        [SerializeField] Text m_SoundName;
         [SerializeField] Slider m_SoundSlider;
         [SerializeField] Text m_SoundValue;
-        [SerializeField] Text m_LanguageName;
         [SerializeField] Dropdown m_LanguageDrog;
         [SerializeField] Text m_LanguageValue;
         [SerializeField] Button m_ResetToDefault;
@@ -38,19 +32,31 @@ namespace HotFix
 
         private Settings lastSettings;
 
+        public Text m_BackText;
+        public Text m_CommonText;
+        public Text m_InputText;
+        public Text m_ScreenSizeName;
+        public Text m_FullScreenName;
+        public Text m_MusicName;
+        public Text m_SoundName;
+        public Text m_LanguageName;
+        public Text m_ResetName;
+
         void Awake()
         {
             //m_TitleText = transform.Find("Top/Title").GetComponent<Text>();
             m_BackBtn = transform.Find("Top/BackBtn").GetComponent<Button>();
-            m_BackBtn.onClick.AddListener(OnBackButtonClick);
             m_BackText = transform.Find("Top/BackBtn/Text").GetComponent<Text>();
             m_ToCommonBtn = transform.Find("Top/ToCommonBtn").GetComponent<Button>();
-            m_ToCommonBtn.onClick.AddListener(SwitchToCommon);
             m_ToInputBtn = transform.Find("Top/ToInputBtn").GetComponent<Button>();
+            m_CommonText = transform.Find("Top/ToCommonBtn/Text").GetComponent<Text>();
+            m_InputText = transform.Find("Top/ToInputBtn/Text").GetComponent<Text>();
+            m_BackBtn.onClick.AddListener(OnBackButtonClick);
+            m_ToCommonBtn.onClick.AddListener(SwitchToCommon);
             m_ToInputBtn.onClick.AddListener(SwitchToInput);
 
             m_CommonPanel = transform.Find("Common");
-
+            
             m_ScreenSizeName = transform.Find("Common/ScreenSize/Name").GetComponent<Text>();
             m_ScreenSizeDrog = transform.Find("Common/ScreenSize/Dropdown").GetComponent<Dropdown>();
             m_ScreenSizeDrog.options = new System.Collections.Generic.List<Dropdown.OptionData>();
@@ -93,6 +99,7 @@ namespace HotFix
 
             //m_ResetToDefault = transform.Find("Common/ResetToDefault/Button").GetComponent<Button>();
             //m_ResetToDefault.onClick.AddListener(OnResetToDefault);
+            m_ResetName = transform.Find("Common/ResetToDefault/Name").GetComponent<Text>();
 
             m_InputPanel = transform.Find("Input");
             for (int i = 0; i < m_InputPanel.childCount; i++)
@@ -104,12 +111,12 @@ namespace HotFix
                     Debug.Log(index);
                 });
             }
-
-            ApplyLanguage();
         }
 
         void OnEnable()
         {
+            ApplyLanguage();
+
             EventManager.RegisterEvent(OnNetCallback);
 
             lastSettings = ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings;
@@ -135,14 +142,17 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            // 多国语言
-            //m_TitleText.text = "Settings";
-            m_ScreenSizeName.text = "Screen Size";
-            m_FullScreenName.text = "Full Screen";
-            m_MusicName.text = "Music Volume";
-            m_SoundName.text = "Sound Volume";
-            m_LanguageName.text = "Language";
-            m_BackText.text = "- BACK";
+            var config = ConfigManager.Get();
+
+            m_BackText.text = config.GetWord(16);
+            m_CommonText.text = config.GetWord(17);
+            m_InputText.text = config.GetWord(18);
+            m_ScreenSizeName.text = config.GetWord(19);
+            m_FullScreenName.text = config.GetWord(20);
+            m_MusicName.text = config.GetWord(21);
+            m_SoundName.text = config.GetWord(22);
+            m_LanguageName.text = config.GetWord(23);
+            m_ResetName.text = config.GetWord(24);
         }
 
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
