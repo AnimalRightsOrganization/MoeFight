@@ -141,5 +141,10 @@ public class EditorTools : Editor
         Debug.Log($"打包成功: {opt.locationPathName}");
     }
     [MenuItem("Tools/打包/资源", false)]
-    static void BuildRes() { }
+    static void BuildRes()
+    {
+        BuildTarget buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
+        Debug.Log(buildTarget);
+        BundleTools.Build_Target(buildTarget);
+    }
 }

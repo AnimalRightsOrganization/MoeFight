@@ -3,5 +3,5 @@ guid: b33c3544ab4c68c4cab75f4056d8a0a5
 PrefabImporter:
   externalObjects: {}
   userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  assetBundleName: ui/ui_gamemenu
+  assetBundleVariant: unity3d

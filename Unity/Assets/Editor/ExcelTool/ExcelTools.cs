@@ -54,16 +54,16 @@ public class ExcelTools : EditorWindow
 	/// <summary>
 	/// 显示当前窗口	
 	/// </summary>
-	[MenuItem("Tools/ExcelTools")]
-	static void ShowExcelTools()
-	{
-		Init();
-		//加载Excel文件
-		LoadExcel();
-		instance.Show();
-	}
+	//[MenuItem("Tools/ExcelTools")]
+	//static void ShowExcelTools()
+	//{
+	//	Init();
+	//	//加载Excel文件
+	//	LoadExcel();
+	//	instance.Show();
+	//}
 
-	[MenuItem("Tools/GenerateJson")]
+	[MenuItem("Tools/打包/导表")]
 	static void GenerateJson()
 	{
 		string curr_dir = System.Environment.CurrentDirectory;

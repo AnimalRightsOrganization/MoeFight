@@ -3,5 +3,5 @@ guid: 4e73d88dce208b045964c364b41c77f8
 PrefabImporter:
   externalObjects: {}
   userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  assetBundleName: prefabs/clientlogic
+  assetBundleVariant: unity3d
