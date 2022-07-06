@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build;
 using Code.Client;
+using Code.Server;
 using Debug = UnityEngine.Debug;
 
 public class TestWindow : EditorWindow
@@ -52,6 +53,11 @@ public class TestWindow : EditorWindow
         if (GUILayout.Button("打印预测"))
         {
             ReplayWindow.ShowWindow();
+        }
+
+        if (GUILayout.Button("打印服务器"))
+        {
+            ServerNet.Get.m_PlayerManager.Print();
         }
     }
 }

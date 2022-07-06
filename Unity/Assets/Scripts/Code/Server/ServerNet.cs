@@ -106,26 +106,27 @@ namespace Code.Server
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
             ServerPlayer player = (ServerPlayer)peer.Tag;
-            int serverRoomID = player.RoomId;
-            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason} @Room#{serverRoomID}");
+            UnityEngine.Debug.Log($"[S] {player} disconnected: {disconnectInfo.Reason}");
 
             if (player != null)
             {
+                int serverRoomID = player.RoomId;
+
                 if (player.Status == PlayerStatus.AtBattle)
                 {
                     // 1.掉线（保留房间）
                     // 2.杀掉进程（主动发送认输）
-                    switch (disconnectInfo.Reason)
-                    {
-                        case DisconnectReason.Timeout: //超时
-                            break;
-                        case DisconnectReason.RemoteConnectionClose: //主动关闭
-                            break;
-                    }
+                    //switch (disconnectInfo.Reason)
+                    //{
+                    //    case DisconnectReason.Timeout: //超时
+                    //        break;
+                    //    case DisconnectReason.RemoteConnectionClose: //主动关闭
+                    //        break;
+                    //}
 
                     ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
-                    if (otherPlayer != null)
+                    if (otherPlayer.IsBot == false)
                     {
                         otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
                     }
@@ -170,7 +171,7 @@ namespace Code.Server
             if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
-            //UnityEngine.Debug.Log($"[新消息] {pt}");
+            //UnityEngine.Debug.Log($"[packet] {pt}");
             switch (pt)
             {
                 case PacketType.C2S_TestPVE:
@@ -256,9 +257,8 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] PVE [{peer.Id}]{cmd.UserName}");
 
-            ServerPlayer player = new ServerPlayer(cmd.UserName, peer);
-            ServerPlayer bot = new ServerPlayer("BOT", peer);
-            m_PlayerManager.AddPlayer(player);
+            ServerPlayer player = (ServerPlayer)peer.Tag;
+            ServerPlayer bot = new ServerPlayer("BOT");
 
             ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
             serverRoom.BattleMode = BattleMode.TestPVE;
@@ -269,9 +269,12 @@ namespace Code.Server
             m_RoomManager.SetBattle(serverRoom);
             UnityEngine.Debug.Log($"PVE create room#{serverRoomID}");
 
-            var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = 0, GuestName = "" };
+            var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = bot.PeerId, GuestName = bot.UserName };
             var writer = WriteSerializable(PacketType.S2C_TestPVE, packet);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
+
+            m_PlayerManager.Print();
+            UnityEngine.Debug.Log($"PVE status: \n{player} \n{bot}");
         }
 
         private void OnTestPVP(NetPacketReader reader, NetPeer peer)
@@ -279,8 +282,7 @@ namespace Code.Server
             var cmd = new C2S_JoinPacket();
             cmd.Deserialize(reader);
 
-            ServerPlayer player = new ServerPlayer(cmd.UserName, peer);
-            m_PlayerManager.AddPlayer(player);
+            ServerPlayer player = (ServerPlayer)peer.Tag;
             UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{cmd.UserName}---{m_PlayerManager.Count}/2");
 
             if (m_PlayerManager.Count == 2)
@@ -305,7 +307,7 @@ namespace Code.Server
         private void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
-            var player = (ServerPlayer)peer.Tag;
+            ServerPlayer player = (ServerPlayer)peer.Tag;
 
             var cmd = new C2S_InputPacket();
             cmd.Deserialize(reader);
@@ -327,8 +329,6 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
-            //m_PlayerManager.GetPlayerByUsername(cmd.UserName);
-
 #if UNITY_SERVER || UNITY_EDITOR
             #region 检查逻辑
             // 校验账号密码
@@ -342,16 +342,32 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
                 return;
             }
-
-            // 校验是否已登录
-            //var list = m_PlayerManager.GetPlayersAll();
-            //UnityEngine.Debug.Log($"list:{list.Length}"); //64
             #endregion
 
             #region 登录逻辑
-            // 新建玩家对象
-            var player = new ServerPlayer(cmd.UserName, peer);
-            m_PlayerManager.AddPlayer(player);
+            ServerPlayer player = null;
+            // 校验是否已登录，是否重连
+            ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(cmd.UserName);
+            if (lastPlayer != null)
+            {
+                if (lastPlayer.Status == PlayerStatus.AtBattle || lastPlayer.Status == PlayerStatus.Reconnect)
+                {
+                    UnityEngine.Debug.Log("is reconnect");
+                    player = lastPlayer;
+                }
+                else
+                {
+                    UnityEngine.Debug.Log("is multipe login");
+                    var packet = new S2C_ErrorPacket { ErrorCode = (byte)ErrorCode.HAS_LOGIN };
+                    peer.Send(WriteSerializable(PacketType.S2C_ErrorOperate, packet), DeliveryMethod.ReliableOrdered);
+                    return;
+                }
+            }
+            else
+            {
+                player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
+                m_PlayerManager.AddPlayer(player);
+            }
 
             // 第一个包，登录许可
             var packet1 = new S2C_LoginResultPacket

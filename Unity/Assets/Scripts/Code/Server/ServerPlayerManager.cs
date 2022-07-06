@@ -16,8 +16,12 @@ namespace Code.Server
         // 登录成功
         public void AddPlayer(ServerPlayer player)
         {
-            playerList.Add(player);
-            player.ResetToLobby();
+            var p = GetPlayerByUsername(player.UserName);
+            if (p == null)
+            {
+                playerList.Add(player);
+                player.ResetToLobby();
+            }
         }
         // 登出/断线/踢人
         public bool RemovePlayer(int peerId)
@@ -59,6 +63,17 @@ namespace Code.Server
         public ServerPlayer[] GetPlayersByLobby()
         {
             return playerList.FindAll(x => x.Status == PlayerStatus.AtLobby).ToArray();
+        }
+
+
+        public void Print()
+        {
+            string result = $"服务器用户数:{Count}";
+            foreach (ServerPlayer p in playerList)
+            {
+                result += $"\n{p}";
+            }
+            UnityEngine.Debug.Log(result);
         }
     }
 }

@@ -47,13 +47,14 @@
         }
         public virtual BasePlayer SetStatus(PlayerStatus status)
         {
+            UnityEngine.Debug.Log($"SetStatus: {UserName}@{status}");
             this._status = status;
             return this;
         }
 
         public override string ToString()
         {
-            string str = $"[{PeerId}]{UserName}({Status}), @Room#{RoomId}, @Seat#{SeatId}";
+            string str = $"[{PeerId}]{UserName} @Room#{RoomId} @Seat={SeatId} @Status={Status}";
             return str;
         }
     }
