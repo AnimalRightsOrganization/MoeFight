@@ -59,6 +59,7 @@ namespace Code.Client
 
         void OnDestroy()
         {
+            SendBattleQuit();
             _netManager.Stop();
         }
         #endregion

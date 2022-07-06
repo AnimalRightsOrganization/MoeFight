@@ -105,9 +105,22 @@ namespace Code.Server
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
-            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason}");
+            ServerPlayer player = (ServerPlayer)peer.Tag;
+            int serverRoomID = player.RoomId;
+            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason} @Room#{serverRoomID}"); //超时、远程关闭
 
-            if (peer.Tag != null)
+            // 玩家离线
+            // 1.杀掉进程（主动发送认输）
+            // 2.掉线（保留房间）
+
+            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+            if (otherPlayer != null)
+            {
+                otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+            }
+
+            if (player != null)
             {
                 if (m_PlayerManager.RemovePlayer(peer.Id))
                 {
@@ -120,7 +133,7 @@ namespace Code.Server
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
-            UnityEngine.Debug.Log("[S] NetworkError: " + socketError);
+            UnityEngine.Debug.Log("[S] NetworkError: " + socketError); //客户端断网
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
@@ -226,7 +239,7 @@ namespace Code.Server
             bot.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtBattle);
             serverRoom.DoInit();
             m_RoomManager.SetBattle(serverRoom);
-            UnityEngine.Debug.Log($"PVE create room#{serverRoomID}, {player.RoomId}, {bot.RoomId}");
+            UnityEngine.Debug.Log($"PVE create room#{serverRoomID}");
 
             var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = 0, GuestName = "" };
             var writer = WriteSerializable(PacketType.S2C_TestPVE, packet);
@@ -286,7 +299,7 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
-#if UNITY_SERVER
+#if UNITY_SERVER || UNITY_EDITOR
             #region 检查逻辑
             // 校验账号密码
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}' AND password='{cmd.Password}'";
@@ -643,7 +656,6 @@ namespace Code.Server
                 otherPlayer.ResetToLobby();
             }
         }
-
         #endregion
 
 

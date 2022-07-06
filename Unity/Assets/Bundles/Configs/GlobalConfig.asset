@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08e5564ac2d68142b4b514379547efa, type: 3}
   m_Name: GlobalConfig
   m_EditorClassIdentifier: 
-  IP: 192.168.1.109
+  IP: 192.168.1.101
   Port: 5000
   Key: ExampleGame
   renderFPS: 60

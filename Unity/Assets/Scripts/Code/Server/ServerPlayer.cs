@@ -7,10 +7,13 @@ namespace Code.Server
     {
         public readonly NetPeer AssociatedPeer;
 
+        public readonly bool IsBot;
+
         public ServerPlayer(string name, NetPeer peer) : base(name, peer.Id)
         {
             peer.Tag = this;
             AssociatedPeer = peer;
+            IsBot = name.Equals("BOT");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿#if UNITY_SERVER
+﻿#if UNITY_SERVER || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using UnityEngine;

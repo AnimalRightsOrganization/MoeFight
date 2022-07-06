@@ -1,4 +1,4 @@
-﻿#if UNITY_SERVER
+﻿#if UNITY_SERVER || UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
@@ -17,7 +17,7 @@ namespace DatabaseEssential
         {
             var config = new SQLConfiguration
             {
-                host = "192.168.1.101",
+                host = "localhost",
                 database = "db_user",
                 user = "seol",
                 password = "123456",
