@@ -278,16 +278,18 @@ namespace Code.Client
 
         public void SendTestPVE()
         {
-            System.Random rd = new System.Random();
-            myName = Environment.MachineName + " " + rd.Next(100000);
+            //System.Random rd = new System.Random();
+            //myName = Environment.MachineName + " " + rd.Next(100000);
+            myName = "test1";
             var cmd = new C2S_JoinPacket { UserName = myName };
             SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
         }
 
         public void SendTestPVP()
         {
-            System.Random rd = new System.Random();
-            myName = Environment.MachineName + " " + rd.Next(100000);
+            //System.Random rd = new System.Random();
+            //myName = Environment.MachineName + " " + rd.Next(100000);
+            myName = "test1";
             var cmd = new C2S_JoinPacket { UserName = myName };
             SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
@@ -422,7 +424,6 @@ namespace Code.Client
                         var packet = (S2C_LoginResultPacket)reader;
                         if (packet.Code == 0)
                         {
-                            //ReconnectTimes = 2; //登录成功，补充重连次数
                             m_PlayerManager.LocalPlayer.ResetToLobby();
                         }
                     }

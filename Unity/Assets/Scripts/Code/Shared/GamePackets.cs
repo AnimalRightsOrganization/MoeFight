@@ -16,6 +16,7 @@ namespace Code.Shared
         RoomIsFull,     //房间爆满
         UserNameUsed,   //账号已经注册
         Be_Kicked,      //被踢了（顶号/GM）
+        HAS_LOGIN,      //已登录
     }
     
     public enum PlayerStatus : byte

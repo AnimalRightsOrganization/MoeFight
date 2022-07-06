@@ -31,7 +31,7 @@ namespace Rollback
             catch (Exception e)
             {
                 //Collection was modified; enumeration operation may not execute.
-                Debug.Log($"\nException while trying to run client: {e.Message}");
+                Debug.LogError($"\nException while trying to run client: {e.Message}");
                 Console.ReadLine();
                 return 1;
             }

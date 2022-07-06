@@ -13,7 +13,11 @@ namespace Code.Server
         {
             peer.Tag = this;
             AssociatedPeer = peer;
-            IsBot = name.Equals("BOT");
+            IsBot = false;
+        }
+        public ServerPlayer(string name) : base(name, -1)
+        {
+            IsBot = true;
         }
     }
 }

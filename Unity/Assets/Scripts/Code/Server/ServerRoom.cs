@@ -33,8 +33,13 @@ namespace Code.Server
         }
         public void Send(NetDataWriter writer)
         {
-            (hostPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
-            (guestPlayer as ServerPlayer).AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+            var serverHost = hostPlayer as ServerPlayer;
+            var serverGuest = guestPlayer as ServerPlayer;
+
+            if (serverHost.IsBot == false)
+                serverHost.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+            if (serverGuest.IsBot == false)
+                serverGuest.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
         #endregion
 
