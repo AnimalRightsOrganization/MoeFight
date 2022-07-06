@@ -53,18 +53,9 @@ namespace Code.Client
             _netManager.PollEvents();
         }
 
-        void OnApplicationQuit()
-        {
-            Debug.Log("OnApplicationQuit");
-            SendBattleQuit();
-            Debug.Log("发送完成");
-        }
-
         void OnDestroy()
         {
-            Debug.Log("OnDestroy");
             _netManager.Stop();
-            Debug.Log("停止");
         }
         #endregion
 

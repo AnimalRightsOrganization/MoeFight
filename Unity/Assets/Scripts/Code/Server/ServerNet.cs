@@ -107,36 +107,61 @@ namespace Code.Server
         {
             ServerPlayer player = (ServerPlayer)peer.Tag;
             int serverRoomID = player.RoomId;
-            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason} @Room#{serverRoomID}"); //超时、远程关闭
-
-            // 玩家离线
-            // 1.杀掉进程（主动发送认输）
-            // 2.掉线（保留房间）
-
-            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            if (serverRoom != null)
-            {
-                ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
-                if (otherPlayer != null)
-                {
-                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
-                }
-            }
+            UnityEngine.Debug.Log($"[S] Player disconnected: {disconnectInfo.Reason} @Room#{serverRoomID}");
 
             if (player != null)
             {
-                if (m_PlayerManager.RemovePlayer(peer.Id))
+                if (player.Status == PlayerStatus.AtBattle)
                 {
-                    //var plp = new PlayerLeavedPacket { Id = (byte)peer.Id };
-                    //_netManager.SendToAll(WritePacket(plp), DeliveryMethod.ReliableOrdered); //全服广播离线
+                    // 1.掉线（保留房间）
+                    // 2.杀掉进程（主动发送认输）
+                    switch (disconnectInfo.Reason)
+                    {
+                        case DisconnectReason.Timeout: //超时
+                            break;
+                        case DisconnectReason.RemoteConnectionClose: //主动关闭
+                            break;
+                    }
+
+                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                    if (otherPlayer != null)
+                    {
+                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                    }
+                }
+                else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
+                {
+                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                    if (otherPlayer != null)
+                    {
+                        var packet = new S2C_MatchResultPacket { Code = 2 };
+                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+                    }
+                    m_RoomManager.RemoveServerRoom(serverRoomID);
+                    m_PlayerManager.RemovePlayer(peer.Id);
+                    otherPlayer.ResetToLobby();
+                }
+                else if (player.Status == PlayerStatus.Matching)
+                {
+                    lock (m_WaitingPeers)
+                    {
+                        m_WaitingPeers.Remove(player);
+                    }
+                    m_PlayerManager.RemovePlayer(peer.Id);
+                }
+                else
+                {
+                    m_PlayerManager.RemovePlayer(peer.Id);
                 }
             }
-            UnityEngine.Debug.Log($"Player count: {m_PlayerManager.Count}");
+            UnityEngine.Debug.Log($"Player count:{m_PlayerManager.Count}, Room count:{m_RoomManager.Count}");
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
         {
-            UnityEngine.Debug.Log("[S] NetworkError: " + socketError); //客户端断网
+            UnityEngine.Debug.Log("[S] NetworkError: " + socketError); //本地断网
         }
 
         void INetEventListener.OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channel, DeliveryMethod deliveryMethod)
@@ -301,6 +326,8 @@ namespace Code.Server
             var cmd = new C2S_LoginPacket();
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
+
+            //m_PlayerManager.GetPlayerByUsername(cmd.UserName);
 
 #if UNITY_SERVER || UNITY_EDITOR
             #region 检查逻辑

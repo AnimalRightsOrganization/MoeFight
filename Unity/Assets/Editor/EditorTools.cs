@@ -53,10 +53,6 @@ public class TestWindow : EditorWindow
         {
             ReplayWindow.ShowWindow();
         }
-        if (GUILayout.Button("发送退出"))
-        {
-            ClientNet.Get.SendBattleQuit();
-        }
     }
 }
 public class EditorTools : Editor

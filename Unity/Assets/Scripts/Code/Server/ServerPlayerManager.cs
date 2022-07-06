@@ -45,6 +45,11 @@ namespace Code.Server
             var player = playerList.Find(x => x.PeerId == peerId);
             return player;
         }
+        public ServerPlayer GetPlayerByUsername(string userName)
+        {
+            var player = playerList.Find(x => x.UserName == userName);
+            return player;
+        }
         // 获取所有玩家
         public ServerPlayer[] GetPlayersAll()
         {
