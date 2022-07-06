@@ -32,12 +32,6 @@ public class TestWindow : EditorWindow
             login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
         }
-        //if (GUILayout.Button("实例化战场"))
-        //{
-        //    var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-        //    UnityEngine.Object.Instantiate(asset);
-        //    HotFix.UIManager.Get().PopAll();
-        //}
         if (GUILayout.Button("PVE"))
         {
             var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
@@ -53,6 +47,11 @@ public class TestWindow : EditorWindow
             HotFix.UIManager.Get().PopAll();
 
             ClientNet.Get.SendTestPVP();
+        }
+
+        if (GUILayout.Button("打印预测"))
+        {
+            ReplayWindow.ShowWindow();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace DatabaseEssential
         {
             var config = new SQLConfiguration
             {
-                host = "localhost",
+                host = "192.168.1.101",
                 database = "db_user",
                 user = "seol",
                 password = "123456",

@@ -12,23 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08e5564ac2d68142b4b514379547efa, type: 3}
   m_Name: GlobalConfig
   m_EditorClassIdentifier: 
-  IP: 127.0.0.1
-  Port: 9050
-  MaxRooms: 16
-  MaxPlayers: 32
+  IP: 192.168.1.109
+  Port: 5000
+  Key: ExampleGame
   renderFPS: 60
   logicFPS: 50
   TotalSecond: 99
-  AreaWidth: 20
-  obstaclePos:
-  - {x: -4, y: 0, z: 0}
-  - {x: 4, y: 0, z: 0}
-  rolePos:
-  - {x: -1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  roleRot:
-  - {x: 0, y: 0, z: 0, w: 1}
-  - {x: 0, y: 1, z: 0, w: 0}
-  roleScale:
-  - {x: 1, y: 1, z: 1}
-  - {x: 1, y: 1, z: -1}

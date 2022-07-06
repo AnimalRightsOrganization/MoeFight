@@ -11,18 +11,18 @@ public class ConfigManager : MonoBehaviour
         return _instance;
     }
 
-    //public static GlobalConfig m_GlobalConfig;
-    //public static InputConfig m_InputConfig;
-    //public static RoleConfig m_RoleConfig;
+    public GlobalConfig globalConfig;
+    //public InputConfig inputConfig;
+    //public RoleConfig roleConfig;
 
-    public LanguageNode[] m_NodeList;
-    public Languages currentLanguage = Languages.Chinese;
+    protected LanguageNode[] m_NodeList;
+    protected Languages currentLanguage = Languages.Chinese;
 
     void Awake()
     {
-        //m_GlobalConfig = ResManager.LoadConfig("configs/globalconfig") as GlobalConfig;
-        //m_InputConfig = ResManager.LoadConfig("configs/inputconfig") as InputConfig;
-        //m_RoleConfig = ResManager.LoadConfig("configs/roleconfig") as RoleConfig;
+        globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
+        //inputConfig = ResManager.LoadConfig("Configs/InputConfig") as InputConfig;
+        //roleConfig = ResManager.LoadConfig("Configs/RoleConfig") as RoleConfig;
 
         var json = ResManager.LoadBytes("Configs/Language");
         m_NodeList = JsonMapper.ToObject<LanguageNode[]>(json);

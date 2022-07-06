@@ -22,9 +22,9 @@ namespace Code.Client
             }
         }
 
-        public const string IP = "192.168.1.101";
-        public const int Port = 5000;
-        public const string Key = "ExampleGame";
+        //public const string IP = "192.168.1.101";
+        //public const int Port = 5000;
+        //public const string Key = "ExampleGame";
 
         private NetPeer _server;
         private NetManager _netManager;
@@ -264,6 +264,10 @@ namespace Code.Client
         {
             if (IsConnect()) return;
             _onDisconnected = onDisconnected;
+
+            string IP = ConfigManager.Get().globalConfig.IP;
+            int Port = ConfigManager.Get().globalConfig.Port;
+            string Key = ConfigManager.Get().globalConfig.Key;
             _netManager.Connect(IP, Port, Key);
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
 

@@ -23,7 +23,6 @@ namespace Code.Server
             }
         }
 
-        public const int MAX_PLAYERS = 64;
         public const int Port = 5000;
         public const string Key = "ExampleGame";
 
@@ -32,8 +31,6 @@ namespace Code.Server
 
         public ServerRoomManager m_RoomManager;
         public ServerPlayerManager m_PlayerManager;
-
-        private Dictionary<uint, Dictionary<int, uint>> dic_recv;
 
         #region Inner Method
         public async Task StartProgram()
@@ -63,7 +60,6 @@ namespace Code.Server
             m_RoomManager = new ServerRoomManager();
             m_PlayerManager = new ServerPlayerManager();
             m_WaitingPeers = new List<ServerPlayer>();
-            dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
 
             _netManager = new NetManager(this);
             _netManager.AutoRecycle = true;

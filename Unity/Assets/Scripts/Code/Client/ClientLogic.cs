@@ -16,9 +16,9 @@ namespace Code.Client
         public uint sendTick;
         public uint recvTick;
         public uint rendTick;
-        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
-        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
-        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
+        public Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
+        public Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
+        public Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
         private List<uint> predicted;
         private HitstunRunner runner;
 
