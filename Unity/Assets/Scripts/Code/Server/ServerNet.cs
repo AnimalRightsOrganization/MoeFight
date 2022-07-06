@@ -114,10 +114,13 @@ namespace Code.Server
             // 2.掉线（保留房间）
 
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
-            if (otherPlayer != null)
+            if (serverRoom != null)
             {
-                otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                if (otherPlayer != null)
+                {
+                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                }
             }
 
             if (player != null)
@@ -591,6 +594,7 @@ namespace Code.Server
             var player = (ServerPlayer)peer.Tag;
             UnityEngine.Debug.Log($"[S] {player} quit battle");
 
+            /*
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
@@ -610,6 +614,7 @@ namespace Code.Server
             player?.ResetToLobby();
             otherPlayer?.ResetToLobby();
             UnityEngine.Debug.Log($"重置：{player?.UserName}和{otherPlayer?.UserName}");
+            */
         }
 
         private void OnBattleEndReceived(NetPacketReader reader, NetPeer peer)
