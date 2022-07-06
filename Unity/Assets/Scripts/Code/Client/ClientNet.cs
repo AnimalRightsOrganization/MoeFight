@@ -225,6 +225,15 @@ namespace Code.Client
                         OnUserStatusChanged(pt, packet);
                     }
                     break;
+                case PacketType.S2C_BattleReconnect:
+                    {
+                        //在UI_Lobby弹出进入提示
+                        var packet = new S2C_MatchResultPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                        OnUserStatusChanged(pt, packet);
+                    }
+                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -476,9 +485,13 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_BattleEnd:
                     {
-                        //GameManager.Instance.DumpInputs();
                         m_PlayerManager.LocalPlayer.ResetToLobby();
                         m_PlayerManager.ResetRival();
+                    }
+                    break;
+                case PacketType.S2C_BattleReconnect:
+                    {
+                        m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtBattle);
                     }
                     break;
             }

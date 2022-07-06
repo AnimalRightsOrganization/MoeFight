@@ -76,6 +76,7 @@ namespace Code.Shared
         S2C_GameReady       ,   //准备结果
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         //
+        S2C_BattleReconnect ,   //重连战斗
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
         S2C_BattleEnd       ,   //比赛结束，结算
@@ -463,7 +464,7 @@ namespace Code.Shared
     }
     public struct S2C_MatchResultPacket : INetSerializable
     {
-        public byte Code; //结果码：匹配成功(0)，取消(1)，退出(2)
+        public byte Code; //结果码：匹配成功(0)，取消(1)，退出(2)，重连(3)
         public short RoomId; //房间ID
         public UserInfo Host;
         public UserInfo Guest;

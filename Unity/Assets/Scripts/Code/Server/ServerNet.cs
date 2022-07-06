@@ -352,8 +352,17 @@ namespace Code.Server
             {
                 if (lastPlayer.Status == PlayerStatus.AtBattle || lastPlayer.Status == PlayerStatus.Reconnect)
                 {
-                    UnityEngine.Debug.Log("is reconnect");
+                    UnityEngine.Debug.Log($"is reconnect: {lastPlayer}");
                     player = lastPlayer;
+
+                    int serverRoomID = player.RoomId;
+                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                    ServerPlayer p1 = serverRoom.hostPlayer as ServerPlayer;
+                    ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
+                    UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
+                    UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
+                    var packet = new S2C_MatchResultPacket { Code = 3, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
+                    peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet), DeliveryMethod.ReliableOrdered);
                 }
                 else
                 {

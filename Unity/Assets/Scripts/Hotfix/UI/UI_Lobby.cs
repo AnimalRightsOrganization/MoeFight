@@ -88,6 +88,9 @@ namespace HotFix
                 case PacketType.S2C_LogoutResult:
                     OnLogoutResult(reader);
                     break;
+                case PacketType.S2C_BattleReconnect:
+                    OnBattleReconnect(reader);
+                    break;
             }
         }
 
@@ -98,6 +101,20 @@ namespace HotFix
             //UI跳转到登录，关闭本页面
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_Login>();
+        }
+
+        private void OnBattleReconnect(INetSerializable reader)
+        {
+            Debug.Log($"[UI.Lobby] 重连");
+
+            var packet = (S2C_MatchResultPacket)reader;
+            if (packet.Code == 3)
+            {
+                var dialog = UIManager.Get().Push<UI_Dialog>();
+                dialog.Show("重连", 
+                    () => { Debug.Log("放弃比赛"); }, "No", 
+                    () => { Debug.Log("返回比赛"); }, "Yes");
+            }
         }
 
         #endregion
