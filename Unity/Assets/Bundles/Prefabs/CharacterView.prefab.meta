@@ -3,5 +3,5 @@ guid: 7a87ca6b0540a664cb4722c4f7e8bf1f
 PrefabImporter:
   externalObjects: {}
   userData: 
-  assetBundleName: 
-  assetBundleVariant: 
+  assetBundleName: prefabs/characterview
+  assetBundleVariant: unity3d

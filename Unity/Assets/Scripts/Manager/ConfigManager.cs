@@ -16,7 +16,7 @@ public class ConfigManager : MonoBehaviour
     //public InputConfig inputConfig;
 
     protected LanguageNode[] m_NodeList;
-    protected Languages currentLanguage = Languages.Chinese;
+    public Languages currentLanguage = Languages.Chinese;
 
     void Awake()
     {

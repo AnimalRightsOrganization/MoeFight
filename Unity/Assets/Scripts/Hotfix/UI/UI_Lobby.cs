@@ -90,6 +90,9 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
+                case PacketType.S2C_Settings:
+                    ApplyLanguage();
+                    break;
             }
         }
 

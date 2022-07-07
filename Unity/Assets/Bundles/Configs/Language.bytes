@@ -3,150 +3,150 @@
     "Id": "UI_Login.username",
     "English": "Username",
     "Chinese": "输入用户名",
-    "Japanese": null
+    "Japanese": "ユーザー名"
   },
   {
     "Id": "UI_Login.password",
     "English": "Password",
     "Chinese": "输入密码",
-    "Japanese": null
+    "Japanese": "パスワード"
   },
   {
     "Id": "UI_Login.login",
     "English": "LOGIN",
     "Chinese": "登录",
-    "Japanese": null
+    "Japanese": "ログイン"
   },
   {
     "Id": "UI_Login.toregister",
     "English": "Go Register",
     "Chinese": "去注册",
-    "Japanese": null
+    "Japanese": "行き登録"
   },
   {
     "Id": "UI_Login.password2",
     "English": "Repeat Password",
     "Chinese": "确认密码",
-    "Japanese": null
+    "Japanese": "暗証番号を確認"
   },
   {
     "Id": "UI_Login.register",
     "English": "CREATE ACCOUNT",
     "Chinese": "注册",
-    "Japanese": null
+    "Japanese": "登録"
   },
   {
     "Id": "UI_Login.tologin",
     "English": "Login here",
     "Chinese": "去登录",
-    "Japanese": null
+    "Japanese": "に登录"
   },
   {
     "Id": "UI_Lobby.Arcade",
     "English": "Arcade",
     "Chinese": "剧情",
-    "Japanese": null
+    "Japanese": "ストーリー"
   },
   {
     "Id": "UI_Lobby.Match",
     "English": "Match",
     "Chinese": "匹配",
-    "Japanese": null
+    "Japanese": "ふさわしい"
   },
   {
     "Id": "UI_Lobby.Match",
     "English": "Training",
     "Chinese": "训练",
-    "Japanese": null
+    "Japanese": "トレーニング"
   },
   {
     "Id": "UI_Lobby.Match",
     "English": "Replay",
     "Chinese": "回放",
-    "Japanese": null
+    "Japanese": "再生"
   },
   {
     "Id": "UI_Lobby.Match",
     "English": "Settings",
     "Chinese": "设置",
-    "Japanese": null
+    "Japanese": "設置"
   },
   {
     "Id": "UI_Lobby.Match",
     "English": "Exit",
     "Chinese": "退出",
-    "Japanese": null
+    "Japanese": "退出"
   },
   {
     "Id": "UI_Matching.UsedTime",
     "English": "Used Time:",
     "Chinese": "已用时间：",
-    "Japanese": null
+    "Japanese": "すでに用时间:"
   },
   {
     "Id": "UI_Matching.Cancel",
     "English": "Cancel",
     "Chinese": "取消",
-    "Japanese": null
+    "Japanese": "キャンセル"
   },
   {
     "Id": "UI_RoleSelect.Back",
     "English": "BACK",
     "Chinese": "返回",
-    "Japanese": null
+    "Japanese": "戻る"
   },
   {
     "Id": "UI_Settings.Back",
     "English": "BACK",
     "Chinese": "返回",
-    "Japanese": null
+    "Japanese": "戻る"
   },
   {
     "Id": "UI_Settings.Common",
     "English": "Common",
     "Chinese": "常规",
-    "Japanese": null
+    "Japanese": "通常"
   },
   {
     "Id": "UI_Settings.Input",
     "English": "Input",
     "Chinese": "输入",
-    "Japanese": null
+    "Japanese": "入力"
   },
   {
     "Id": "UI_Settings.ScreenSize",
     "English": "Screen Size",
     "Chinese": "分辨率",
-    "Japanese": null
+    "Japanese": "解像度"
   },
   {
     "Id": "UI_Settings.FullScreen",
     "English": "Full Screen",
     "Chinese": "全屏",
-    "Japanese": null
+    "Japanese": "全般"
   },
   {
     "Id": "UI_Settings.MusicVolume",
     "English": "Music Volume",
     "Chinese": "背景音量",
-    "Japanese": null
+    "Japanese": "背景のボリューム"
   },
   {
     "Id": "UI_Settings.SoundVolume",
     "English": "Sound Volume",
     "Chinese": "音效音量",
-    "Japanese": null
+    "Japanese": "サウンド音量"
   },
   {
     "Id": "UI_Settings.Language",
     "English": "Language",
     "Chinese": "语言",
-    "Japanese": null
+    "Japanese": "言語"
   },
   {
     "Id": "UI_Settings.Reset",
     "English": "Reset to Defualt",
     "Chinese": "重置默认",
-    "Japanese": null
+    "Japanese": "リセット黙認"
   }
 ]

@@ -179,14 +179,15 @@ namespace Code.Client
                     {
                         var packet = new Settings();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
 
                         m_PlayerManager.LocalPlayer.m_Settings = packet;
                         AudioManager.musicVolume = packet.MusicVolume / 100f;
                         AudioManager.soundVolume = packet.SoundVolume / 100f;
                         AudioManager.Get().ApplyToCurrent();
                         ConfigManager.Get().SetLanguage((Languages)packet.Language);
-                        Debug.Log($"[C] Settings music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={packet.Language}");
+                        Debug.Log($"[C] Settings music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={(Languages)packet.Language}");
+
+                        EventManager.Trigger(pt, packet, peer);
                     }
                     break;
                 case PacketType.S2C_GameReady:
