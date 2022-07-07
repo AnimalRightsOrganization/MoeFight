@@ -314,7 +314,7 @@ namespace Code.Client
                 S2C_InputPacket input = packet.inputs[i];
 
                 uint tick = (uint)i;
-                uint[] _inputs = new uint[2] { input.inputs[0], input.inputs[1] };
+                uint[] _inputs = input.inputs;
                 recv[tick] = _inputs;
             }
 
