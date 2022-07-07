@@ -350,9 +350,9 @@ namespace Code.Server
             string columnName = "username,audio,sound,language";
             List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName);
             //UnityEngine.Debug.Log($"results={results.Length}"); //固定是4
-            byte _audio = string.IsNullOrEmpty(results[1][0]) ? (byte)int.Parse(results[1][0]) : (byte)0;
-            byte _sound = string.IsNullOrEmpty(results[2][0]) ? (byte)int.Parse(results[2][0]) : (byte)0;
-            byte _language = string.IsNullOrEmpty(results[3][0]) ? (byte)int.Parse(results[3][0]) : (byte)0;
+            byte _audio = string.IsNullOrEmpty(results[1][0]) ? (byte)0 : (byte)int.Parse(results[1][0]);
+            byte _sound = string.IsNullOrEmpty(results[2][0]) ? (byte)0 : (byte)int.Parse(results[2][0]);
+            byte _language = string.IsNullOrEmpty(results[3][0]) ? (byte)0 : (byte)int.Parse(results[3][0]);
 #endif
             #endregion
 

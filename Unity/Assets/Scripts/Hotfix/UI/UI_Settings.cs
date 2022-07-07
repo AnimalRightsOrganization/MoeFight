@@ -159,8 +159,9 @@ namespace HotFix
             switch (eventID)
             {
                 case PacketType.S2C_Settings:
-                    //var packet = (Settings)reader;
+                    var packet = (Settings)reader;
                     //ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings = packet;
+                    m_LanguageDrog.value = packet.Language;
                     this.Pop();
                     break;
             }
