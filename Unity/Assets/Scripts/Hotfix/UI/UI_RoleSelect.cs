@@ -104,11 +104,12 @@ namespace HotFix
                 m_Selectors[i].localPosition = Vector3.zero;
             }
 
-            //int length = ConfigManager.m_RoleConfig.Roles.Length;
-            //int index1 = localPlayer.RoleIndex % length;
-            //m_Rolename[0].text = ConfigManager.m_RoleConfig.Roles[index1].Name[0];
-            //int index2 = rivalPlayer.RoleIndex % length;
-            //m_Rolename[1].text = ConfigManager.m_RoleConfig.Roles[index2].Name[0];
+            var roleArray = ConfigManager.Get().roleConfig.Roles;
+            int length = roleArray.Length;
+            int index1 = localPlayer.RoleIndex % length;
+            m_Rolename[0].text = roleArray[index1].Name[0];
+            int index2 = rivalPlayer.RoleIndex % length;
+            m_Rolename[1].text = roleArray[index2].Name[0];
         }
 
         void OnDisable()
