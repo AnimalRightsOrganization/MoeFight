@@ -94,7 +94,6 @@ public class UI_CheckUpdate : MonoBehaviour
         {
             string abUrl = Path.Combine(ConstValue.AB_WebURL, diff[i] + ".unity3d");
             string abDstPath = Path.Combine(ConstValue.AB_AppPath, diff[i] + ".unity3d");
-            //Debug.LogFormat("下载：{0}\n保存到：{1}", abUrl, abDstPath);
             yield return BeginDownLoad(abUrl, abDstPath);
             fileCount++;
         }
@@ -121,6 +120,11 @@ public class UI_CheckUpdate : MonoBehaviour
 
     public static IEnumerator BeginDownLoad(string downloadfileName, string desFileName)
     {
+        //Debug.Log($"BeginDownLoad: {downloadfileName}\nTo: {desFileName}");
+        if (downloadfileName.Contains("http") == false)
+        {
+            downloadfileName = $"http://{downloadfileName}";
+        }
         HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(downloadfileName);
         request.Timeout = 5000;
         WebResponse response = request.GetResponse();

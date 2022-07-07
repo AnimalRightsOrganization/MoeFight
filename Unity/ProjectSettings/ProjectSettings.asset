@@ -710,6 +710,7 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
     Android: USE_ASSETBUNDLE
+    Server: USE_ASSETBUNDLE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

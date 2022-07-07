@@ -398,6 +398,7 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
 
             // 第二个包，用户设置
+#if UNITY_SERVER || UNITY_EDITOR
             var packet2 = new Settings
             {
                 ScreenSize = 0,
@@ -408,6 +409,7 @@ namespace Code.Server
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
             UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
+#endif
 
             /*
             // 第三个包，重连战场
@@ -436,7 +438,7 @@ namespace Code.Server
                 //UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
                 //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             }*/
-            #endregion
+#endregion
         }
 
         private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)

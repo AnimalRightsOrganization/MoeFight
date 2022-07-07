@@ -64,6 +64,7 @@ public class GameManager : MonoBehaviour
             Debug.LogError("配置请求失败");
             return;
         }
+        Debug.Log($"config: {text}");
         var obj = JsonMapper.ToObject<ServerResponse>(text);
         present = JsonMapper.ToObject<Present>(obj.data);
 
