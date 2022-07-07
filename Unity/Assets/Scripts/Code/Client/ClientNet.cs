@@ -228,7 +228,7 @@ namespace Code.Client
                 case PacketType.S2C_BattleReconnect:
                     {
                         //在UI_Lobby弹出进入提示
-                        var packet = new S2C_MatchResultPacket();
+                        var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                         //OnUserStatusChanged(pt, packet);

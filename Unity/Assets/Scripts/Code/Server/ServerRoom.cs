@@ -31,11 +31,10 @@ namespace Code.Server
                 return null; //要找的用户不在当前房间
             }
         }
+        protected ServerPlayer serverHost;
+        protected ServerPlayer serverGuest;
         public void Send(NetDataWriter writer)
         {
-            var serverHost = hostPlayer as ServerPlayer;
-            var serverGuest = guestPlayer as ServerPlayer;
-
             if (serverHost.IsBot == false)
                 serverHost.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
             if (serverGuest.IsBot == false)
@@ -71,17 +70,13 @@ namespace Code.Server
 
         // 独立的帧同步对象
         private Dictionary<uint, Dictionary<int, uint>> dic_recv;
-        protected NetPeer[] m_NetPeers;
 
         public void DoInit()
         {
-            var netManager = ServerNet.Get._netManager;
+            serverHost = hostPlayer as ServerPlayer;
+            serverGuest = guestPlayer as ServerPlayer;
+
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
-            m_NetPeers = new NetPeer[]
-            {
-                netManager.GetPeerById(hostPlayer.PeerId),
-                netManager.GetPeerById(guestPlayer.PeerId),
-            };
         }
 
         // 收到帧数据
@@ -129,6 +124,12 @@ namespace Code.Server
                     }
                     break;
             }
+        }
+
+        // 掉线倒计时
+        public void CutDown()
+        {
+            //ConstValue.DROP_WAIT_TIME;
         }
 
         // 打印服务器帧

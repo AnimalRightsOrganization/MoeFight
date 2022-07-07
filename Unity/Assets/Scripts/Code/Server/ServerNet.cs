@@ -398,9 +398,18 @@ namespace Code.Server
                 ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
                 ServerPlayer p1 = serverRoom.hostPlayer as ServerPlayer;
                 ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
-                UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
-                UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
-                var packet = new S2C_MatchResultPacket { Code = 3, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
+
+                // 服务器下令开始
+                var packet = new S2C_LoadScenePacket
+                {
+                    RoomId = (short)serverRoomID,
+                    BattleId = serverRoom.BattleID,
+                    Seed = serverRoom.Seed,
+                    MapId = serverRoom.MapId,
+                    BattleMode = (byte)serverRoom.BattleMode,
+                    Host = new PlayerLoadPacket { UserName = p1.UserName, PeerId = p1.PeerId, RoleIndex = p1.RoleIndex },
+                    Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
+                };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet), DeliveryMethod.ReliableOrdered);
             }
             #endregion

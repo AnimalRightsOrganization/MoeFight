@@ -107,14 +107,32 @@ namespace HotFix
         {
             Debug.Log($"[UI.Lobby] 重连");
 
-            var packet = (S2C_MatchResultPacket)reader;
-            if (packet.Code == 3)
-            {
-                var dialog = UIManager.Get().Push<UI_Dialog>();
-                dialog.Show("重连", 
-                    () => { Debug.Log("放弃比赛"); }, "No", 
-                    () => { Debug.Log("返回比赛"); }, "Yes");
-            }
+            var packet = (S2C_LoadScenePacket)reader;
+
+            int seatId = packet.Host.UserName == localPlayer.UserName ? 0 : 1;
+            localPlayer.SetRoomID(packet.RoomId).SetSeatID(seatId).SetStatus(PlayerStatus.AtBattle);
+
+            var dialog = UIManager.Get().Push<UI_Dialog>();
+            dialog.Show("重连",
+                () =>
+                {
+                    Debug.Log("放弃比赛");
+                    ClientNet.Get.SendBattleQuit();
+                    this.Pop();
+                }, "No",
+                () =>
+                {
+                    Debug.Log("返回比赛");
+
+                    System.Action action = () =>
+                    {
+                        UIManager.Get().PopAll();
+                        UIManager.Get().Push<UI_GameMenu>();
+                        ClientNet.Get.SendBattleStart(0); //切换场景完成时发
+                    };
+                    GameManager.Get.LoadBattle(action);
+
+                }, "Yes");
         }
 
         #endregion

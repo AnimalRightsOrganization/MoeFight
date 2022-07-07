@@ -133,4 +133,6 @@ public class ConstValue
     public static string REPLAY_FOLDER = $"{Application.persistentDataPath}/Replay";
     public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
 #endif
+
+    public const int DROP_WAIT_TIME = 30; //掉线等待30s，未重连判负
 }
