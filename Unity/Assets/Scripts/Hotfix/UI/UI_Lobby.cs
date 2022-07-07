@@ -117,7 +117,7 @@ namespace HotFix
                 {
                     Debug.Log("放弃比赛");
                     ClientNet.Get.SendBattleQuit();
-                    this.Pop();
+                    dialog.Pop();
                 }, "No",
                 () =>
                 {

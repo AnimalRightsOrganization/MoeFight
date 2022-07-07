@@ -156,6 +156,7 @@ public class HitstunRunner : MonoBehaviour
     {
         Debug.Log($"{characterDatas[0].name} vs {characterDatas[1].name}");
 
+        characterView = ResManager.LoadPrefab("Prefabs/CharacterView").GetComponent<CharacterView>();
         characterViews = new CharacterView[Constants.NUM_PLAYERS];
 
         for (int i = 0; i < Constants.NUM_PLAYERS; ++i)

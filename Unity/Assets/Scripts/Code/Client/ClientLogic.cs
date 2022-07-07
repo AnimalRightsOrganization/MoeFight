@@ -33,6 +33,9 @@ namespace Code.Client
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
             runner = FindObjectOfType<HitstunRunner>();
+            runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.hostPlayer.RoleIndex;
+            runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.guestPlayer.RoleIndex;
+            Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
 
             EventManager.RegisterEvent(OnNetCallback);
         }
@@ -154,7 +157,6 @@ namespace Code.Client
         // 预测
         private void Predict(uint tick)
         {
-            //int remoteSeat = (mySeatId + 1) % 2;
             uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];
             var _inputs = ggpo_predict[tick];
             _inputs[remoteSeatId] = remoteInput;
@@ -327,14 +329,18 @@ namespace Code.Client
 
             ggpo_recieve = ConvertRecv(packet);
 
-            //uint badTick = 0;
-            //Rollback(badTick);
             for (uint t = 1; t < packet.frameNumber; t++)
             {
                 uint[] _inputs = ggpo_recieve[t];
                 ggpo_predict[t] = _inputs;
                 Process(t, _inputs);
             }
+
+            sendTick = packet.frameNumber;
+            recvTick = packet.frameNumber;
+            rendTick = packet.frameNumber;
+            //IsStart= true;
+            Debug.Log($"pred:{ggpo_predict.Count}, recv:{ggpo_recieve.Count}, ");
         }
 
         private GUIStyle _style1;
