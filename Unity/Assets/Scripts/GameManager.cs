@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using Code.Client;
 using HotFix;
+using LitJson;
 
 public class GameManager : MonoBehaviour
 {
@@ -17,39 +20,73 @@ public class GameManager : MonoBehaviour
     }
 
     private static bool Initialized = false;
+    public static Present present; //通过请求返回
     public static string Token { get; private set; }
 
     void Awake()
     {
-        // 系统设置
-        Time.timeScale = 1.0f;
-        Time.fixedDeltaTime = 0.02f;
-        Screen.fullScreen = false;
-        //Screen.SetResolution(540, 960);
-        Screen.sleepTimeout = SleepTimeout.NeverSleep;
-        //Application.targetFrameRate = 60; //锁定渲染帧
-        QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
-        //Debug.unityLogger.logEnabled = false; //release版关闭
-        //Application.systemLanguage;
-
         if (!Initialized)
         {
             DontDestroyOnLoad(gameObject);
 
-            //TODO: 检查更新
-            OnInit();
+            // 系统设置
+            Time.timeScale = 1.0f;
+            Time.fixedDeltaTime = 0.02f;
+            Screen.fullScreen = false;
+            //Screen.SetResolution(540, 960);
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            //Application.targetFrameRate = 60; //锁定渲染帧
+            QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
+            //Debug.unityLogger.logEnabled = false; //release版关闭
+            //Application.systemLanguage;
+
+#if UNITY_EDITOR && !USE_ASSETBUNDLE
+            // 不检查更新
+            present = new Present();
+            OnInited();
+#else
+            // 加载配置（需要启动资源服务器）
+            GetConfig();
+#endif
         }
         else
         {
-            OnInit();
+            OnInited();
         }
     }
 
-    async void GetConfig() { }
+    // 请求游戏配置
+    async void GetConfig()
+    {
+        string text = await HttpHelper.TryGetAsync(ConstValue.PRESENT_GET);
+        if (string.IsNullOrEmpty(text))
+        {
+            Debug.LogError("配置请求失败");
+            return;
+        }
+        var obj = JsonMapper.ToObject<ServerResponse>(text);
+        present = JsonMapper.ToObject<Present>(obj.data);
 
-    async void CheckUpdateAsync() { }
+        StartCoroutine(CheckUpdateAsync(OnInited));
+    }
 
-    void OnInit()
+    IEnumerator CheckUpdateAsync(System.Action action)
+    {
+        if (!Directory.Exists(ConstValue.AB_AppPath))
+            Directory.CreateDirectory(ConstValue.AB_AppPath);
+
+        Transform root = GameObject.Find("Canvas").transform;
+        var request = Resources.LoadAsync<GameObject>("UI_CheckUpdate");
+        yield return request;
+
+        var asset = request.asset as GameObject;
+        GameObject prefab = Instantiate(asset, root);
+        var ui_checkupdate = prefab.AddComponent<UI_CheckUpdate>();
+
+        yield return ui_checkupdate.StartCheck(action);
+    }
+
+    void OnInited()
     {
         Initialized = true;
 
