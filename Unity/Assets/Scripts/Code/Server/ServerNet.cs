@@ -412,8 +412,9 @@ namespace Code.Server
                 };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
 
-
+                // 下发缺失帧
                 var packet4 = serverRoom.ConvertInputs();
+                UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
                 peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             }
             #endregion
