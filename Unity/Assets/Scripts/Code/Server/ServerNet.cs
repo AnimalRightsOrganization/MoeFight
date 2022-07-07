@@ -340,6 +340,10 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
+            byte _audio = 0;
+            byte _sound = 0;
+            byte _language = 1;
+
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}' AND password='{cmd.Password}'";
@@ -356,9 +360,17 @@ namespace Code.Server
             string columnName = "username,audio,sound,language";
             List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName);
             //UnityEngine.Debug.Log($"results={results.Length}"); //固定是4
-            byte _audio = string.IsNullOrEmpty(results[1][0]) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            byte _sound = string.IsNullOrEmpty(results[2][0]) ? (byte)0 : (byte)int.Parse(results[2][0]);
-            byte _language = string.IsNullOrEmpty(results[3][0]) ? (byte)0 : (byte)int.Parse(results[3][0]);
+            //for (int i = 0; i < results.Length; i++)
+            //{
+            //    List<string> tempList = results[i];
+            //    UnityEngine.Debug.Log($"{i} --- {tempList.Count}");
+            //}
+            List<string> _audioList = results[1];
+            List<string> _soundList = results[2];
+            List<string> _languageList = results[3];
+            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
+            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
+            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
 #endif
             #endregion
 

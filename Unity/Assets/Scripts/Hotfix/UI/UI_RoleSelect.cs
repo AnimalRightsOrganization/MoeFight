@@ -16,7 +16,7 @@ namespace HotFix
         public Button[] m_ConfirmBtn;
         public GameObject[] m_ReadyObj;
         public Transform[] m_Selectors;
-        public Image[] m_HeadImages;
+        public RawImage[] m_HeadImages;
         public Button[] m_Charactors;
 
         private ClientPlayer localPlayer;
@@ -50,10 +50,10 @@ namespace HotFix
             m_ReadyObj[1] = transform.Find("RoomPanel/P2_Ready").gameObject;
 
             var headPanel = transform.Find("HeadPanel");
-            m_HeadImages = new Image[headPanel.childCount];
+            m_HeadImages = new RawImage[headPanel.childCount];
             for (int i = 0; i < headPanel.childCount; i++)
             {
-                m_HeadImages[i] = headPanel.GetChild(i).GetComponent<Image>();
+                m_HeadImages[i] = headPanel.GetChild(i).GetComponent<RawImage>();
             }
 
             var selectPanel = transform.Find("SelectPanel");
@@ -99,7 +99,7 @@ namespace HotFix
             for (int i = 0; i < 2; i++)
             {
                 m_HeadImages[i].color = Color.white;
-                m_HeadImages[i].sprite = m_Charactors[0].image.sprite;
+                m_HeadImages[i].texture = m_Charactors[0].image.sprite.texture;
                 m_Selectors[i].SetParent(m_Charactors[0].transform);
                 m_Selectors[i].localPosition = Vector3.zero;
             }
@@ -151,7 +151,7 @@ namespace HotFix
             //Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
 
             m_HeadImages[packet.SeatId].color = Color.white;
-            m_HeadImages[packet.SeatId].sprite = m_Charactors[packet.RoleIndex].image.sprite;
+            m_HeadImages[packet.SeatId].texture = m_Charactors[packet.RoleIndex].image.sprite.texture;
             m_Selectors[packet.SeatId].SetParent(m_Charactors[packet.RoleIndex].transform);
             m_Selectors[packet.SeatId].localPosition = Vector3.zero;
 

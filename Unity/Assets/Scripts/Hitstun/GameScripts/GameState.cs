@@ -219,13 +219,13 @@ public class GameState
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_CROUCH);
                 defendingChar.health -= 10;
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}");
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击：{attackingChar.state}");
             }
             else if (defendingChar.IsStand())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_STAND);
                 defendingChar.health -= 10;
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}");
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击：{attackingChar.state}");
             }
             // apply hitstun
             defendingChar.framesInState = 0;
