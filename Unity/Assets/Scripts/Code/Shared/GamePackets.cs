@@ -378,7 +378,7 @@ namespace Code.Shared
             writer.Put(frameNumber);
 
             if (inputs == null)
-                inputs = new S2C_InputPacket[frameNumber];
+                inputs = new S2C_InputPacket[frameNumber + 1];
 
             for (int i = 0; i < frameNumber; i++)
             {
@@ -390,7 +390,7 @@ namespace Code.Shared
             frameNumber = reader.GetUInt();
 
             if (inputs == null)
-                inputs = new S2C_InputPacket[frameNumber]; //注意：嵌套结构体，内层数组默认是Null，要初始化一下！！
+                inputs = new S2C_InputPacket[frameNumber + 1]; //注意：嵌套结构体，内层数组默认是Null，要初始化一下！！
 
             for (int i = 0; i < frameNumber; i++)
             {
