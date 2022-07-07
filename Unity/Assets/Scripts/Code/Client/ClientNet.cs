@@ -237,6 +237,7 @@ namespace Code.Client
                         var packet = new S2C_LackInputPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
+                        Debug.Log("Trigger S2C_LackInput");
                     }
                     break;
                 default:
@@ -426,12 +427,9 @@ namespace Code.Client
 
         public void SendLackInput(uint start = 0, uint end = 0)
         {
-            var packet = new C2S_LackInputPacket
-            {
-                startTick = start,
-                endTick = end,
-            };
-            SendPacketSerializable(PacketType.C2S_LackInput, packet);
+            Debug.Log("[C] SendLackInput");
+            var cmd = new C2S_LackInputPacket { startTick = start, endTick = end };
+            SendPacketSerializable(PacketType.C2S_LackInput, cmd);
         }
 
         // 统一处理用户状态变化，并派发出去

@@ -128,7 +128,6 @@ namespace HotFix
                     {
                         UIManager.Get().PopAll();
                         UIManager.Get().Push<UI_GameMenu>();
-                        //ClientNet.Get.SendBattleStart(2); //发送恢复比赛
                         ClientNet.Get.SendLackInput(); //请求帧数据
                     };
                     GameManager.Get.LoadBattleAsync(action); //跳转比赛

@@ -360,6 +360,8 @@ namespace Code.Server
                 {
                     UnityEngine.Debug.Log($"is reconnect: {lastPlayer}");
                     player = lastPlayer;
+                    peer.Tag = lastPlayer;
+
                     isReconnect = true;
                 }
                 else
@@ -740,11 +742,18 @@ namespace Code.Server
 
         private void OnLackInputReceived(NetPacketReader reader, NetPeer peer)
         {
+            UnityEngine.Debug.Log($"[S] LackInput received");
+            if (peer.Tag == null)
+            {
+                UnityEngine.Debug.LogError($"[S] peer.Tag is null");
+                return;
+            }
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
 
             var cmd = new C2S_LackInputPacket();
             cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[S] LackInput received: {cmd.startTick}~{cmd.endTick}");
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
