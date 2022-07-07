@@ -113,7 +113,7 @@ namespace HotFix
             localPlayer.SetRoomID(packet.RoomId).SetSeatID(seatId).SetStatus(PlayerStatus.AtBattle);
 
             var dialog = UIManager.Get().Push<UI_Dialog>();
-            dialog.Show("重连",
+            dialog.Show("你有一个正在进行的比赛，是否立即返回？",
                 () =>
                 {
                     Debug.Log("放弃比赛");
@@ -124,11 +124,17 @@ namespace HotFix
                 {
                     Debug.Log("返回比赛");
 
+                    //进入Loading
+
+                    //请求帧数据
+
+                    //跳转比赛，追帧，完成后发送恢复比赛
+
                     System.Action action = () =>
                     {
                         UIManager.Get().PopAll();
                         UIManager.Get().Push<UI_GameMenu>();
-                        ClientNet.Get.SendBattleStart(0); //切换场景完成时发
+                        ClientNet.Get.SendBattleStart(2); //发送恢复比赛
                     };
                     GameManager.Get.LoadBattle(action);
 

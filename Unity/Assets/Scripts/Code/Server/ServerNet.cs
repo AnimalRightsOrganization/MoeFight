@@ -400,7 +400,7 @@ namespace Code.Server
                 ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
 
                 // 服务器下令开始
-                var packet = new S2C_LoadScenePacket
+                var packet3 = new S2C_LoadScenePacket
                 {
                     RoomId = (short)serverRoomID,
                     BattleId = serverRoom.BattleID,
@@ -410,7 +410,21 @@ namespace Code.Server
                     Host = new PlayerLoadPacket { UserName = p1.UserName, PeerId = p1.PeerId, RoleIndex = p1.RoleIndex },
                     Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
                 };
-                peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet), DeliveryMethod.ReliableOrdered);
+                peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
+
+
+                var inputArray = new S2C_InputPacket[serverRoom.Tick];
+                foreach (var item in serverRoom.dic_recv)
+                {
+                    S2C_InputPacket input = new S2C_InputPacket { frameNumber = item.Key, inputs = new uint[] { item.Value[0], item.Value[1] } };
+                    inputArray[item.Key] = input;
+                }
+                var packet4 = new S2C_LackInputPacket
+                {
+                    frameNumber = serverRoom.Tick,
+                    inputs = inputArray,
+                };
+                peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             }
             #endregion
         }

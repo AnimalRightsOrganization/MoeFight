@@ -69,7 +69,8 @@ namespace Code.Server
         public int EndCount = 0;
 
         // 独立的帧同步对象
-        private Dictionary<uint, Dictionary<int, uint>> dic_recv;
+        public uint Tick;
+        public Dictionary<uint, Dictionary<int, uint>> dic_recv;
 
         public void DoInit()
         {
@@ -96,6 +97,9 @@ namespace Code.Server
                         };
                         var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
+
+                        Tick = cmd.frameNumber;
+                        Debug.Log($"server tick: {Tick}");
                     }
                     break;
                 case BattleMode.TestPVP:
@@ -120,6 +124,8 @@ namespace Code.Server
                             };
                             var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                             Send(writer);
+
+                            Tick = cmd.frameNumber;
                         }
                     }
                     break;
@@ -130,6 +136,12 @@ namespace Code.Server
         public void CutDown()
         {
             //ConstValue.DROP_WAIT_TIME;
+        }
+
+        // 把帧集合打包成下发的格式
+        public void ConvertInputs()
+        {
+            
         }
 
         // 打印服务器帧

@@ -64,6 +64,7 @@ namespace Code.Shared
         S2C_TestPVE         ,   //独立启动加入
         S2C_TestPVP         ,   //双人启动加入
         S2C_Input           ,   //
+        S2C_LackInput       ,   //缺失帧
         //
         S2C_LoginResult     ,   //登录结果
         S2C_LogoutResult    ,   //登出结果
@@ -361,6 +362,39 @@ namespace Code.Shared
             for (int i = 0; i < 2; i++)
             {
                 inputs[i] = reader.GetUInt();
+            }
+        }
+    }
+
+    public struct S2C_LackInputPacket : INetSerializable
+    {
+        public uint frameNumber;
+        public S2C_InputPacket[] inputs;
+
+        //public const int Size = 4 + S2C_InputPacket.Size * frameNumber; //整个结构体长度
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(frameNumber);
+
+            if (inputs == null)
+                inputs = new S2C_InputPacket[frameNumber];
+
+            for (int i = 0; i < frameNumber; i++)
+            {
+                inputs[i].Serialize(writer);
+            }
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            frameNumber = reader.GetUInt();
+
+            if (inputs == null)
+                inputs = new S2C_InputPacket[frameNumber]; //注意：嵌套结构体，内层数组默认是Null，要初始化一下！！
+
+            for (int i = 0; i < frameNumber; i++)
+            {
+                inputs[i].Deserialize(reader);
             }
         }
     }
