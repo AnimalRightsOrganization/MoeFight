@@ -329,12 +329,11 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
+            #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
-            #region 检查逻辑
-            // 校验账号密码
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}' AND password='{cmd.Password}'";
             int check1 = DatabaseEssential.DatabaseManager.Count(query);
-            //UnityEngine.Debug.Log($"check1: {check1}");
+            //UnityEngine.Debug.Log($"check username & password: {check1}");
             if (check1 <= 0)
             {
                 UnityEngine.Debug.LogError("username or password is incorrect");
@@ -342,9 +341,11 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
                 return;
             }
+#endif
             #endregion
 
             #region 登录逻辑
+            bool isReconnect = false;
             ServerPlayer player = null;
             // 校验是否已登录，是否重连
             ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(cmd.UserName);
@@ -354,15 +355,7 @@ namespace Code.Server
                 {
                     UnityEngine.Debug.Log($"is reconnect: {lastPlayer}");
                     player = lastPlayer;
-
-                    int serverRoomID = player.RoomId;
-                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-                    ServerPlayer p1 = serverRoom.hostPlayer as ServerPlayer;
-                    ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
-                    UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
-                    UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
-                    var packet = new S2C_MatchResultPacket { Code = 3, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
-                    peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet), DeliveryMethod.ReliableOrdered);
+                    isReconnect = true;
                 }
                 else
                 {
@@ -389,16 +382,28 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
 
             // 第二个包，用户设置
-            //var packet2 = new Settings
-            //{
-            //    ScreenSize = 0,
-            //    FullScreen = 0,
-            //    MusicVolume = userData.musicVolume,
-            //    SoundVolume = userData.soundVolume,
-            //};
-            //peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
+            var packet2 = new Settings
+            {
+                ScreenSize = 0,
+                FullScreen = 0,
+                MusicVolume = 0,
+                SoundVolume = 0,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
+
+            // 第三个包，重连战场
+            if (isReconnect)
+            {
+                int serverRoomID = player.RoomId;
+                ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                ServerPlayer p1 = serverRoom.hostPlayer as ServerPlayer;
+                ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
+                UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
+                UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
+                var packet = new S2C_MatchResultPacket { Code = 3, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
+                peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet), DeliveryMethod.ReliableOrdered);
+            }
             #endregion
-#endif
         }
 
         private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)

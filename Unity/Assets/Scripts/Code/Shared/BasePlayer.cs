@@ -47,7 +47,7 @@
         }
         public virtual BasePlayer SetStatus(PlayerStatus status)
         {
-            UnityEngine.Debug.Log($"SetStatus: {UserName}@{status}");
+            //UnityEngine.Debug.Log($"SetStatus: {UserName}@{status}");
             this._status = status;
             return this;
         }

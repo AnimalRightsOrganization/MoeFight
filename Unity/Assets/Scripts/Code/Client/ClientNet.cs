@@ -221,7 +221,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_BattleEndPacket();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer); //UI_GameResult这接收
+                        EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
                         OnUserStatusChanged(pt, packet);
                     }
                     break;
@@ -231,7 +231,7 @@ namespace Code.Client
                         var packet = new S2C_MatchResultPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
-                        OnUserStatusChanged(pt, packet);
+                        //OnUserStatusChanged(pt, packet);
                     }
                     break;
                 default:
@@ -487,11 +487,6 @@ namespace Code.Client
                     {
                         m_PlayerManager.LocalPlayer.ResetToLobby();
                         m_PlayerManager.ResetRival();
-                    }
-                    break;
-                case PacketType.S2C_BattleReconnect:
-                    {
-                        m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtBattle);
                     }
                     break;
             }
