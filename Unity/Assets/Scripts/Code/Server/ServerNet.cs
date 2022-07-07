@@ -130,6 +130,8 @@ namespace Code.Server
                     {
                         otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
                     }
+
+                    serverRoom.CutDown(); //开始倒计时
                 }
                 else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
                 {
@@ -225,6 +227,9 @@ namespace Code.Server
                     break;
                 case PacketType.C2S_BattleEnd:
                     OnBattleEndReceived(reader, peer);
+                    break;
+                case PacketType.C2S_LackInput:
+                    OnLackInputReceived(reader, peer);
                     break;
                 default:
                     UnityEngine.Debug.Log("Unhandled packet: " + pt);
@@ -413,9 +418,9 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
 
                 // 下发缺失帧
-                var packet4 = serverRoom.ConvertInputs();
-                UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
-                peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
+                //var packet4 = serverRoom.ConvertInputs();
+                //UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
+                //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             }
             #endregion
         }
@@ -731,6 +736,23 @@ namespace Code.Server
                 player.ResetToLobby();
                 otherPlayer.ResetToLobby();
             }
+        }
+
+        private void OnLackInputReceived(NetPacketReader reader, NetPeer peer)
+        {
+            if (peer.Tag == null) return;
+            var player = (ServerPlayer)peer.Tag;
+
+            var cmd = new C2S_LackInputPacket();
+            cmd.Deserialize(reader);
+
+            int serverRoomID = player.RoomId;
+            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+
+            // 下发缺失帧
+            var packet4 = serverRoom.ConvertInputs();
+            UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
+            peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
         }
         #endregion
 

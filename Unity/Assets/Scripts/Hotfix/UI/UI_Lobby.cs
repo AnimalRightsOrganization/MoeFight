@@ -80,7 +80,6 @@ namespace HotFix
         }
 
         #region 网络消息
-
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -91,9 +90,6 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
-                //case PacketType.S2C_LackInput:
-                //    OnLackInput(reader);
-                //    break;
             }
         }
 
@@ -128,28 +124,19 @@ namespace HotFix
                     Debug.Log("返回比赛");
 
                     //进入Loading
-
-                    //请求帧数据
-
-                    //跳转比赛，追帧，完成后发送恢复比赛
-
                     System.Action action = () =>
                     {
                         UIManager.Get().PopAll();
                         UIManager.Get().Push<UI_GameMenu>();
-                        ClientNet.Get.SendBattleStart(2); //发送恢复比赛
+                        //ClientNet.Get.SendBattleStart(2); //发送恢复比赛
+                        ClientNet.Get.SendLackInput(); //请求帧数据
                     };
-                    GameManager.Get.LoadBattle(action);
+                    GameManager.Get.LoadBattleAsync(action); //跳转比赛
+
+                    //追帧，完成后发送恢复比赛
 
                 }, "Yes");
         }
-
-        private void OnLackInput(INetSerializable reader)
-        {
-            var packet = (S2C_LackInputPacket)reader;
-            Debug.Log($"[UI_Lobby] 缺失帧: {packet.frameNumber}/{packet.inputs.Length}个");
-        }
-
         #endregion
 
         #region 按钮事件

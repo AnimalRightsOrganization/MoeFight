@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 using Code.Client;
 using HotFix;
@@ -78,18 +78,11 @@ public class GameManager : MonoBehaviour
 
     public LanguageNode[] nodes;
 
-    public void LoadBattle(System.Action action = null)
+    public async void LoadBattleAsync(System.Action action = null)
     {
-        StartCoroutine(LoadBattleAsync(action));
-    }
-    IEnumerator LoadBattleAsync(System.Action action = null)
-    {
-        yield return new WaitForSeconds(2);
         var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-        UnityEngine.Object.Instantiate(asset);
-        yield return new WaitForSeconds(1);
-        {
-            action?.Invoke();
-        }
+        Instantiate(asset);
+        await Task.Delay(1000);
+        action?.Invoke();
     }
 }

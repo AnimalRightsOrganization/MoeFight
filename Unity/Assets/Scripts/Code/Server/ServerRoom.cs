@@ -13,6 +13,8 @@ namespace Code.Server
         public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id, host, guest)
         {
             //Debug.Log("子类迟");
+            serverHost = host;
+            serverGuest = guest;
             m_PlayerList = new ServerPlayer[] { host, guest };
             EndCount = 0;
         }
@@ -74,9 +76,6 @@ namespace Code.Server
 
         public void DoInit()
         {
-            serverHost = hostPlayer as ServerPlayer;
-            serverGuest = guestPlayer as ServerPlayer;
-
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
         }
 

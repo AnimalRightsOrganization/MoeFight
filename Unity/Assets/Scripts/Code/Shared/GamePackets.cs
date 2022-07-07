@@ -43,6 +43,7 @@ namespace Code.Shared
         C2S_TestPVE         ,   //独立启动加入
         C2S_TestPVP         ,   //双人启动加入
         C2S_Input           ,   //
+        C2S_LackInput       ,   //缺失帧
         //
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
@@ -193,6 +194,23 @@ namespace Code.Shared
         {
             frameNumber = reader.GetUInt();
             input = reader.GetUInt();
+        }
+    }
+
+    public struct C2S_LackInputPacket : INetSerializable
+    {
+        public uint startTick;
+        public uint endTick;
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(startTick);
+            writer.Put(endTick);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            startTick = reader.GetUInt();
+            endTick = reader.GetUInt();
         }
     }
 

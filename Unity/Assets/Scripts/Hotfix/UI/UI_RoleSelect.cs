@@ -4,6 +4,7 @@ using Code.Client;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.Threading.Tasks;
 
 namespace HotFix
 {
@@ -191,17 +192,18 @@ namespace HotFix
             }
         }
 
-        private void OnLoadScene(INetSerializable reader)
+        private async void OnLoadScene(INetSerializable reader)
         {
             var packet = (S2C_LoadScenePacket)reader;
             ClientNet.Get.m_ClientRoom.DoInit(packet);
             Debug.Log($"[C] 比赛开始，跳转到比赛场景\n{packet}");
 
-            // 先变化状态，让用户看到。再倒计时切换场景。
             m_ConfirmBtn[0].gameObject.SetActive(false);
             m_ReadyObj[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyObj[1].SetActive(true);
+            // 先变化状态，让用户看到，再切换场景。
+            await Task.Delay(1500);
 
             System.Action action = () =>
             {
@@ -209,7 +211,7 @@ namespace HotFix
                 UIManager.Get().Push<UI_GameMenu>();
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
-            GameManager.Get.LoadBattle(action);
+            GameManager.Get.LoadBattleAsync(action);
         }
 
         #endregion

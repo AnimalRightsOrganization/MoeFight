@@ -424,6 +424,16 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_BattleEnd, cmd);
         }
 
+        public void SendLackInput(uint start = 0, uint end = 0)
+        {
+            var packet = new C2S_LackInputPacket
+            {
+                startTick = start,
+                endTick = end,
+            };
+            SendPacketSerializable(PacketType.C2S_LackInput, packet);
+        }
+
         // 统一处理用户状态变化，并派发出去
         void OnUserStatusChanged(PacketType type, INetSerializable reader)
         {
