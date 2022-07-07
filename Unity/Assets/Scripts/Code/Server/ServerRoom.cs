@@ -70,7 +70,7 @@ namespace Code.Server
 
         // 独立的帧同步对象
         public uint Tick;
-        public Dictionary<uint, Dictionary<int, uint>> dic_recv;
+        public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始
 
         public void DoInit()
         {
@@ -99,7 +99,7 @@ namespace Code.Server
                         Send(writer);
 
                         Tick = cmd.frameNumber;
-                        Debug.Log($"server tick: {Tick}");
+                        //Debug.Log($"server tick: {Tick}");
                     }
                     break;
                 case BattleMode.TestPVP:
@@ -139,9 +139,26 @@ namespace Code.Server
         }
 
         // 把帧集合打包成下发的格式
-        public void ConvertInputs()
+        public S2C_LackInputPacket ConvertInputs()
         {
-            
+            S2C_InputPacket[] array = new S2C_InputPacket[Tick + 1];
+            array[0] = new S2C_InputPacket(); //填充废帧[0]
+
+            for (int i = 1; i < array.Length; i++)
+            {
+                uint tick = (uint)i;
+                Dictionary<int, uint> item = dic_recv[tick];
+                uint[] _inputs = new uint[2] { item[0], item[1] };
+                array[i] = new S2C_InputPacket { frameNumber = tick, inputs = _inputs };
+            }
+
+            S2C_LackInputPacket packet = new S2C_LackInputPacket
+            {
+                frameNumber = Tick,
+                inputs = array,
+            };
+
+            return packet;
         }
 
         // 打印服务器帧

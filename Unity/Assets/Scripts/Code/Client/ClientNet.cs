@@ -234,6 +234,13 @@ namespace Code.Client
                         //OnUserStatusChanged(pt, packet);
                     }
                     break;
+                case PacketType.S2C_LackInput:
+                    {
+                        var packet = new S2C_LackInputPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;

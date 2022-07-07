@@ -91,6 +91,9 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
+                case PacketType.S2C_LackInput:
+                    OnLackInput(reader);
+                    break;
             }
         }
 
@@ -139,6 +142,12 @@ namespace HotFix
                     GameManager.Get.LoadBattle(action);
 
                 }, "Yes");
+        }
+
+        private void OnLackInput(INetSerializable reader)
+        {
+            var packet = (S2C_LackInputPacket)reader;
+            Debug.Log($"[UI_Lobby] 缺失帧: {packet.frameNumber}/{packet.inputs.Length}个");
         }
 
         #endregion

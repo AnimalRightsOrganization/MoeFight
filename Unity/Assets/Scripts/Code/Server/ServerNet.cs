@@ -413,17 +413,7 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
 
 
-                var inputArray = new S2C_InputPacket[serverRoom.Tick];
-                foreach (var item in serverRoom.dic_recv)
-                {
-                    S2C_InputPacket input = new S2C_InputPacket { frameNumber = item.Key, inputs = new uint[] { item.Value[0], item.Value[1] } };
-                    inputArray[item.Key] = input;
-                }
-                var packet4 = new S2C_LackInputPacket
-                {
-                    frameNumber = serverRoom.Tick,
-                    inputs = inputArray,
-                };
+                var packet4 = serverRoom.ConvertInputs();
                 peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             }
             #endregion
