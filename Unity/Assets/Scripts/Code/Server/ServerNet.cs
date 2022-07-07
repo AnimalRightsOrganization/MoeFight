@@ -128,10 +128,16 @@ namespace Code.Server
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
                     if (otherPlayer.IsBot == false)
                     {
-                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
-                    }
+                        // ①掉线暂停
+                        //otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
 
-                    serverRoom.CutDown(); //开始倒计时
+                        // ②掉线直接结算
+                        var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
+                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
+                        otherPlayer.ResetToLobby();
+                    }
+                    //serverRoom.CutDown(); //①掉线开始倒计时
+                    m_RoomManager.RemoveServerRoom(serverRoomID); //②掉线结算解散
                 }
                 else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
                 {

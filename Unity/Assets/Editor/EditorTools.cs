@@ -35,6 +35,10 @@ public class TestWindow : EditorWindow
         }
         if (GUILayout.Button("PVE"))
         {
+            ClientPlayer host = new ClientPlayer("test1", 1);
+            ClientPlayer guest = new ClientPlayer("BOT", -1);
+            ClientNet.Get.m_ClientRoom = new ClientRoom(1, host, guest);
+
             var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
             UnityEngine.Object.Instantiate(asset);
             HotFix.UIManager.Get().PopAll();

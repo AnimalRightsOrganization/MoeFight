@@ -16,6 +16,7 @@ public class Character
     public uint hitStun;
     public List<HitBox> hitBoxes;
     public Projectile projectile;
+    public uint health;
 
     // Input Buffer
     private uint[] inputBuffer;
@@ -45,6 +46,8 @@ public class Character
         hitBoxes = new List<HitBox>();
         // projectile
         projectile = new Projectile();
+        // hp
+        health = 100;
     }
 
     public void Serialize(BinaryWriter bw)
@@ -63,6 +66,7 @@ public class Character
         bw.Write(framesInState);
         bw.Write(blockStun);
         bw.Write(hitStun);
+        bw.Write(health);
         // input buffer
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; i++)
         {
@@ -95,6 +99,7 @@ public class Character
         framesInState = br.ReadUInt32();
         blockStun = br.ReadUInt32();
         hitStun = br.ReadUInt32();
+        health = br.ReadUInt32();
         // input buffer
         inputBuffer = new uint[Constants.INPUT_BUFFER_SIZE]; //60
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; ++i)
