@@ -185,17 +185,16 @@ namespace Code.Client
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
-
+        
         // 结束判定
-        const int TOTAL_SECOND = 90;
         private void CheckGameEnd()
         {
             //①时间
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             //Debug.Log($"{rendTick} * {Time.fixedDeltaTime}");
-            int leftTime = Mathf.Max(TOTAL_SECOND - passedTime, 0);
+            int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
             HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
-            if (passedTime >= TOTAL_SECOND)
+            if (passedTime >= ConstValue.TOTAL_SECOND)
             {
                 //if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Matching && m_BattleStage != BattleStage.End)
                 //{
@@ -233,6 +232,9 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
                     OnBattleEnd(reader);
+                    break;
+                case PacketType.S2C_LackInput:
+                    OnLackInput(reader);
                     break;
             }
         }
@@ -300,6 +302,40 @@ namespace Code.Client
             //SaveReplay();
         }
 
+        // 重连恢复场景
+        public static Dictionary<uint, uint[]> ConvertRecv(S2C_LackInputPacket packet)
+        {
+            Dictionary<uint, uint[]> recv = new Dictionary<uint, uint[]>();
+
+            for (int i = 0; i < packet.inputs.Length; i++)
+            {
+                if (i == 0) continue; //删掉废帧0
+
+                S2C_InputPacket input = packet.inputs[i];
+
+                uint tick = (uint)i;
+                uint[] _inputs = new uint[2] { input.inputs[0], input.inputs[1] };
+                recv[tick] = _inputs;
+            }
+
+            return recv;
+        }
+        private void OnLackInput(INetSerializable reader)
+        {
+            var packet = (S2C_LackInputPacket)reader;
+            Debug.Log($"缺失帧: {packet.frameNumber}/{packet.inputs.Length}个"); //63/64
+
+            ggpo_recieve = ConvertRecv(packet);
+
+            //uint badTick = 0;
+            //Rollback(badTick);
+            for (uint t = 1; t < packet.frameNumber; t++)
+            {
+                uint[] _inputs = ggpo_recieve[t];
+                ggpo_predict[t] = _inputs;
+                Process(t, _inputs);
+            }
+        }
 
         private GUIStyle _style1;
         private GUIStyle style1

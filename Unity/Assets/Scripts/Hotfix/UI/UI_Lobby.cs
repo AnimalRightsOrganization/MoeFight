@@ -91,9 +91,9 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
-                case PacketType.S2C_LackInput:
-                    OnLackInput(reader);
-                    break;
+                //case PacketType.S2C_LackInput:
+                //    OnLackInput(reader);
+                //    break;
             }
         }
 
@@ -148,8 +148,6 @@ namespace HotFix
         {
             var packet = (S2C_LackInputPacket)reader;
             Debug.Log($"[UI_Lobby] 缺失帧: {packet.frameNumber}/{packet.inputs.Length}个");
-
-
         }
 
         #endregion

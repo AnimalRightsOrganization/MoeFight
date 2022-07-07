@@ -134,5 +134,9 @@ public class ConstValue
     public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
 #endif
 
+
+    #region GameLogic
     public const int DROP_WAIT_TIME = 30; //掉线等待30s，未重连判负
+    public const int TOTAL_SECOND = 90; //比赛时间（s）
+    #endregion
 }

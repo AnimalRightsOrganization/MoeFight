@@ -321,7 +321,6 @@ namespace Code.Shared
             writer.Put(HostName);
             writer.Put(GuestName);
         }
-
         public void Deserialize(NetDataReader reader)
         {
             Code = reader.GetByte();
@@ -351,7 +350,6 @@ namespace Code.Shared
                 writer.Put(inputs[i]);
             }
         }
-
         public void Deserialize(NetDataReader reader)
         {
             frameNumber = reader.GetUInt();
@@ -370,8 +368,6 @@ namespace Code.Shared
     {
         public uint frameNumber;
         public S2C_InputPacket[] inputs;
-
-        //public const int Size = 4 + S2C_InputPacket.Size * frameNumber; //整个结构体长度
 
         public void Serialize(NetDataWriter writer)
         {
