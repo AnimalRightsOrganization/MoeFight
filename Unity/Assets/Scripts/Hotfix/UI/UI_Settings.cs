@@ -89,7 +89,6 @@ namespace HotFix
             m_LanguageDrog.options = new System.Collections.Generic.List<Dropdown.OptionData>();
             for (int i = 0; i < System.Enum.GetValues(typeof(Languages)).Length; i++)
             {
-                //string option = LanguageOptions[i];
                 string option = ((Languages)i).ToString();
                 var data = new Dropdown.OptionData(option);
                 m_LanguageDrog.options.Add(data);
@@ -160,8 +159,8 @@ namespace HotFix
             switch (eventID)
             {
                 case PacketType.S2C_Settings:
-                    var packet = (Settings)reader;
-                    ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings = packet;
+                    //var packet = (Settings)reader;
+                    //ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings = packet;
                     this.Pop();
                     break;
             }
@@ -246,7 +245,6 @@ namespace HotFix
             m_SoundValue.text = $"{value}";
         }
 
-        //static readonly string[] LanguageOptions = new string[] { "English", "简体中文", "日本語", "Español" };
         void OnLanguageChanged(int index)
         {
             Debug.Log($"改变语言：{m_LanguageDrog.options[index].text}");

@@ -28,6 +28,11 @@ public class ConfigManager : MonoBehaviour
         m_NodeList = JsonMapper.ToObject<LanguageNode[]>(json);
     }
 
+    public void SetLanguage(Languages lang)
+    {
+        currentLanguage = lang;
+    }
+
     public string GetWord(int key)
     {
         return m_NodeList[key].Word[(int)currentLanguage];

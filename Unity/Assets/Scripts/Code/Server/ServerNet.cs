@@ -346,14 +346,22 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
                 return;
             }
+
+            string columnName = "username,audio,sound,language";
+            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName);
+            //UnityEngine.Debug.Log($"results={results.Length}"); //固定是4
+            byte _audio = string.IsNullOrEmpty(results[1][0]) ? (byte)int.Parse(results[1][0]) : (byte)0;
+            byte _sound = string.IsNullOrEmpty(results[2][0]) ? (byte)int.Parse(results[2][0]) : (byte)0;
+            byte _language = string.IsNullOrEmpty(results[3][0]) ? (byte)int.Parse(results[3][0]) : (byte)0;
 #endif
             #endregion
 
             #region 登录逻辑
-            bool isReconnect = false;
             ServerPlayer player = null;
-            // 校验是否已登录，是否重连
+            /*
             ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(cmd.UserName);
+            // 校验是否已登录，是否重连
+            bool isReconnect = false;
             if (lastPlayer != null)
             {
                 if (lastPlayer.Status == PlayerStatus.AtBattle || lastPlayer.Status == PlayerStatus.Reconnect)
@@ -373,6 +381,7 @@ namespace Code.Server
                 }
             }
             else
+            */
             {
                 player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
                 m_PlayerManager.AddPlayer(player);
@@ -393,11 +402,13 @@ namespace Code.Server
             {
                 ScreenSize = 0,
                 FullScreen = 0,
-                MusicVolume = 0,
-                SoundVolume = 0,
+                MusicVolume = _audio,
+                SoundVolume = _sound,
+                Language = _language,
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
 
+            /*
             // 第三个包，重连战场
             if (isReconnect)
             {
@@ -423,7 +434,7 @@ namespace Code.Server
                 //var packet4 = serverRoom.ConvertInputs();
                 //UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
                 //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
-            }
+            }*/
             #endregion
         }
 
@@ -445,12 +456,26 @@ namespace Code.Server
 
             Settings cmd = new Settings();
             cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[S] OnSettingsReceived: {player.UserName}: {cmd.MusicVolume}, {cmd.SoundVolume}, {cmd.Language}");
 
-            //var user = ConfigManager.m_DBConfig.users.Where(x => x.userName == player.UserName).ToArray().FirstOrDefault();
-            //user.musicVolume = cmd.MusicVolume;
-            //user.soundVolume = cmd.SoundVolume;
-            //ConfigManager.m_DBConfig.Save();
-
+#if UNITY_SERVER || UNITY_EDITOR
+            string tableName = "tb_settings";
+            string query = $"SELECT Count(*) FROM {tableName} WHERE username='{player.UserName}'";
+            int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            //UnityEngine.Debug.Log($"check1={check1}");
+            if (check1 == 0)
+            {
+                //①如果没有，创建
+                DatabaseEssential.DatabaseManager.InsertRecord(tableName, "username,audio,sound,language", $"'{player.UserName}', '{cmd.MusicVolume}', '{cmd.SoundVolume}', '{cmd.Language}'");
+                UnityEngine.Debug.Log($"insert sql:");
+            }
+            else
+            {
+                //②如果有，更新
+                DatabaseEssential.DatabaseManager.UpdateRecord(tableName, $"audio='{cmd.MusicVolume}',sound='{cmd.SoundVolume}',language='{cmd.Language}' WHERE Username='{player.UserName}'");
+                UnityEngine.Debug.Log($"update sql:");
+            }
+#endif
             peer.Send(WriteSerializable(PacketType.S2C_Settings, cmd), DeliveryMethod.ReliableOrdered);
         }
 

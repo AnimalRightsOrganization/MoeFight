@@ -12,10 +12,10 @@ namespace Code.Shared
 
     public enum ErrorCode : byte
     {
-        LobbyIsFull,    //大厅爆满
-        RoomIsFull,     //房间爆满
-        UserNameUsed,   //账号已经注册
-        Be_Kicked,      //被踢了（顶号/GM）
+        LOBBY_IS_FULL,  //大厅爆满
+        ROOM_IS_FULL,   //房间爆满
+        USERNAME_USED,  //账号已经注册
+        BE_KICKED,      //被踢了（顶号/GM）
         HAS_LOGIN,      //已登录
     }
     
@@ -44,19 +44,16 @@ namespace Code.Shared
         C2S_TestPVP         ,   //双人启动加入
         C2S_Input           ,   //
         C2S_LackInput       ,   //缺失帧
-        //
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
         C2S_LogoutReq       ,   //登出请求
         C2S_UserInfo        ,   //请求用户信息
         C2S_Settings        ,   //设置选项
-        //
         C2S_MatchRequest    ,   //请求匹配
         C2S_MatchCancel     ,   //请求匹配中离开
         C2S_MatchQuit       ,   //匹配成功后离开
         C2S_RoleSelect      ,   //匹配成功后选择角色
         C2S_GameReady       ,   //请求准备
-        //
         C2S_BattleStart     ,   //请求开始战斗
         C2S_BattlePause     ,   //请求暂停战斗
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
@@ -66,18 +63,15 @@ namespace Code.Shared
         S2C_TestPVP         ,   //双人启动加入
         S2C_Input           ,   //
         S2C_LackInput       ,   //缺失帧
-        //
         S2C_LoginResult     ,   //登录结果
         S2C_LogoutResult    ,   //登出结果
         S2C_UserInfo        ,   //下发用户信息
         S2C_Settings        ,   //设置选项
         S2C_ErrorOperate    ,   //错误代码
-        //
         S2C_MatchResult     ,   //匹配结果
         S2C_RoleSelect      ,   //选择角色
         S2C_GameReady       ,   //准备结果
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
-        //
         S2C_BattleReconnect ,   //重连战斗
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
         S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
@@ -118,7 +112,7 @@ namespace Code.Shared
         public void Serialize(NetDataWriter writer) { }
         public void Deserialize(NetDataReader reader) { }
     }
-    // 设置选项
+
     [System.Serializable]
     public struct Settings : INetSerializable
     {
@@ -155,7 +149,7 @@ namespace Code.Shared
             bool cond3 = MusicVolume == other.MusicVolume;
             bool cond4 = SoundVolume == other.SoundVolume;
             bool cond5 = Language == other.Language;
-            return cond3 && cond4;
+            return cond3 && cond4 && cond5;
         }
         public override string ToString()
         {

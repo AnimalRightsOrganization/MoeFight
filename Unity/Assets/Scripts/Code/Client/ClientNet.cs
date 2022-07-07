@@ -73,7 +73,7 @@ namespace Code.Client
 
         void INetEventListener.OnPeerConnected(NetPeer peer)
         {
-            Debug.Log("[C] Connected to server: " + peer.EndPoint);
+            Debug.Log($"<color=green>[C] Connected to server: {peer.EndPoint}</color>");
             _server = peer;
 
             if (UIManager.Get() == null) return;
@@ -185,6 +185,7 @@ namespace Code.Client
                         AudioManager.musicVolume = packet.MusicVolume / 100f;
                         AudioManager.soundVolume = packet.SoundVolume / 100f;
                         AudioManager.Get().ApplyToCurrent();
+                        ConfigManager.Get().SetLanguage((Languages)packet.Language);
                     }
                     break;
                 case PacketType.S2C_GameReady:

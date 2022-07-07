@@ -148,16 +148,17 @@ namespace HotFix
         private void OnRoleSelect(INetSerializable reader)
         {
             var packet = (S2C_RoleSelectPacket)reader;
-            Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
+            //Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
 
             m_HeadImages[packet.SeatId].color = Color.white;
             m_HeadImages[packet.SeatId].sprite = m_Charactors[packet.RoleIndex].image.sprite;
             m_Selectors[packet.SeatId].SetParent(m_Charactors[packet.RoleIndex].transform);
             m_Selectors[packet.SeatId].localPosition = Vector3.zero;
 
-            //int length = ConfigManager.m_RoleConfig.Roles.Length;
-            //int index = packet.RoleIndex % length;
-            //m_Rolename[packet.SeatId].text = ConfigManager.m_RoleConfig.Roles[index].Name[0];
+            var roleArray = ConfigManager.Get().roleConfig.Roles;
+            int length = roleArray.Length;
+            int index = packet.RoleIndex % length;
+            m_Rolename[packet.SeatId].text = roleArray[index].Name[0];
         }
 
         private void OnMatchResult(INetSerializable reader)
