@@ -186,6 +186,7 @@ namespace Code.Client
                         AudioManager.soundVolume = packet.SoundVolume / 100f;
                         AudioManager.Get().ApplyToCurrent();
                         ConfigManager.Get().SetLanguage((Languages)packet.Language);
+                        Debug.Log($"[C] Settings music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={packet.Language}");
                     }
                     break;
                 case PacketType.S2C_GameReady:

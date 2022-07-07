@@ -407,6 +407,7 @@ namespace Code.Server
                 Language = _language,
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
+            UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
 
             /*
             // 第三个包，重连战场
