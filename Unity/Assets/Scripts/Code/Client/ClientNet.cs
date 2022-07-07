@@ -27,6 +27,7 @@ namespace Code.Client
         private NetDataWriter _writer;
 
         private Action<DisconnectInfo> _onDisconnected;
+        public Action _onConnected;
         public ClientRoom m_ClientRoom;
         public ClientPlayerManager m_PlayerManager;
         public int _ping;
@@ -76,22 +77,18 @@ namespace Code.Client
             Debug.Log($"<color=green>[C] Connected to server: {peer.EndPoint}</color>");
             _server = peer;
 
-            if (UIManager.Get() == null) return;
-            var connect = UIManager.Get().GetUI<UI_Connect>();
-            UIManager.Get().Pop(connect);
+            _onConnected?.Invoke();
+            _onConnected = null;
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
+            Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
             m_PlayerManager.Clear();
             _server = null;
 
-            Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
             _onDisconnected?.Invoke(disconnectInfo);
             _onDisconnected = null;
-
-            UIManager.Get().PopAll();
-            UIManager.Get().Push<UI_Login>();
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
@@ -284,9 +281,6 @@ namespace Code.Client
             string Key = ConfigManager.Get().globalConfig.Key;
             _netManager.Connect(IP, Port, Key);
             Debug.Log($"Connect to: {IP}: {Port}, key={Key}");
-
-            if (UIManager.Get() == null) return;
-            UIManager.Get().Push<UI_Connect>();
         }
 
         public void Disconnect()

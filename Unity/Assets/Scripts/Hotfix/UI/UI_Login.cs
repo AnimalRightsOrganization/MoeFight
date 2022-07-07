@@ -10,11 +10,14 @@ namespace HotFix
 {
     public class UI_Login : UIBase
     {
+        public Button m_OAuthBtn;
+
         public CanvasGroup m_LoginPanel;
         public InputField m_UserNameField;
         public InputField m_PasswordField;
         public Button m_LoginBtn;
         public Button m_ToRegisterBtn;
+        public Button m_LoginCloseBtn;
         public Text m_UserNamePlaceholder; //输入用户名
         public Text m_PasswordPlaceholder; //输入密码
         public Text m_LoginText; //+登录
@@ -26,6 +29,7 @@ namespace HotFix
         public InputField m_RegPassword2Field;
         public Button m_RegisterBtn;
         public Button m_ToLoginBtn;
+        public Button m_RegisterCloseBtn;
         public Text m_RegUserNamePlaceholder; //输入用户名
         public Text m_RegPasswordPlaceholder; //输入密码
         public Text m_RegPassword2Placeholder; //确认密码
@@ -34,18 +38,22 @@ namespace HotFix
 
         void Awake()
         {
+            m_OAuthBtn = transform.Find("OAuthBtn").GetComponent<Button>();
+            m_OAuthBtn.onClick.AddListener(OnOAuthBtnClick);
+
             m_LoginPanel = transform.Find("LoginPanel").GetComponent<CanvasGroup>();
             m_UserNameField = transform.Find("LoginPanel/UserName").GetComponent<InputField>();
             m_PasswordField = transform.Find("LoginPanel/Password").GetComponent<InputField>();
             m_LoginBtn = transform.Find("LoginPanel/LoginBtn").GetComponent<Button>();
             m_ToRegisterBtn = transform.Find("LoginPanel/ToRegisterBtn").GetComponent<Button>();
+            m_LoginCloseBtn = transform.Find("LoginPanel/CloseBtn").GetComponent<Button>();
             m_LoginBtn.onClick.AddListener(SendLogin);
             m_ToRegisterBtn.onClick.AddListener(ToRegister);
+            m_LoginCloseBtn.onClick.AddListener(() => { m_LoginPanel.gameObject.SetActive(false); });
             m_UserNamePlaceholder = transform.Find("LoginPanel/UserName/Placeholder").GetComponent<Text>();
             m_PasswordPlaceholder = transform.Find("LoginPanel/Password/Placeholder").GetComponent<Text>();
             m_LoginText = transform.Find("LoginPanel/LoginBtn/Text").GetComponent<Text>();
             m_ToRegisterText = transform.Find("LoginPanel/ToRegisterBtn/Text").GetComponent<Text>();
-
 
             m_RegisterPanel = transform.Find("RegisterPanel").GetComponent<CanvasGroup>();
             m_RegUserNameField = transform.Find("RegisterPanel/UserName").GetComponent<InputField>();
@@ -53,13 +61,18 @@ namespace HotFix
             m_RegPassword2Field = transform.Find("RegisterPanel/Password2").GetComponent<InputField>();
             m_RegisterBtn = transform.Find("RegisterPanel/RegisterBtn").GetComponent<Button>();
             m_ToLoginBtn = transform.Find("RegisterPanel/ToLoginBtn").GetComponent<Button>();
+            m_RegisterCloseBtn = transform.Find("RegisterPanel/CloseBtn").GetComponent<Button>();
             m_RegisterBtn.onClick.AddListener(SendRegister);
             m_ToLoginBtn.onClick.AddListener(ToLogin);
+            m_RegisterCloseBtn.onClick.AddListener(() => { m_RegisterPanel.gameObject.SetActive(false); });
             m_RegUserNamePlaceholder = transform.Find("RegisterPanel/UserName/Placeholder").GetComponent<Text>();
             m_RegPasswordPlaceholder = transform.Find("RegisterPanel/Password/Placeholder").GetComponent<Text>();
             m_RegPassword2Placeholder = transform.Find("RegisterPanel/Password2/Placeholder").GetComponent<Text>();
             m_RegisterText = transform.Find("RegisterPanel/RegisterBtn/Text").GetComponent<Text>();
             m_ToLoginText = transform.Find("RegisterPanel/ToLoginBtn/Text").GetComponent<Text>();
+
+            m_LoginPanel.gameObject.SetActive(false);
+            m_RegisterPanel.gameObject.SetActive(false);
         }
 
         void OnEnable()
@@ -68,9 +81,7 @@ namespace HotFix
 
             EventManager.RegisterEvent(OnNetCallback);
 
-            ToLogin();
-
-            ClientNet.Get.Connect(null);
+            ConnectToServer();
         }
 
         void OnDisable()
@@ -132,6 +143,36 @@ namespace HotFix
 
         #endregion
 
+        void ConnectToServer()
+        {
+            var connect = UIManager.Get().Push<UI_Connect>();
+            m_OAuthBtn.gameObject.SetActive(false);
+
+            ClientNet.Get._onConnected = () =>
+            {
+                connect.Pop();
+                m_OAuthBtn.gameObject.SetActive(true);
+            };
+            ClientNet.Get.Connect((DisconnectInfo) =>
+            {
+                connect.Pop();
+                m_OAuthBtn.gameObject.SetActive(true);
+            });
+        }
+        private void OnOAuthBtnClick()
+        {
+            if (ClientNet.Get.IsConnect() == false)
+            {
+                ConnectToServer();
+                return;
+            }
+
+            //TODO: 判断渠道号（根据平台和包名）。弹出默认登录或三方SDKView。
+            //Debug.Log($"当前渠道是：{Application.identifier}");
+            m_LoginPanel.gameObject.SetActive(true);
+            m_RegisterPanel.gameObject.SetActive(false);
+        }
+
         private void SendLogin()
         {
             string UserName = m_UserNameField.text;
@@ -178,41 +219,15 @@ namespace HotFix
             }
         }
 
-        private void ToRegister()
-        {
-            Tweener tw1 = m_LoginPanel.DOFade(0, 0.3f);
-            tw1.Play();
-            tw1.OnComplete(() =>
-            {
-                m_LoginPanel.interactable = false;
-                m_LoginPanel.blocksRaycasts = false;
-
-                Tweener tw2 = m_RegisterPanel.DOFade(1, 0.3f);
-                tw2.Play();
-                tw2.OnComplete(() =>
-                {
-                    m_RegisterPanel.interactable = true;
-                    m_RegisterPanel.blocksRaycasts = true;
-                });
-            });
-        }
         private void ToLogin()
         {
-            Tweener tw1 = m_RegisterPanel.DOFade(0, 0.3f);
-            tw1.Play();
-            tw1.OnComplete(() =>
-            {
-                m_RegisterPanel.interactable = false;
-                m_RegisterPanel.blocksRaycasts = false;
-
-                Tweener tw2 = m_LoginPanel.DOFade(1, 0.3f);
-                tw2.Play();
-                tw2.OnComplete(() =>
-                {
-                    m_LoginPanel.interactable = true;
-                    m_LoginPanel.blocksRaycasts = true;
-                });
-            });
+            m_LoginPanel.gameObject.SetActive(true);
+            m_RegisterPanel.gameObject.SetActive(false);
+        }
+        private void ToRegister()
+        {
+            m_LoginPanel.gameObject.SetActive(false);
+            m_RegisterPanel.gameObject.SetActive(true);
         }
     }
 }

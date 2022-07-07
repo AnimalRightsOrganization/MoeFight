@@ -24,15 +24,13 @@ namespace Code.Client
             m_TestX2Btn.onClick.AddListener(OnTestX2Click);
         }
 
-        void OnDisconnected(DisconnectInfo info)
-        {
-            m_InfoText.text = info.Reason.ToString();
-            gameObject.SetActive(true);
-        }
-
         void OnConnectClick()
         {
-            ClientNet.Get.Connect(OnDisconnected);
+            ClientNet.Get.Connect((DisconnectInfo) =>
+            {
+                m_InfoText.text = DisconnectInfo.Reason.ToString();
+                gameObject.SetActive(true);
+            });
         }
 
         void OnTestX1Click()
