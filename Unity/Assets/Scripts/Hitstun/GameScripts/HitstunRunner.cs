@@ -18,6 +18,7 @@ public class HitstunRunner : MonoBehaviour
 
     // Character Data
     CharacterData[] characterDatas; //技能数据
+    CharacterNode[] characterNodes; //伤害数据
 
     // Internal
     NativeArray<byte> buffer;
@@ -59,6 +60,8 @@ public class HitstunRunner : MonoBehaviour
             };
             LocalSession.ngs.SetConnectState(i, PlayerConnectState.RUNNING);
         }
+        // load character node from JSON
+        LoadCharacterNode();
         // Init GameState
         LocalSession.gs.Init();
         // load character data from JSON
@@ -154,7 +157,7 @@ public class HitstunRunner : MonoBehaviour
 
     void InitView(GameState gs)
     {
-        Debug.Log($"{characterDatas[0].name} vs {characterDatas[1].name}");
+        Debug.Log($"InitView: {characterDatas[0].name} vs {characterDatas[1].name}");
 
         characterView = ResManager.LoadPrefab("Prefabs/CharacterView").GetComponent<CharacterView>();
         characterViews = new CharacterView[Constants.NUM_PLAYERS];
@@ -246,15 +249,21 @@ public class HitstunRunner : MonoBehaviour
         }
     }
 
+    void LoadCharacterNode()
+    {
+        characterNodes = new CharacterNode[Constants.NUM_PLAYERS];
+        characterNodes[0] = ConfigManager.Get().GetCharacter(player1Character);
+        characterNodes[1] = ConfigManager.Get().GetCharacter(player2Character);
+        LocalSession.gs.characterNodes = characterNodes;
+    }
+
     void LoadCharacterData()
     {
-        characterDatas = new CharacterData[Constants.NUM_PLAYERS];
-
         var ta1 = Resources.Load<TextAsset>($"CharacterData/{player1Character}");
         var ta2 = Resources.Load<TextAsset>($"CharacterData/{player2Character}");
+        characterDatas = new CharacterData[Constants.NUM_PLAYERS];
         characterDatas[0] = JsonConvert.DeserializeObject<CharacterData>(ta1.text);
         characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(ta2.text);
-
         LocalSession.characterDatas = characterDatas;
         LocalSession.gs.characterDatas = characterDatas;
     }

@@ -12,7 +12,7 @@ public class GameState
     public uint hitstop;
     public Character[] characters;
     public CharacterData[] characterDatas;
-    //public CharacterNode[] characterNodes;
+    public CharacterNode[] characterNodes;
 
     public bool Equals(GameState other)
     {
@@ -109,6 +109,8 @@ public class GameState
 
             characters[i].facingRight = (i == 0) ? true : false;
             characters[i].onTop = (i == 0) ? true : false;
+
+            characters[i].health = characterNodes[i].Health;
         }
     }
 
@@ -219,14 +221,18 @@ public class GameState
             if (defendingChar.IsCrouch())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_CROUCH);
-                defendingChar.health -= 10;
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击：{attackingChar.state}");
+                int attacker = (characters[0] == attackingChar) ? 0 : 1;
+                uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
+                defendingChar.health -= damage;
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             else if (defendingChar.IsStand())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_STAND);
-                defendingChar.health -= 10;
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击：{attackingChar.state}");
+                int attacker = (characters[0] == attackingChar) ? 0 : 1;
+                uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
+                defendingChar.health -= damage;
+                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             // apply hitstun
             defendingChar.framesInState = 0;

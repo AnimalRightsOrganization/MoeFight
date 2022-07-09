@@ -47,8 +47,7 @@ public class Character
         // projectile
         projectile = new Projectile();
         // hp
-        health = 1000;
-        //health = ConfigManager.Get().GetCharacter(CharacterName.KEN).Health;
+        health = 0;
     }
 
     public void Serialize(BinaryWriter bw)
