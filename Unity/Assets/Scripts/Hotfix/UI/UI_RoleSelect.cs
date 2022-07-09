@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 using Code.Client;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using System.Threading.Tasks;
 
 namespace HotFix
 {
@@ -26,6 +26,7 @@ namespace HotFix
         public Text[] m_ConfirmText;
         public Text[] m_ReadyText;
 
+        #region 内置方法
         void Awake()
         {
             m_BackBtn = transform.Find("Background/BackBtn").GetComponent<Button>();
@@ -84,32 +85,7 @@ namespace HotFix
 
             EventManager.RegisterEvent(OnNetCallback);
 
-            localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
-            rivalPlayer = ClientNet.Get.m_PlayerManager.RivalPlayer;
-            bool localIsHost = localPlayer.SeatId == 0;
-            m_Username[0].text = localIsHost ? localPlayer.UserName : rivalPlayer.UserName;
-            m_Username[1].text = !localIsHost ? localPlayer.UserName : rivalPlayer.UserName;
-            //Debug.Log($"我的座位{localPlayer.SeatId}");
-
-            m_ConfirmBtn[0].gameObject.SetActive(localIsHost);
-            m_ConfirmBtn[1].gameObject.SetActive(!localIsHost);
-            m_ReadyObj[0].SetActive(false);
-            m_ReadyObj[1].SetActive(false);
-
-            for (int i = 0; i < 2; i++)
-            {
-                m_HeadImages[i].color = Color.white;
-                m_HeadImages[i].texture = m_Charactors[0].image.sprite.texture;
-                m_Selectors[i].SetParent(m_Charactors[0].transform);
-                m_Selectors[i].localPosition = Vector3.zero;
-            }
-
-            var roleArray = ConfigManager.Get().roleConfig.Roles;
-            int length = roleArray.Length;
-            int index1 = localPlayer.RoleIndex % length;
-            m_Rolename[0].text = roleArray[index1].Name[0];
-            int index2 = rivalPlayer.RoleIndex % length;
-            m_Rolename[1].text = roleArray[index2].Name[0];
+            InitUI();
         }
 
         void OnDisable()
@@ -123,6 +99,7 @@ namespace HotFix
 
             m_BackText.text = config.GetWord(15);
         }
+        #endregion
 
         #region 网络消息
 
@@ -217,6 +194,36 @@ namespace HotFix
         }
 
         #endregion
+
+        void InitUI()
+        {
+            localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
+            rivalPlayer = ClientNet.Get.m_PlayerManager.RivalPlayer;
+            bool localIsHost = localPlayer.SeatId == 0;
+            m_Username[0].text = localIsHost ? localPlayer.UserName : rivalPlayer.UserName;
+            m_Username[1].text = !localIsHost ? localPlayer.UserName : rivalPlayer.UserName;
+            //Debug.Log($"我的座位{localPlayer.SeatId}");
+
+            m_ConfirmBtn[0].gameObject.SetActive(localIsHost);
+            m_ConfirmBtn[1].gameObject.SetActive(!localIsHost);
+            m_ReadyObj[0].SetActive(false);
+            m_ReadyObj[1].SetActive(false);
+
+            for (int i = 0; i < 2; i++)
+            {
+                m_HeadImages[i].color = Color.white;
+                m_HeadImages[i].texture = m_Charactors[0].image.sprite.texture;
+                m_Selectors[i].SetParent(m_Charactors[0].transform);
+                m_Selectors[i].localPosition = Vector3.zero;
+            }
+
+            var roleArray = ConfigManager.Get().roleConfig.Roles;
+            int length = roleArray.Length;
+            int index1 = localPlayer.RoleIndex % length;
+            m_Rolename[0].text = roleArray[index1].Name[0];
+            int index2 = rivalPlayer.RoleIndex % length;
+            m_Rolename[1].text = roleArray[index2].Name[0];
+        }
 
         void OnBackButtonClick()
         {

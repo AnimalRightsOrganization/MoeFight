@@ -142,7 +142,6 @@ namespace HotFix
         #endregion
 
         #region 按钮事件
-
         void OnArcadeButtonClick()
         {
             var ui = UIManager.Get().Push<UI_Toast>();
@@ -163,8 +162,7 @@ namespace HotFix
 
         void OnTrainingButtonClick()
         {
-            var ui = UIManager.Get().Push<UI_Toast>();
-            ui.Show("敬请期待");
+            UIManager.Get().Push<UI_RoleSelect>();
         }
 
         void OnReplayButtonClick()
@@ -181,7 +179,16 @@ namespace HotFix
 
         void OnExitButtonClick()
         {
-            ClientNet.Get.SendLogout();
+            var dialog = UIManager.Get().Push<UI_Dialog>();
+            dialog.Show("确定退出？",
+                () =>
+                {
+                    dialog.Pop();
+                }, "否",
+                () =>
+                {
+                    ClientNet.Get.SendLogout(); dialog.Pop();
+                }, "是");
             return;
 
             Debug.Log("Exit");
@@ -192,7 +199,6 @@ namespace HotFix
             Application.Quit();
 #endif
         }
-
         #endregion
     }
 }

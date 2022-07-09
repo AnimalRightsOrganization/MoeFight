@@ -33,9 +33,12 @@ namespace Code.Client
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
             runner = FindObjectOfType<HitstunRunner>();
-            runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.hostPlayer.RoleIndex;
-            runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.guestPlayer.RoleIndex;
-            Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
+            if (ClientNet.Get.m_ClientRoom != null)
+            {
+                runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.hostPlayer.RoleIndex;
+                runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.guestPlayer.RoleIndex;
+                Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
+            }
 
             EventManager.RegisterEvent(OnNetCallback);
         }

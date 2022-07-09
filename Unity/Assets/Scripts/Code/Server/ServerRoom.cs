@@ -9,38 +9,31 @@ namespace Code.Server
 {
     public class ServerRoom : BaseRoom
     {
+        public ServerPlayer hostPlayer;
+        public ServerPlayer guestPlayer;
+
         #region 房间数据
         public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id, host, guest)
         {
             //Debug.Log("子类迟");
-            serverHost = host;
-            serverGuest = guest;
-            m_PlayerList = new ServerPlayer[] { host, guest };
+            hostPlayer = host;
+            guestPlayer = guest;
             EndCount = 0;
         }
         public ServerPlayer GetOtherPlayer(short peerId)
         {
-            if (m_PlayerList[0].PeerId == peerId && m_PlayerList[1].PeerId != peerId)
-            {
-                return m_PlayerList[1] as ServerPlayer;
-            }
-            else if (m_PlayerList[0].PeerId != peerId && m_PlayerList[1].PeerId == peerId)
-            {
-                return m_PlayerList[0] as ServerPlayer;
-            }
-            else
-            {
-                return null; //要找的用户不在当前房间
-            }
+            if (hostPlayer.PeerId == peerId)
+                return guestPlayer;
+            else if (guestPlayer.PeerId == peerId)
+                return hostPlayer;
+            return null;
         }
-        protected ServerPlayer serverHost;
-        protected ServerPlayer serverGuest;
         public void Send(NetDataWriter writer)
         {
-            if (serverHost.IsBot == false)
-                serverHost.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
-            if (serverGuest.IsBot == false)
-                serverGuest.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+            if (hostPlayer.IsBot == false)
+                hostPlayer.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
+            if (guestPlayer.IsBot == false)
+                guestPlayer.AssociatedPeer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
         #endregion
 

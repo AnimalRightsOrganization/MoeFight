@@ -568,7 +568,6 @@ namespace Code.Shared
     }
 
     // 角色加载所需信息
-    [System.Serializable]
     public struct PlayerLoadPacket : INetSerializable
     {
         public string UserName; // 玩家昵称
@@ -600,13 +599,11 @@ namespace Code.Shared
 
     // 双方准备后，服务器通知跳转场景。
     // 下发初始化场景所需的参数。服务器房间内也要备份。
-    [System.Serializable]
     public struct S2C_LoadScenePacket : INetSerializable
     {
         public short RoomId;    //要加入的房间号
         public string BattleId; //服务器战斗编号
-        public int Seed;        //随机种子
-        public byte MapId;      //地图ID
+        public byte MapId;      //地图
         public byte BattleMode; //游戏模式
         public PlayerLoadPacket Host;
         public PlayerLoadPacket Guest;
@@ -615,7 +612,6 @@ namespace Code.Shared
         {
             writer.Put(RoomId);
             writer.Put(BattleId);
-            writer.Put(Seed);
             writer.Put(MapId);
             writer.Put(BattleMode);
             Host.Serialize(writer);
@@ -625,7 +621,6 @@ namespace Code.Shared
         {
             RoomId = reader.GetShort();
             BattleId = reader.GetString();
-            Seed = reader.GetInt();
             MapId = reader.GetByte();
             BattleMode = reader.GetByte();
             Host.Deserialize(reader);
@@ -634,7 +629,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string stringBuild = $"RoomId={RoomId}, BattleId={BattleId}, Seed={Seed}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
+            string stringBuild = $"RoomId={RoomId}, BattleId={BattleId}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
             return stringBuild;
         }
     }

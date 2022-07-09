@@ -623,7 +623,6 @@ namespace Code.Server
                 {
                     RoomId = (short)serverRoomID,
                     BattleId = serverRoom.BattleID,
-                    Seed = serverRoom.Seed,
                     MapId = serverRoom.MapId,
                     BattleMode = (byte)serverRoom.BattleMode,
                     Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = host.RoleIndex },
@@ -889,12 +888,8 @@ namespace Code.Server
         public void BroadcastToRoom(int roomId, NetDataWriter writer)
         {
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(roomId);
-            var players = serverRoom.m_PlayerList; //直接从内存取
-            for (int i = 0; i < players.Length; i++)
-            {
-                short peedId = players[i].PeerId;
-                _netManager.GetPeerById(peedId).Send(writer, DeliveryMethod.ReliableOrdered);
-            }
+            _netManager.GetPeerById(serverRoom.hostPlayer.PeerId).Send(writer, DeliveryMethod.ReliableOrdered);
+            _netManager.GetPeerById(serverRoom.guestPlayer.PeerId).Send(writer, DeliveryMethod.ReliableOrdered);
         }
         #endregion
     }

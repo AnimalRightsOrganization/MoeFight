@@ -119,8 +119,6 @@ namespace HotFix
             EventManager.RegisterEvent(OnNetCallback);
 
             lastSettings = ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings;
-            //m_MusicSlider.value = AudioManager.musicVolume * 100;
-            //m_SoundSlider.value = AudioManager.soundVolume * 100;
             m_MusicSlider.value = lastSettings.MusicVolume;
             m_SoundSlider.value = lastSettings.SoundVolume;
             m_ScreenSizeDrog.value = lastSettings.ScreenSize;
@@ -129,7 +127,7 @@ namespace HotFix
             m_FullScreenValue.text = m_FullScreenTog.isOn ? "ON" : "OFF";
             m_LanguageDrog.value = lastSettings.Language;
             m_LanguageValue.text = m_LanguageDrog.options[m_LanguageDrog.value].text;
-            Debug.Log($"进来时：{lastSettings.ToString()}");
+            Debug.Log($"进来时：{lastSettings}");
 
             SwitchToCommon();
         }

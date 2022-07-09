@@ -360,8 +360,9 @@ namespace Code.Client
             Debug.Log($"[C] 请求匹配");
             SendPacketSerializable(PacketType.C2S_MatchRequest, new EmptyPacket());
 
-            m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.Matching);
-            UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
+            var localPlayer = m_PlayerManager.LocalPlayer;
+            localPlayer.SetStatus(PlayerStatus.Matching);
+            UserEventManager.Trigger(localPlayer.Status); //通知给UI
         }
 
         public void SendMatchCancel()
