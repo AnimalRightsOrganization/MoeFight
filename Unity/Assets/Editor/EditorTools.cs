@@ -38,6 +38,7 @@ public class TestWindow : EditorWindow
             ClientPlayer host = new ClientPlayer("test1", 1);
             ClientPlayer guest = new ClientPlayer("BOT", -1);
             ClientNet.Get.m_ClientRoom = new ClientRoom(1, host, guest);
+            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.TestPVE;
 
             var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
             UnityEngine.Object.Instantiate(asset);

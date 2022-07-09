@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
-using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using Code.Shared;
+using Code.Client;
 
 namespace HotFix
 {
@@ -15,7 +16,8 @@ namespace HotFix
         public virtual void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer) { }
         public virtual void OnUserCallback(PlayerStatus status) { }
 
-        //public SystemLanguage currentLanguage;
         public virtual void ApplyLanguage() { }
+
+        //public virtual ClientPlayer LocalPlayer => ClientNet.Get.m_PlayerManager.LocalPlayer;
     }
 }

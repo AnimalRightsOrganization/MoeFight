@@ -162,6 +162,26 @@ namespace HotFix
 
         void OnTrainingButtonClick()
         {
+            // 创建模拟消息
+            ClientPlayer localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
+            var packet = new S2C_MatchResultPacket
+            {
+                Code = 0,
+                BattleMode = (byte)(BattleMode.TestPVE),
+                RoomId = 1,
+                Host = new UserInfo { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId },
+                Guest = new UserInfo { UserName = "BOT", PeerId = 1 },
+            };
+
+            // 创建用户管理
+            ClientPlayer rivalPlayer = new ClientPlayer(packet.Guest.UserName, packet.Guest.PeerId);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(rivalPlayer, false);
+
+            // 创建房间管理
+            ClientNet.Get.m_ClientRoom = new ClientRoom(packet.RoomId, localPlayer, rivalPlayer);
+            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.TestPVE;
+
+
             UIManager.Get().Push<UI_RoleSelect>();
         }
 

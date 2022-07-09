@@ -11,7 +11,7 @@ namespace Code.Shared
         public byte MapId = 0;          //地图编号
         public BattleMode BattleMode;   //房间模式
 
-        public BaseRoom(int id, BasePlayer host, BasePlayer guest)
+        public BaseRoom(int id)
         {
             //Debug.Log("基类先");
             RoomID = id;

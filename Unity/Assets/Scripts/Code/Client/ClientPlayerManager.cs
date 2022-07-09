@@ -11,13 +11,13 @@
         public ClientPlayer RivalPlayer => _rivalPlayer;
 
         // 断线、登出
-        public void Clear()
+        public void RemoveAll()
         {
             _localPlayer = null;
             _rivalPlayer = null;
         }
         // 退出房间、比赛结束
-        public void ResetRival()
+        public void RemoveRival()
         {
             _rivalPlayer = null;
         }

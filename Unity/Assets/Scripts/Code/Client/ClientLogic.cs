@@ -35,8 +35,8 @@ namespace Code.Client
             runner = FindObjectOfType<HitstunRunner>();
             if (ClientNet.Get.m_ClientRoom != null)
             {
-                runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.hostPlayer.RoleIndex;
-                runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.guestPlayer.RoleIndex;
+                runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.HostPlayer.RoleIndex;
+                runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.GuestPlayer.RoleIndex;
                 Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
             }
 
@@ -261,7 +261,7 @@ namespace Code.Client
 
             if (packet.Code == 0)
             {
-                mySeatId = packet.HostName.Equals(ClientNet.Get.myName) ? packet.HostId : packet.GuestId;
+                mySeatId = packet.HostName.Equals(ClientNet.Get.m_PlayerManager.LocalPlayer.UserName) ? packet.HostId : packet.GuestId;
                 remoteSeatId = (mySeatId + 1) % 2;
 
                 IsStart = true;

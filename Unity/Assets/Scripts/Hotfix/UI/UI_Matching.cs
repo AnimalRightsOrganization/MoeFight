@@ -79,33 +79,16 @@ namespace HotFix
         private void OnMatchResult(INetSerializable reader)
         {
             var packet = (S2C_MatchResultPacket)reader;
-            Debug.Log($"[UI_Matching] {packet}");
-
             if (packet.Code == 0) //匹配成功
             {
-                ClientPlayer localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
-                bool localIsHost = localPlayer.PeerId == packet.Host.PeerId;
-
-                //创建用户对象
-                short rivalPlayerId = localIsHost ? packet.Guest.PeerId : packet.Host.PeerId;
-                string rivalPlayerName = localIsHost ? packet.Guest.UserName : packet.Host.UserName;
-                ClientPlayer rivalPlayer = new ClientPlayer(rivalPlayerName, rivalPlayerId);
-                ClientNet.Get.m_PlayerManager.AddClientPlayer(rivalPlayer, false);
-
-                int localSeatId = localIsHost ? 0 : 1;
-                int rivalSeatId = localIsHost ? 1 : 0;
-                localPlayer.SetRoomID(packet.RoomId).SetSeatID(localSeatId).SetStatus(PlayerStatus.AtRoomWait);
-                rivalPlayer.SetRoomID(packet.RoomId).SetSeatID(rivalSeatId).SetStatus(PlayerStatus.AtRoomWait);
-
                 this.Pop();
                 UIManager.Get().Push<UI_RoleSelect>();
             }
             else if (packet.Code == 1) //匹配取消
             {
-                //ClientPlayer localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
-                //localPlayer.ResetToLobby();
                 this.Pop();
             }
+            //情况2在UI_RoleSelect
         }
         #endregion
 

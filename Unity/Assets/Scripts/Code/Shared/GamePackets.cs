@@ -506,7 +506,8 @@ namespace Code.Shared
     }
     public struct S2C_MatchResultPacket : INetSerializable
     {
-        public byte Code; //结果码：匹配成功(0)，取消(1)，退出(2)，重连(3)
+        public byte Code; //结果码：匹配成功(0)，取消(1)，退出(2)，重连?(3)
+        public byte BattleMode; //游戏模式
         public short RoomId; //房间ID
         public UserInfo Host;
         public UserInfo Guest;
@@ -514,6 +515,7 @@ namespace Code.Shared
         public void Serialize(NetDataWriter writer)
         {
             writer.Put(Code);
+            writer.Put(BattleMode);
             writer.Put(RoomId);
             Host.Serialize(writer);
             Guest.Serialize(writer);
@@ -521,6 +523,7 @@ namespace Code.Shared
         public void Deserialize(NetDataReader reader)
         {
             Code = reader.GetByte();
+            BattleMode = reader.GetByte();
             RoomId = reader.GetShort();
             Host.Deserialize(reader);
             Guest.Deserialize(reader);
@@ -597,14 +600,12 @@ namespace Code.Shared
         }
     }
 
-    // 双方准备后，服务器通知跳转场景。
     // 下发初始化场景所需的参数。服务器房间内也要备份。
     public struct S2C_LoadScenePacket : INetSerializable
     {
         public short RoomId;    //要加入的房间号
         public string BattleId; //服务器战斗编号
         public byte MapId;      //地图
-        public byte BattleMode; //游戏模式
         public PlayerLoadPacket Host;
         public PlayerLoadPacket Guest;
 
@@ -613,7 +614,6 @@ namespace Code.Shared
             writer.Put(RoomId);
             writer.Put(BattleId);
             writer.Put(MapId);
-            writer.Put(BattleMode);
             Host.Serialize(writer);
             Guest.Serialize(writer);
         }
@@ -622,14 +622,13 @@ namespace Code.Shared
             RoomId = reader.GetShort();
             BattleId = reader.GetString();
             MapId = reader.GetByte();
-            BattleMode = reader.GetByte();
             Host.Deserialize(reader);
             Guest.Deserialize(reader);
         }
 
         public override string ToString()
         {
-            string stringBuild = $"RoomId={RoomId}, BattleId={BattleId}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
+            string stringBuild = $"RoomId={RoomId}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
             return stringBuild;
         }
     }

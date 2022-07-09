@@ -19,12 +19,12 @@ namespace HotFix
         public RawImage[] m_HeadImages;
         public Button[] m_Charactors;
 
-        private ClientPlayer localPlayer;
-        private ClientPlayer rivalPlayer;
-
         public Text m_BackText;
         public Text[] m_ConfirmText;
         public Text[] m_ReadyText;
+
+        ClientPlayer localPlayer;
+        ClientPlayer rivalPlayer;
 
         #region 内置方法
         void Awake()
@@ -70,10 +70,7 @@ namespace HotFix
                 int id = i;
                 var charactor = selectPanel.GetChild(id);
                 m_Charactors[id] = charactor.GetComponent<Button>();
-                m_Charactors[id].onClick.AddListener(() =>
-                {
-                    ClientNet.Get.SendSelection(id);
-                });
+                m_Charactors[id].onClick.AddListener(() => OnSendSelection(id));
             }
 
             m_BackText = transform.Find("Background/BackBtn/Text").GetComponent<Text>();
@@ -102,7 +99,6 @@ namespace HotFix
         #endregion
 
         #region 网络消息
-
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -141,12 +137,9 @@ namespace HotFix
         private void OnMatchResult(INetSerializable reader)
         {
             var packet = (S2C_MatchResultPacket)reader;
-            Debug.Log($"[UI_RoleSelect] {packet}");
-
+            //情况0, 1在UI_Matching
             if (packet.Code == 2) //匹配后退出
             {
-                // 这里理论上只会收到2
-                Debug.Log("玩家离开，返回大厅");
                 this.Pop();
             }
         }
@@ -192,11 +185,12 @@ namespace HotFix
             };
             GameManager.Get.LoadBattleAsync(action);
         }
-
         #endregion
 
         void InitUI()
         {
+            //①通过匹配进入
+            //②通过训练进入
             localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
             rivalPlayer = ClientNet.Get.m_PlayerManager.RivalPlayer;
             bool localIsHost = localPlayer.SeatId == 0;
@@ -230,9 +224,55 @@ namespace HotFix
             ClientNet.Get.SendMatchQuit();
         }
 
+        void OnSendSelection(int id)
+        {
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Matching:
+                    ClientNet.Get.SendSelection(id);
+                    break;
+                case BattleMode.Editor:
+                case BattleMode.TestPVE:
+                    var packet = new S2C_RoleSelectPacket { SeatId = (byte)0, RoleIndex = (byte)id };
+                    localPlayer.RoleIndex = packet.RoleIndex;
+                    OnRoleSelect(packet);
+                    break;
+                default:
+                    Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    break;
+            }
+        }
+
         void OnSendReady()
         {
-            ClientNet.Get.SendGameReady();
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Matching:
+                    ClientNet.Get.SendGameReady();
+                    break;
+                case BattleMode.Editor:
+                case BattleMode.TestPVE:
+                    var serverRoom = ClientNet.Get.m_ClientRoom;
+                    var packet = new S2C_LoadScenePacket
+                    {
+                        RoomId = (short)serverRoom.RoomID,
+                        BattleId = serverRoom.BattleID,
+                        MapId = serverRoom.MapId,
+                        Host = new PlayerLoadPacket { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId, RoleIndex = localPlayer.RoleIndex },
+                        Guest = new PlayerLoadPacket { UserName = rivalPlayer.UserName, PeerId = rivalPlayer.PeerId, RoleIndex = rivalPlayer.RoleIndex },
+                    };
+                    serverRoom.DoInit(packet);
+
+                    var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
+                    Instantiate(asset);
+                    UIManager.Get().PopAll();
+
+                    ClientNet.Get.SendTestPVE();
+                    break;
+                default:
+                    Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    break;
+            }
         }
     }
 }

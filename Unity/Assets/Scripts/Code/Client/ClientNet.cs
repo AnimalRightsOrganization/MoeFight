@@ -31,7 +31,6 @@ namespace Code.Client
         public ClientRoom m_ClientRoom;
         public ClientPlayerManager m_PlayerManager;
         public int _ping;
-        public string myName;
 
 
         #region Inner Method
@@ -84,7 +83,7 @@ namespace Code.Client
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
             Debug.Log("[C] Disconnected from server: " + disconnectInfo.Reason);
-            m_PlayerManager.Clear();
+            m_PlayerManager.RemoveAll();
             _server = null;
 
             _onDisconnected?.Invoke(disconnectInfo);
@@ -290,15 +289,13 @@ namespace Code.Client
 
         public void SendTestPVE()
         {
-            myName = "test1";
-            var cmd = new C2S_JoinPacket { UserName = myName };
+            var cmd = new C2S_JoinPacket { UserName = m_PlayerManager.LocalPlayer.UserName };
             SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
         }
 
         public void SendTestPVP()
         {
-            myName = "test1";
-            var cmd = new C2S_JoinPacket { UserName = myName };
+            var cmd = new C2S_JoinPacket { UserName = m_PlayerManager.LocalPlayer.UserName };
             SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
         }
 
@@ -447,25 +444,27 @@ namespace Code.Client
                 case PacketType.S2C_MatchResult:
                     {
                         var packet = (S2C_MatchResultPacket)reader;
-                        if (packet.Code == 0) //匹配成功
+                        if (packet.Code == 0) //匹配成功0
                         {
-                            ClientPlayer host = new ClientPlayer(packet.Host.UserName, packet.Host.PeerId);
-                            ClientPlayer guest = new ClientPlayer(packet.Guest.UserName, packet.Guest.PeerId);
+                            // 创建用户管理
+                            bool localIsHost = m_PlayerManager.LocalPlayer.PeerId == packet.Host.PeerId;
+                            string rivalName = localIsHost ? packet.Guest.UserName : packet.Host.UserName;
+                            short rivalPeer = localIsHost ? packet.Guest.PeerId : packet.Host.PeerId;
+                            ClientPlayer rivalPlayer = new ClientPlayer(rivalName, rivalPeer);
+                            m_PlayerManager.AddClientPlayer(rivalPlayer, false);
+
+                            // 创建房间管理
+                            ClientPlayer host = localIsHost ? m_PlayerManager.LocalPlayer : m_PlayerManager.RivalPlayer;
+                            ClientPlayer guest = localIsHost ? m_PlayerManager.RivalPlayer : m_PlayerManager.LocalPlayer;
                             m_ClientRoom = new ClientRoom(packet.RoomId, host, guest);
-                            m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtRoomWait);
+                            m_ClientRoom.BattleMode = (BattleMode)packet.BattleMode;
                         }
-                        else if (packet.Code == 1) //匹配取消
+                        else //匹配取消1、匹配后退出2
                         {
                             m_ClientRoom?.Dispose();
                             m_ClientRoom = null;
                             m_PlayerManager.LocalPlayer.ResetToLobby();
-                        }
-                        else if (packet.Code == 2) //匹配后退出
-                        {
-                            m_ClientRoom?.Dispose();
-                            m_ClientRoom = null;
-                            m_PlayerManager.LocalPlayer.ResetToLobby();
-                            m_PlayerManager.ResetRival();
+                            m_PlayerManager.RemoveRival();
                         }
                     }
                     break;
@@ -497,7 +496,7 @@ namespace Code.Client
                 case PacketType.S2C_BattleEnd:
                     {
                         m_PlayerManager.LocalPlayer.ResetToLobby();
-                        m_PlayerManager.ResetRival();
+                        m_PlayerManager.RemoveRival();
                     }
                     break;
             }
@@ -508,7 +507,7 @@ namespace Code.Client
         void OnLogoutResult(INetSerializable reader)
         {
             Debug.Log($"<color=red>[C] {m_PlayerManager.LocalPlayer.UserName}登出重置</color>");
-            m_PlayerManager.Clear();
+            m_PlayerManager.RemoveAll();
         }
 
         void OnErrorOperate(INetSerializable reader)

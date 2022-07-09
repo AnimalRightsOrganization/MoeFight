@@ -273,12 +273,9 @@ namespace Code.Server
 
             ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
             serverRoom.BattleMode = BattleMode.TestPVE;
-            int serverRoomID = serverRoom.RoomID;
-            player.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtBattle);
-            bot.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtBattle);
             serverRoom.DoInit();
             m_RoomManager.SetBattle(serverRoom);
-            UnityEngine.Debug.Log($"PVE create room#{serverRoomID}");
+            UnityEngine.Debug.Log($"PVE create room#{serverRoom.RoomID}");
 
             var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = bot.PeerId, GuestName = bot.UserName };
             var writer = WriteSerializable(PacketType.S2C_TestPVE, packet);
@@ -303,9 +300,6 @@ namespace Code.Server
 
                 ServerRoom serverRoom = m_RoomManager.CreateServerRoom(host, guest);
                 serverRoom.BattleMode = BattleMode.TestPVP;
-                int serverRoomID = serverRoom.RoomID;
-                host.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtBattle);
-                guest.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtBattle);
                 serverRoom.DoInit();
                 m_RoomManager.SetBattle(serverRoom);
 
@@ -624,7 +618,6 @@ namespace Code.Server
                     RoomId = (short)serverRoomID,
                     BattleId = serverRoom.BattleID,
                     MapId = serverRoom.MapId,
-                    BattleMode = (byte)serverRoom.BattleMode,
                     Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = host.RoleIndex },
                     Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = guest.RoleIndex },
                 };
@@ -860,11 +853,9 @@ namespace Code.Server
                 ServerRoom serverRoom = m_RoomManager.CreateServerRoom(p1, p2);
                 int serverRoomID = serverRoom.RoomID;
                 UnityEngine.Debug.Log($"match success, put {p1.PeerId}, {p2.PeerId} into Room#{serverRoomID}");
-                p1.SetRoomID(serverRoomID).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
-                p2.SetRoomID(serverRoomID).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
                 UserInfo hostPlayer = new UserInfo { PeerId = p1.PeerId, UserName = p1.UserName };
                 UserInfo guestPlayer = new UserInfo { PeerId = p2.PeerId, UserName = p2.UserName };
-                var packet = new S2C_MatchResultPacket { Code = 0, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
+                var packet = new S2C_MatchResultPacket { Code = 0, BattleMode = (byte)BattleMode.Matching, RoomId = (short)serverRoomID, Host = hostPlayer, Guest = guestPlayer };
                 var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
                 serverRoom.Send(writer);
 

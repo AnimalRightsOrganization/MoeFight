@@ -13,12 +13,14 @@ namespace Code.Server
         public ServerPlayer guestPlayer;
 
         #region 房间数据
-        public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id, host, guest)
+        public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id)
         {
             //Debug.Log("子类迟");
             hostPlayer = host;
             guestPlayer = guest;
-            EndCount = 0;
+
+            hostPlayer.SetRoomID(id).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
+            guestPlayer.SetRoomID(id).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
         }
         public ServerPlayer GetOtherPlayer(short peerId)
         {
@@ -38,9 +40,10 @@ namespace Code.Server
         #endregion
 
         #region 帧同步
-        // 开始战斗计数，重连时不需要
+        // 跳转场景同步
         private List<short> stage_0_list = new List<short>();
         public int Stage_0_Count => stage_0_list.Count;
+        // 321倒计时同步
         private List<short> stage_1_list = new List<short>();
         public int Stage_1_Count => stage_1_list.Count;
         public void StageCount(int stage, ServerPlayer player)
@@ -69,7 +72,12 @@ namespace Code.Server
 
         public void DoInit()
         {
+            EndCount = 0;
+            Tick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
+
+            hostPlayer.SetStatus(PlayerStatus.AtBattle);
+            guestPlayer.SetStatus(PlayerStatus.AtBattle);
         }
 
         // 收到帧数据

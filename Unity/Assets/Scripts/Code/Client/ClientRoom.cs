@@ -5,24 +5,28 @@ namespace Code.Client
 {
     public class ClientRoom : BaseRoom
     {
-        public ClientPlayer hostPlayer;
-        public ClientPlayer guestPlayer;
+        public ClientPlayer HostPlayer;
+        public ClientPlayer GuestPlayer;
 
-        public ClientRoom(int roomId, ClientPlayer host, ClientPlayer guest) : base(roomId, host, guest)
+        // 匹配成功创建
+        public ClientRoom(int id, ClientPlayer host, ClientPlayer guest) : base(id)
         {
-            //m_PlayerList = new ClientPlayer[] { host, guest };
-            hostPlayer = host;
-            guestPlayer = guest;
+            HostPlayer = host;
+            GuestPlayer = guest;
+
+            HostPlayer.SetRoomID(id).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
+            GuestPlayer.SetRoomID(id).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
         }
 
+        // 双方准备，初始化比赛
         public void DoInit(S2C_LoadScenePacket packet)
         {
             BattleID = packet.BattleId;
             MapId = packet.MapId;
-            BattleMode = (BattleMode)packet.BattleMode;
-            hostPlayer.RoleIndex = packet.Host.RoleIndex;
-            guestPlayer.RoleIndex = packet.Guest.RoleIndex;
-            Debug.Log($"客户端初始化: {hostPlayer.RoleIndex} vs {guestPlayer.RoleIndex}");
+            HostPlayer.RoleIndex = packet.Host.RoleIndex;
+            GuestPlayer.RoleIndex = packet.Guest.RoleIndex;
+
+            Debug.Log($"房间初始化: {HostPlayer.RoleIndex} vs {GuestPlayer.RoleIndex}");
         }
     }
 }
