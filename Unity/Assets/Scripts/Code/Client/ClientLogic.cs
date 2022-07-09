@@ -216,6 +216,10 @@ namespace Code.Client
         }
 
 
+        //技能伤害表character:state:damage
+
+
+
         void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)

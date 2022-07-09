@@ -36,12 +36,6 @@ public class CreateConfig : Editor
         CreateAsset<InputConfig>();
     }
 
-    [MenuItem("Tools/创建配置/RoleConfig")]
-    static void CreateRoleConfig()
-    {
-        CreateAsset<RoleConfig>();
-    }
-
     [MenuItem("Tools/创建配置/选中角色配置")]
     static void SelectCharacterConfig()
     {

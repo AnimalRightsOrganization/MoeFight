@@ -1,14 +1,1 @@
-﻿[
-  {
-    "Id": 0.0,
-    "name": "Tom",
-    "age": 21.0,
-    "man": true
-  },
-  {
-    "Id": 1.0,
-    "name": "Jane",
-    "age": 18.0,
-    "man": false
-  }
-]
+﻿[{"Id":0,"name":"Tom","age":21,"man":true},{"Id":1,"name":"Jane","age":18,"man":false}]

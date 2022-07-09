@@ -128,10 +128,10 @@ namespace HotFix
             m_Selectors[packet.SeatId].SetParent(m_Charactors[packet.RoleIndex].transform);
             m_Selectors[packet.SeatId].localPosition = Vector3.zero;
 
-            var roleArray = ConfigManager.Get().roleConfig.Roles;
+            var roleArray = ConfigManager.Get().m_CharacterList;
             int length = roleArray.Length;
             int index = packet.RoleIndex % length;
-            m_Rolename[packet.SeatId].text = roleArray[index].Name[0];
+            m_Rolename[packet.SeatId].text = roleArray[index].Name;
         }
 
         private void OnMatchResult(INetSerializable reader)
@@ -211,12 +211,12 @@ namespace HotFix
                 m_Selectors[i].localPosition = Vector3.zero;
             }
 
-            var roleArray = ConfigManager.Get().roleConfig.Roles;
+            var roleArray = ConfigManager.Get().m_CharacterList;
             int length = roleArray.Length;
             int index1 = localPlayer.RoleIndex % length;
-            m_Rolename[0].text = roleArray[index1].Name[0];
+            m_Rolename[0].text = roleArray[index1].Name;
             int index2 = rivalPlayer.RoleIndex % length;
-            m_Rolename[1].text = roleArray[index2].Name[0];
+            m_Rolename[1].text = roleArray[index2].Name;
         }
 
         void OnBackButtonClick()

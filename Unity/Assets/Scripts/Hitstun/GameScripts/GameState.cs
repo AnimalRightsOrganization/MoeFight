@@ -12,6 +12,7 @@ public class GameState
     public uint hitstop;
     public Character[] characters;
     public CharacterData[] characterDatas;
+    //public CharacterNode[] characterNodes;
 
     public bool Equals(GameState other)
     {

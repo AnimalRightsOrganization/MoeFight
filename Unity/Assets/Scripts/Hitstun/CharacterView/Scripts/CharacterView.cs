@@ -4,7 +4,6 @@ using HitstunConstants;
 
 public class CharacterView : MonoBehaviour
 {
-    //public SpriteRenderer spriteRenderer;
     public Projector shadowProjector;
     public HitboxView hitboxPrefab;
     public ProjectileView projectilePrefab;
@@ -108,21 +107,10 @@ public class CharacterView : MonoBehaviour
         shadowProjector.orthographicSize = shadowSize * (1.0f - normY) * (1.0f - normY);
 
         // sprite facing direction
-        //spriteRenderer.flipX = character.facingRight;
         float flipShadow = (character.facingRight) ? shadowOffset : -shadowOffset;
         shadowProjector.transform.position = new Vector3(viewX + flipShadow, viewY + 2.0f, zDistance + 0.15f);
         model.rotation = (character.facingRight) ? Quaternion.Euler(0, 90, 0) : Quaternion.Euler(0, -90, 0);
         model.localScale = (character.facingRight) ? Vector3.one : new Vector3(-1, 1, 1);
-
-        // set correct drawing layer
-        //if (character.onTop)
-        //{
-        //    spriteRenderer.sortingLayerName = "PLAYER_TOP";
-        //}
-        //else
-        //{
-        //    spriteRenderer.sortingLayerName = "PLAYER_BOTTOM";
-        //}
 
         // projectile
         if (character.projectile.active)

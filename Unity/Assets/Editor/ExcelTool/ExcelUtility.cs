@@ -118,7 +118,9 @@ public class ExcelUtility
 		}
 
 		//生成Json字符串
-		string json = JsonConvert.SerializeObject(table, Newtonsoft.Json.Formatting.Indented);
+		//string json = JsonConvert.SerializeObject(table, Newtonsoft.Json.Formatting.Indented);
+		string json = JsonConvert.SerializeObject(table, new DecimalJsonConverter());
+		Debug.Log(json);
 		//写入文件
 		using (FileStream fileStream = new FileStream(JsonPath, FileMode.Create, FileAccess.Write))
 		{
@@ -386,5 +388,57 @@ public class ExcelUtility
 				property.SetValue(target, Convert.ChangeType(propertyValue, property.PropertyType), null);
 			}
 		}
+	}
+}
+
+// 序列化过程把默认的double变为Int
+class DecimalJsonConverter : JsonConverter
+{
+	public DecimalJsonConverter() { }
+
+	public override bool CanRead
+	{
+		get { return false; }
+	}
+
+	public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+	{
+		throw new NotImplementedException("Unnecessary because CanRead is false. The type will skip the converter.");
+	}
+
+	public override bool CanConvert(Type objectType)
+	{
+		return (objectType == typeof(decimal) || objectType == typeof(float) || objectType == typeof(double));
+	}
+
+	public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+	{
+		if (DecimalJsonConverter.IsWholeValue(value))
+		{
+			writer.WriteRawValue(JsonConvert.ToString(Convert.ToInt64(value)));
+		}
+		else
+		{
+			writer.WriteRawValue(JsonConvert.ToString(value));
+		}
+	}
+
+	private static bool IsWholeValue(object value)
+	{
+		if (value is decimal decimalValue)
+		{
+			int precision = (Decimal.GetBits(decimalValue)[3] >> 16) & 0x000000FF;
+			return precision == 0;
+		}
+		else if (value is float floatValue)
+		{
+			return floatValue == Math.Truncate(floatValue);
+		}
+		else if (value is double doubleValue)
+		{
+			return doubleValue == Math.Truncate(doubleValue);
+		}
+
+		return false;
 	}
 }

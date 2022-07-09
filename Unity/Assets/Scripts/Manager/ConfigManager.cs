@@ -12,29 +12,36 @@ public class ConfigManager : MonoBehaviour
     }
 
     public GlobalConfig globalConfig;
-    public RoleConfig roleConfig;
     //public InputConfig inputConfig;
 
-    protected LanguageNode[] m_NodeList;
+    // 多语言
     public Languages currentLanguage = Languages.Chinese;
-
-    void Awake()
-    {
-        globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
-        roleConfig = ResManager.LoadConfig("Configs/RoleConfig") as RoleConfig;
-        //inputConfig = ResManager.LoadConfig("Configs/InputConfig") as InputConfig;
-
-        var json = ResManager.LoadBytes("Configs/Language");
-        m_NodeList = JsonMapper.ToObject<LanguageNode[]>(json);
-    }
-
+    protected LanguageNode[] m_Languages;
     public void SetLanguage(Languages lang)
     {
         currentLanguage = lang;
     }
-
     public string GetWord(int key)
     {
-        return m_NodeList[key].Word[(int)currentLanguage];
+        return m_Languages[key].Word[(int)currentLanguage];
+    }
+
+    // 角色配置
+    public CharacterNode[] m_CharacterList;
+    public CharacterNode GetCharacter(HitstunConstants.CharacterName key)
+    {
+        return m_CharacterList[(int)key];
+    }
+
+    void Awake()
+    {
+        globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
+        //inputConfig = ResManager.LoadConfig("Configs/InputConfig") as InputConfig;
+
+        var langConfig = ResManager.LoadBytes("Configs/Language");
+        m_Languages = JsonMapper.ToObject<LanguageNode[]>(langConfig);
+
+        var charConfig = ResManager.LoadBytes("Configs/Character");
+        m_CharacterList = JsonMapper.ToObject<CharacterNode[]>(charConfig);
     }
 }
