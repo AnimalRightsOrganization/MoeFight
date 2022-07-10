@@ -42,7 +42,7 @@ namespace Code.Client
 
             EventManager.RegisterEvent(OnNetCallback);
         }
-        
+
         void OnGUI()
         {
             var char0 = LocalSession.gs.characters[0];
@@ -57,12 +57,15 @@ namespace Code.Client
             var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
             int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
 
-            string log = $"game: {LocalSession.gs.frameNumber}" +
-                $"\nping: {ClientNet.Get._ping}" +
-                $"\ninterval: {Time.fixedDeltaTime}" +
-                $"\nP0: {currentState0}: {currentFrame0}" +
-                $"\nP1: {currentState1}: {currentFrame1}";
+            string log = $"Tick: {LocalSession.gs.frameNumber}" +
+                $"\nping: {ClientNet.Get._ping}";
             GUI.Label(new Rect(10, 10, 100, 50), log, style1);
+
+
+            string state1 = $"{currentState0}: {currentFrame0}";
+            GUI.Label(new Rect(posX1, posY, 100, 50), state1, style1);
+            string state2 = $"{currentState1}: {currentFrame1}";
+            GUI.Label(new Rect(posX2, posY, 100, 50), state2, style1);
         }
 
         void FixedUpdate()
@@ -214,10 +217,6 @@ namespace Code.Client
         {
         
         }
-
-
-        //技能伤害表character:state:damage
-
 
 
         void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
@@ -388,6 +387,42 @@ namespace Code.Client
                     _view1 = runner.transform.GetChild(1);
                 }
                 return _view1;
+            }
+        }
+        private int _posX1;
+        private int posX1
+        {
+            get
+            {
+                if (_posX1 == 0)
+                {
+                    _posX1 = Screen.width / 4;
+                }
+                return _posX1;
+            }
+        }
+        private int _posX2;
+        private int posX2
+        {
+            get
+            {
+                if (_posX2 == 0)
+                {
+                    _posX2 = Screen.width / 4 * 3;
+                }
+                return _posX2;
+            }
+        }
+        private int _posY;
+        private int posY
+        {
+            get
+            {
+                if (_posY == 0)
+                {
+                    _posY = Screen.height - 50;
+                }
+                return _posY;
             }
         }
 #if UNITY_EDITOR
