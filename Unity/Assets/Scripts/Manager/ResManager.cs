@@ -143,11 +143,15 @@ public class ResManager
         return t2d;
     }
 
-    public static Dictionary<string, Sprite> LoadSprite(string configName)
+    public static Dictionary<string, Sprite> LoadSprite(string fileName)
     {
+        var array = fileName.Split('.');
+        var configName = array[0];
+        var configType = array[1];
+
         Dictionary<string, Sprite> sp;
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
-        string filePath = $"{BUNDLES_FOLDER}/{configName}.png";
+        string filePath = $"{BUNDLES_FOLDER}/{configName}.{configType}";
         var assets = AssetDatabase.LoadAllAssetsAtPath(filePath);
 #else
         string filePath = GetFilePath($"{configName}.unity3d");

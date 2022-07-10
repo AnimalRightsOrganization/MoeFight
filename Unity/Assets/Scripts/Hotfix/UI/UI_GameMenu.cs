@@ -20,6 +20,7 @@ namespace HotFix
         [SerializeField] GameObject m_HpPanel;
         [SerializeField] RectTransform[] LastHp;
         [SerializeField] RectTransform[] CurrentHp;
+        [SerializeField] Image[] HeadImages;
         [Header("比赛菜单")]
         [SerializeField] GameObject m_MenuPanel;
         [SerializeField] Button m_MenuBtn;
@@ -53,6 +54,11 @@ namespace HotFix
             {
                 m_HpPanel.transform.Find("HP_P1/current").GetComponent<RectTransform>(),
                 m_HpPanel.transform.Find("HP_P2/current").GetComponent<RectTransform>(),
+            };
+            HeadImages = new Image[2]
+            {
+                m_HpPanel.transform.Find("Head_1/Image").GetComponent<Image>(),
+                m_HpPanel.transform.Find("Head_2/Image").GetComponent<Image>(),
             };
 
             m_MenuPanel = transform.Find("MenuPanel").gameObject;
@@ -108,6 +114,11 @@ namespace HotFix
 
             // 会在跳转场景前就执行到
             Reset();
+
+            //var dic_aoi = ResManager.LoadSprite("Sprites/Head/AOI.jpg");
+            //HeadImages[0].sprite = dic_aoi["AOI"];
+            //var dic_satomi = ResManager.LoadSprite("Sprites/Head/SATOMI.jpg");
+            //HeadImages[1].sprite = dic_satomi["SATOMI"];
         }
 
         void OnDisable()
@@ -143,17 +154,17 @@ namespace HotFix
         private void OnBattleStart(INetSerializable reader)
         {
             var packet = (S2C_BattleStartPacket)reader;
-            Debug.Log($"[UI] 开始战斗，阶段：{packet.Stage}");
+            Debug.Log($"[GameMenu] 战斗开始, 阶段: {packet.Stage}");
 
-            if (packet.Stage == 0)
+            if (packet.Stage == 0) //场景加载完同步
             {
-                OnReadyToStart(); //此时场景肯定已经创建完成。
+                OnCountDown();
             }
-            else if (packet.Stage == 1)
+            else if (packet.Stage == 1) //倒计时完同步
             {
                 //GameManager.Instance.GameStart();
             }
-            else if (packet.Stage == 2)
+            else if (packet.Stage == 2) //暂停恢复同步
             {
                 m_MenuPanel.SetActive(false);
                 //GameManager.Instance.GameResume();
@@ -194,21 +205,22 @@ namespace HotFix
         void OnQuitBtnClick()
         {
             string titleStr = string.Empty;
-            string noStr = "取消"; //TODO: 多国语言
+            string noStr = "取消";
             string yesStr = "确定";
             var dialog = UIManager.Get().Push<UI_Dialog>();
             System.Action noAction = dialog.Hide;
             System.Action yesAction = null;
-            /*
-            switch (GameManager.Instance.m_BattleMode)
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
                 case BattleMode.Editor:
                 case BattleMode.Replay:
+                case BattleMode.TestPVE:
+                case BattleMode.TestPVP:
                     titleStr = "确定退出？";
                     yesAction = () =>
                     {
                         ClientNet.Get.m_PlayerManager.LocalPlayer.ResetToLobby();
-                        ClientNet.Get.m_PlayerManager.ResetRival();
+                        ClientNet.Get.m_PlayerManager.RemoveRival();
                         OnBackBtnClick();
                     };
                     break;
@@ -224,10 +236,9 @@ namespace HotFix
                     break;
             }
             dialog.Show(titleStr, noAction, noStr, yesAction, yesStr);
-            */
         }
 
-        void OnReadyToStart()
+        void OnCountDown()
         {
             // 第1秒
             Tweener tw3 = m_StartText.DOText("Round1", 0); //duration是渐变，一个字一个字变过来
@@ -274,11 +285,9 @@ namespace HotFix
                     Debug.Log($"[C] 请求暂停");
                     ClientNet.Get.SendBattlePause();
                     break;
-                case BattleMode.Replay:
-                    //m_MenuPanel.SetActive(true);
-                    //GameManager.Instance.PauseReplay();
-                    break;
                 default: //其他情况不会有UI
+                    m_MenuPanel.SetActive(true);
+                    //GameManager.Instance.PauseReplay();
                     break;
             }
         }
@@ -290,11 +299,9 @@ namespace HotFix
                 case BattleMode.Matching:
                     ClientNet.Get.SendBattleStart(2); //解除暂停，继续
                     break;
-                case BattleMode.Replay:
-                    //m_MenuPanel.SetActive(false);
-                    //GameManager.Instance.PlayReplay();
-                    break;
                 default: //其他情况不会有UI
+                    m_MenuPanel.SetActive(false);
+                    //GameManager.Instance.PlayReplay();
                     break;
             }
         }
@@ -306,7 +313,7 @@ namespace HotFix
 
         void OnBackBtnClick()
         {
-            SceneManager.LoadScene("Client");
+            //SceneManager.LoadScene("Client");
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_Lobby>();
 

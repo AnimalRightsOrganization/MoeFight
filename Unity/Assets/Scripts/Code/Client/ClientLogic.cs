@@ -256,6 +256,8 @@ namespace Code.Client
             remoteSeatId = 1;
 
             IsStart = true;
+
+            HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
         }
 
         private void OnTestPVP(INetSerializable reader)
