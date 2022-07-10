@@ -222,16 +222,20 @@ public class GameState
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_CROUCH);
                 int attacker = (characters[0] == attackingChar) ? 0 : 1;
+                int defender = (attacker + 1) % 2;
                 uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
+                HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             else if (defendingChar.IsStand())
             {
                 defendingChar.SetCharacterState(CharacterState.HIT_STAND);
                 int attacker = (characters[0] == attackingChar) ? 0 : 1;
+                int defender = (attacker + 1) % 2;
                 uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
+                HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             // apply hitstun

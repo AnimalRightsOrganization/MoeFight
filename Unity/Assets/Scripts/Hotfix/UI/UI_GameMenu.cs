@@ -36,6 +36,8 @@ namespace HotFix
         [SerializeField] Text m_ResultText;
         [SerializeField] Button m_BackBtn;
 
+        [SerializeField] Sprite[] m_HeadArray;
+
         void Awake()
         {
             m_Wallpaper = transform.Find("Wallpaper").gameObject;
@@ -115,10 +117,12 @@ namespace HotFix
             // 会在跳转场景前就执行到
             Reset();
 
-            var sp_aoi = ResManager.LoadSprite("Sprites/Head/AOI.jpg");
-            HeadImages[0].sprite = sp_aoi;
-            var sp_satomi = ResManager.LoadSprite("Sprites/Head/SATOMI.jpg");
-            HeadImages[1].sprite = sp_satomi;
+            var dic_heads = ResManager.LoadSprites("Sprites/Heads.jpg");
+            var p1_name = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.HostPlayer.RoleIndex;
+            var p2_name = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.GuestPlayer.RoleIndex;
+            //Debug.Log($"GameMenu: {p1_name} vs {p2_name}");
+            HeadImages[0].sprite = dic_heads[p1_name.ToString()];
+            HeadImages[1].sprite = dic_heads[p2_name.ToString()];
         }
 
         void OnDisable()
