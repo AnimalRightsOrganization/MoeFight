@@ -143,7 +143,7 @@ public class ResManager
         return t2d;
     }
 
-    public static Dictionary<string, Sprite> LoadSprite(string fileName)
+    public static Dictionary<string, Sprite> LoadSprites(string fileName)
     {
         var array = fileName.Split('.');
         var configName = array[0];
@@ -173,6 +173,23 @@ public class ResManager
             }
         }
         //Debug.Log($"字典：{sp.Count}个");
+        return sp;
+    }
+    public static Sprite LoadSprite(string fileName)
+    {
+        var array = fileName.Split('.');
+        var configName = array[0];
+        var configType = array[1];
+
+#if UNITY_EDITOR && !USE_ASSETBUNDLE
+        string filePath = $"{BUNDLES_FOLDER}/{configName}.{configType}";
+        var sp = AssetDatabase.LoadAssetAtPath<Sprite>(filePath);
+#else
+        string filePath = GetFilePath($"{configName}.unity3d");
+        AssetBundle asset = AssetBundle.LoadFromFile(filePath);
+        var sp = asset.LoadAllAssets()[0] as Sprite;
+        asset.Unload(false);
+#endif
         return sp;
     }
 

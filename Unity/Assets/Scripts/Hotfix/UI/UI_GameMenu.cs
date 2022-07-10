@@ -115,10 +115,10 @@ namespace HotFix
             // 会在跳转场景前就执行到
             Reset();
 
-            //var dic_aoi = ResManager.LoadSprite("Sprites/Head/AOI.jpg");
-            //HeadImages[0].sprite = dic_aoi["AOI"];
-            //var dic_satomi = ResManager.LoadSprite("Sprites/Head/SATOMI.jpg");
-            //HeadImages[1].sprite = dic_satomi["SATOMI"];
+            var sp_aoi = ResManager.LoadSprite("Sprites/Head/AOI.jpg");
+            HeadImages[0].sprite = sp_aoi;
+            var sp_satomi = ResManager.LoadSprite("Sprites/Head/SATOMI.jpg");
+            HeadImages[1].sprite = sp_satomi;
         }
 
         void OnDisable()
