@@ -123,10 +123,6 @@ namespace HotFix
             {
                 case 0:
                     {
-                        // 创建用户对象
-                        var clientPlayer = new ClientPlayer(packet.UserName, packet.PeerId);
-                        ClientNet.Get.m_PlayerManager.AddClientPlayer(clientPlayer, true);
-
                         // 弹出大厅页，关闭本页面
                         UIManager.Get().Push<UI_Lobby>();
                         this.Pop();

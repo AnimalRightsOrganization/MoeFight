@@ -129,8 +129,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_LoginResultPacket();
                         packet.Deserialize(reader); //解包
-                        if (packet.Code == 0)
-                            OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
+                        OnUserStatusChanged(pt, packet); //Offline→AtLobby
                         EventManager.Trigger(pt, packet, peer); //派发
                     }
                     break;
@@ -146,7 +145,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_MatchResultPacket();
                         packet.Deserialize(reader);
-                        OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet); //AtLobby→AtRoomWait
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
@@ -190,7 +189,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_GameReadyPacket();
                         packet.Deserialize(reader);
-                        OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet); //AtRoomWait→AtRoomReady
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
@@ -198,7 +197,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
-                        OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet); //AtRoomReady→AtBattle
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
@@ -220,7 +219,7 @@ namespace Code.Client
                     {
                         var packet = new S2C_BattleEndPacket();
                         packet.Deserialize(reader);
-                        OnUserStatusChanged(pt, packet);
+                        OnUserStatusChanged(pt, packet); //AtBattle→AtLobby
                         EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
                     }
                     break;
@@ -437,6 +436,9 @@ namespace Code.Client
                         var packet = (S2C_LoginResultPacket)reader;
                         if (packet.Code == 0)
                         {
+                            // 创建用户对象
+                            var clientPlayer = new ClientPlayer(packet.UserName, packet.PeerId);
+                            m_PlayerManager.AddClientPlayer(clientPlayer, true);
                             m_PlayerManager.LocalPlayer.ResetToLobby();
                         }
                     }
