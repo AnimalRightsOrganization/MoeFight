@@ -66,8 +66,25 @@ public class TestWindow : EditorWindow
         }
     }
 }
+[InitializeOnLoad]
 public class EditorTools : Editor
 {
+    static string kShowedReadmeSessionStateName = "ReadmeEditor.TestWindow";
+
+    static EditorTools()
+    {
+        EditorApplication.delayCall += SelectReadmeAutomatically; //Inspector刷新时
+    }
+    static void SelectReadmeAutomatically()
+    {
+        if (!SessionState.GetBool(kShowedReadmeSessionStateName, false))
+        {
+            SessionState.SetBool(kShowedReadmeSessionStateName, true);
+
+            RunEditor();
+        }
+    }
+
     //% (ctrl on Windows and Linux, cmd on macOS),
     //^ (ctrl on Windows, Linux, and macOS),
     //# (shift),

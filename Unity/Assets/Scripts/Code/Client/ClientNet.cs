@@ -129,9 +129,9 @@ namespace Code.Client
                     {
                         var packet = new S2C_LoginResultPacket();
                         packet.Deserialize(reader); //解包
-                        EventManager.Trigger(pt, packet, peer); //派发
                         if (packet.Code == 0)
                             OnUserStatusChanged(pt, packet); //登录成功才改变用户状态
+                        EventManager.Trigger(pt, packet, peer); //派发
                     }
                     break;
                 case PacketType.S2C_LogoutResult:
@@ -146,8 +146,8 @@ namespace Code.Client
                     {
                         var packet = new S2C_MatchResultPacket();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
                         OnUserStatusChanged(pt, packet);
+                        EventManager.Trigger(pt, packet, peer);
                     }
                     break;
                 case PacketType.S2C_RoleSelect:
@@ -190,16 +190,16 @@ namespace Code.Client
                     {
                         var packet = new S2C_GameReadyPacket();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
                         OnUserStatusChanged(pt, packet);
+                        EventManager.Trigger(pt, packet, peer);
                     }
                     break;
                 case PacketType.S2C_LoadScene:
                     {
                         var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
                         OnUserStatusChanged(pt, packet);
+                        EventManager.Trigger(pt, packet, peer);
                     }
                     break;
                 case PacketType.S2C_BattleStart:
@@ -220,8 +220,8 @@ namespace Code.Client
                     {
                         var packet = new S2C_BattleEndPacket();
                         packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
                         OnUserStatusChanged(pt, packet);
+                        EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
                     }
                     break;
                 case PacketType.S2C_BattleReconnect:

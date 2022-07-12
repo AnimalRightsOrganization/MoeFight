@@ -305,8 +305,9 @@ public class DeployTools : EditorWindow
         string src = @"C:\Users\Administrator\source\repos\QRCode\GameCenter\bin\Debug\net6.0-windows\Temp\StandaloneWindows64.zip";
         string dst = @"C:\Users\Administrator\source\repos\QRCode\GameCenter\bin\Debug\net6.0-windows\Applications\turtlerace2\";
         ZipTools.UnpackFiles(src, dst);
-        return;
+        await Task.CompletedTask;
+        //return;
 
-        await PostDeployRes();
+        //await PostDeployRes();
     }
 }

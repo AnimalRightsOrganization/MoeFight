@@ -256,7 +256,6 @@ public class ExcelUtility
 		XmlDocument xmlDoc = new XmlDocument();
 		xmlDoc.Load(xmlPath);
 		int rootlist = xmlDoc.GetElementsByTagName("root")[0].ChildNodes.Count;
-		string node = "";
 
 		XmlNodeList nodeList = xmlDoc.SelectSingleNode("root").ChildNodes;
 
