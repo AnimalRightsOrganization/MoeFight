@@ -308,7 +308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   showHitboxes: 1
   manualStep: 0
-  player1Character: 0
+  player1Character: 1
   player2Character: 0
   characterView: {fileID: 4859713226901122751, guid: d2b363d148b49154cad6157737fd0243, type: 3}
   mainCamera: {fileID: 963194227}

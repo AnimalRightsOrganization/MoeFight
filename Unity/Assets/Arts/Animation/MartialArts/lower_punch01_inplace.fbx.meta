@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 3874fd10284740b4ba7b36e234f7d6d7
+guid: 024f12bb8e335764591e1c54f9ef54c6
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
   - first:
-      74: -48287457777222261
-    second: lower_kick02
+      74: 6014141757482695615
+    second: lower_punch01
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -17,7 +17,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    removeConstantScaleCurves: 0
+    removeConstantScaleCurves: 1
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -36,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: lower_kick02
-      takeName: lower_kick02
+      name: lower_punch01
+      takeName: lower_punch01
       internalID: 0
       firstFrame: 0
-      lastFrame: 25
+      lastFrame: 13
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -76,7 +76,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
-    nodeNameCollisionStrategy: 0
+    nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -867,7 +867,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
-  remapMaterialsIfMaterialImportModeIsNone: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 
   assetBundleName: 
