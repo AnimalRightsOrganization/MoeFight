@@ -733,7 +733,7 @@ public class Character
 
     public bool CheckGroundedSpecials(CharacterData data)
     {
-        // [↓→] + [I] + 非CD中
+        // [↓→] + [I]
         if (CheckSequence(Motions.QCF, Constants.LENIENCY_QF) && 
             CheckSequence(new uint[] { (uint)Inputs.INPUT_nMP, (uint)Inputs.INPUT_MP }, 3) && 
             !projectile.active)
@@ -742,6 +742,7 @@ public class Character
             SetCharacterState(CharacterState.HADOUKEN);
             return true;
         }
+        // [↓←] + [U]
         else if (CheckSequence(Motions.QCB, 20) 
             && CheckSequence(new uint[] { (uint)Inputs.INPUT_nLP, (uint)Inputs.INPUT_LP }, 3)
             && !projectile.active)
