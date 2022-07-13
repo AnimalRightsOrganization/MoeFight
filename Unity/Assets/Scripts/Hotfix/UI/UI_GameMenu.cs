@@ -191,13 +191,15 @@ namespace HotFix
 
             if (packet.WinnerSeatId == ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
             {
-                // 弹出胜利界面
                 m_ResultText.text = "YOU WIN";
+            }
+            else if (packet.WinnerSeatId == ClientNet.Get.m_PlayerManager.RivalPlayer.SeatId)
+            {
+                m_ResultText.text = "Game Over";
             }
             else
             {
-                // 弹出GameOver界面
-                m_ResultText.text = "Game Over";
+                m_ResultText.text = "Time Out";
             }
 
             //GameManager.Instance.GameEnd(); //对方掉线
@@ -317,7 +319,8 @@ namespace HotFix
 
         void OnBackBtnClick()
         {
-            //SceneManager.LoadScene("Client");
+            GameManager.Get.CleanBattle();
+
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_Lobby>();
 

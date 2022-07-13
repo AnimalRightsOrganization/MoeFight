@@ -5,19 +5,19 @@ public class CharacterNode
 {
     public int Id;
     public string Name;
-    public uint Health;
-    public uint Stun;
-    public uint LP;
-    public uint MP;
-    public uint HP;
-    public uint LK;
-    public uint MK;
-    public uint HK;
-    public uint EX1;
-    public uint EX2;
-    public uint EX3;
+    public int Health;
+    public int Stun;
+    public int LP;
+    public int MP;
+    public int HP;
+    public int LK;
+    public int MK;
+    public int HK;
+    public int EX1;
+    public int EX2;
+    public int EX3;
 
-    public uint GetDamage(CharacterState state)
+    public int GetDamage(CharacterState state)
     {
         switch (state)
         {

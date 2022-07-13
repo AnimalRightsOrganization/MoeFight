@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     public static Present present; //通过请求返回
     public static string Token { get; private set; }
 
+    //public LanguageNode[] nodes;
+    public ClientLogic logic;
+
     void Awake()
     {
         if (!Initialized)
@@ -114,13 +117,17 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
-    public LanguageNode[] nodes;
-
     public async void LoadBattleAsync(System.Action action = null)
     {
         var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-        Instantiate(asset);
+        logic = Instantiate(asset).GetComponent<ClientLogic>();
         await Task.Delay(1000);
         action?.Invoke();
+    }
+    public void CleanBattle()
+    {
+        Destroy(logic);
+        //logic.gameObject.SetActive(false);
+        //logic.Reset();
     }
 }

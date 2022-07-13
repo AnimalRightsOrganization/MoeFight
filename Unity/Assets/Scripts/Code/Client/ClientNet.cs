@@ -219,8 +219,8 @@ namespace Code.Client
                     {
                         var packet = new S2C_BattleEndPacket();
                         packet.Deserialize(reader);
-                        OnUserStatusChanged(pt, packet); //AtBattle→AtLobby
                         EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
+                        OnUserStatusChanged(pt, packet); //AtBattle→AtLobby
                     }
                     break;
                 case PacketType.S2C_BattleReconnect:

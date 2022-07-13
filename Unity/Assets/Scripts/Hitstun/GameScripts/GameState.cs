@@ -223,7 +223,7 @@ public class GameState
                 defendingChar.SetCharacterState(CharacterState.HIT_CROUCH);
                 int attacker = (characters[0] == attackingChar) ? 0 : 1;
                 int defender = (attacker + 1) % 2;
-                uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
+                int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
                 HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
@@ -237,7 +237,7 @@ public class GameState
                 defendingChar.SetCharacterState(CharacterState.HIT_STAND);
                 int attacker = (characters[0] == attackingChar) ? 0 : 1;
                 int defender = (attacker + 1) % 2;
-                uint damage = characterNodes[attacker].GetDamage(attackingChar.state);
+                int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
                 HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)

@@ -193,20 +193,17 @@ namespace Code.Client
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
-        
-        // 结束判定
+
+        // 结束判定（①时间，②血量）
         private void CheckGameEnd()
         {
-            //①时间
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
-            //Debug.Log($"{rendTick} * {Time.fixedDeltaTime}");
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
             HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
                 HotFix.UIManager.doSetGameEnd?.Invoke(2);
             }
-            //②血量
         }
 
 
