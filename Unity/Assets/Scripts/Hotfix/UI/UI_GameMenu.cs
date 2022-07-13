@@ -332,6 +332,7 @@ namespace HotFix
             UIManager.doShowSkillText = ShowSkill;
             UIManager.doSetTimeText = SetTime;
             UIManager.doSetCurrentHp = SetCurrentHp;
+            UIManager.doSetGameEnd = SetGameEnd;
         }
         void UnbindDelegete()
         {
@@ -354,6 +355,10 @@ namespace HotFix
             Tweener tw = LastHp[pid - 1].DOSizeDelta(CurrentHp[pid - 1].sizeDelta, 1); //duration是渐变，一个字一个字变过来
             tw.SetDelay(0.5f);
             tw.Play();
+        }
+        void SetGameEnd(int winner)
+        {
+            ClientNet.Get.SendBattleEnd((byte)winner);
         }
         #endregion
     }

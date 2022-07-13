@@ -121,9 +121,8 @@ namespace HotFix
             var packet = (S2C_LoginResultPacket)reader;
             switch (packet.Code)
             {
-                case 0:
+                case 0: //弹出大厅页，关闭本页面
                     {
-                        // 弹出大厅页，关闭本页面
                         UIManager.Get().Push<UI_Lobby>();
                         this.Pop();
                     }
@@ -135,6 +134,9 @@ namespace HotFix
                     }
                     break;
             }
+
+            var connect = UIManager.Get().GetUI<UI_Connect>();
+            connect.Pop();
         }
 
         #endregion
@@ -171,16 +173,11 @@ namespace HotFix
 
         private void SendLogin()
         {
+            UIManager.Get().Push<UI_Connect>();
+
             string UserName = m_UserNameField.text;
             string Password = m_PasswordField.text;
-            try
-            {
-                ClientNet.Get.SendLogin(UserName, Password);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"抛出的错误：{e}");
-            }
+            ClientNet.Get.SendLogin(UserName, Password);
         }
         private void SendRegister()
         {

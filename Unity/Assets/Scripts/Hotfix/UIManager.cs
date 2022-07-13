@@ -6,6 +6,7 @@ namespace HotFix
     public delegate void ShowSkillText(int pid, string content);
     public delegate void SetTimeText(string second);
     public delegate void SetCurrentHp(int pid, int hp);
+    public delegate void SetGameEnd(int winner);
     public class UIManager : MonoBehaviour
     {
         static UIManager _instance;
@@ -21,6 +22,7 @@ namespace HotFix
         public static ShowSkillText doShowSkillText;
         public static SetTimeText doSetTimeText;
         public static SetCurrentHp doSetCurrentHp;
+        public static SetGameEnd doSetGameEnd;
 
         // UI存储栈
         public Dictionary<string, UIBase> stack;

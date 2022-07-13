@@ -413,9 +413,9 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_BattleQuit, new EmptyPacket());
         }
 
-        public void SendBattleEnd(int hp1, int hp2, int timeLeft)
+        public void SendBattleEnd(byte winner)
         {
-            var cmd = new C2S_BattleEndPacket { HostHP = (short)hp1, GuestHP = (short)hp2, TimeLeft = (short)timeLeft };
+            var cmd = new C2S_BattleEndPacket { Winner = winner };
             SendPacketSerializable(PacketType.C2S_BattleEnd, cmd);
         }
 
@@ -502,7 +502,8 @@ namespace Code.Client
                     }
                     break;
             }
-            UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
+            if (m_PlayerManager.LocalPlayer != null)
+                UserEventManager.Trigger(m_PlayerManager.LocalPlayer.Status); //通知给UI
         }
 
         // 自己登出

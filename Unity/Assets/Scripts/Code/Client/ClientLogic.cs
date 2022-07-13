@@ -204,18 +204,9 @@ namespace Code.Client
             HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
-                //if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Matching && m_BattleStage != BattleStage.End)
-                //{
-                //    Debug.Log($"时间到，上报比赛结果：{p1.HP}，{p2.HP}");
-                //    ClientNet.Get.SendBattleEnd(p1.HP, p2.HP, 0);
-                //}
-                DoGameEnd();
+                HotFix.UIManager.doSetGameEnd?.Invoke(2);
             }
             //②血量
-        }
-        private void DoGameEnd()
-        {
-        
         }
 
 
@@ -308,7 +299,7 @@ namespace Code.Client
 
         private void OnBattleEnd(INetSerializable reader)
         {
-            DoGameEnd();
+            //DoGameEnd();
             //SaveReplay();
         }
 

@@ -283,21 +283,15 @@ namespace Code.Shared
 
     public struct C2S_BattleEndPacket : INetSerializable
     {
-        public short HostHP;
-        public short GuestHP;
-        public short TimeLeft;
+        public byte Winner;
 
         public void Serialize(NetDataWriter writer)
         {
-            writer.Put(HostHP);
-            writer.Put(GuestHP);
-            writer.Put(TimeLeft);
+            writer.Put(Winner);
         }
         public void Deserialize(NetDataReader reader)
         {
-            HostHP = reader.GetByte();
-            GuestHP = reader.GetByte();
-            TimeLeft = reader.GetByte();
+            Winner = reader.GetByte();
         }
     }
     #endregion
