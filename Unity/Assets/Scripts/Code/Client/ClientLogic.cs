@@ -197,12 +197,15 @@ namespace Code.Client
         // 结束判定（①时间，②血量）
         private void CheckGameEnd()
         {
+            if (HotFix.UIManager.doSetGameEnd == null) return;
+
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
             HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
+
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
-                HotFix.UIManager.doSetGameEnd?.Invoke(2);
+                HotFix.UIManager.doSetGameEnd.Invoke(2);
             }
         }
 

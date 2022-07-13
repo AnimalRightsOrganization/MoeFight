@@ -312,10 +312,10 @@
       "distinctSprites": 5,
       "totalFrames": 20,
       "frameDuration": [1,4,4,4,4],
-      "collisionBox": [-650,650,0,300],
+      "collisionBox": [-500,500,0,300],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-700,700,0,350]]
+        "0": [[-550,550,0,350]]
       }
     }
   },

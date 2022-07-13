@@ -429,6 +429,8 @@ public class Character
         {
             // DIE STATE
             case CharacterState.DIE:
+                velocity.x = 0;
+                velocity.y = 0;
                 break;
             // IDLE STATE
             case CharacterState.STAND:
