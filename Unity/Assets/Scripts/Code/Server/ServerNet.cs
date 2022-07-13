@@ -749,7 +749,6 @@ namespace Code.Server
             serverRoom.EndCount++;
 
             // 给上报者回包
-            //short winnerSeatId = (short)BaseRoom.CheckWinnerSeatId(cmd.Winner, cmd.GuestHP);
             var packet = new S2C_BattleEndPacket { WinnerSeatId = cmd.Winner };
             peer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
 

@@ -339,6 +339,7 @@ namespace HotFix
             UIManager.doShowSkillText = null;
             UIManager.doSetTimeText = null;
             UIManager.doSetCurrentHp = null;
+            UIManager.doSetGameEnd = null;
         }
         void ShowSkill(int pid, string content)
         {
@@ -358,6 +359,8 @@ namespace HotFix
         }
         void SetGameEnd(int winner)
         {
+            UIManager.doSetGameEnd = null;
+            Debug.Log($"delegate gameEnd: {winner}");
             ClientNet.Get.SendBattleEnd((byte)winner);
         }
         #endregion
