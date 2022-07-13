@@ -23,7 +23,6 @@ public class GameManager : MonoBehaviour
     public static Present present; //通过请求返回
     public static string Token { get; private set; }
 
-    //public LanguageNode[] nodes;
     public ClientLogic logic;
 
     void Awake()

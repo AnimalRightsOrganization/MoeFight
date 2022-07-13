@@ -263,11 +263,13 @@ namespace HotFix
                     };
                     serverRoom.DoInit(packet);
 
-                    var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-                    Instantiate(asset);
-                    UIManager.Get().PopAll();
-
-                    ClientNet.Get.SendTestPVE();
+                    System.Action action = () =>
+                    {
+                        UIManager.Get().PopAll();
+                        UIManager.Get().Push<UI_GameMenu>();
+                        ClientNet.Get.SendTestPVE();
+                    };
+                    GameManager.Get.LoadBattleAsync(action);
                     break;
                 default:
                     Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");

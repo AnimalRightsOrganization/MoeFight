@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
@@ -65,7 +66,6 @@ public class ReplayFormat
 
     public void BufferToGS(byte[] bytes)
     {
-        //GameState.FromByteArray(gs, cache_buffer[tick]);
         using (var memoryStream = new MemoryStream(bytes))
         {
             using (var reader = new BinaryReader(memoryStream))
@@ -76,7 +76,6 @@ public class ReplayFormat
     }
     public byte[] GSToBuffer()
     {
-        //GameState.ToByteArray(gs);
         using (var memoryStream = new MemoryStream())
         {
             using (var writer = new BinaryWriter(memoryStream))
@@ -142,6 +141,11 @@ public class ReplayManager
 
         File.WriteAllBytes(filePath, bytes);
         Debug.Log($"replay saved in: {filePath}");
+    }
+    public static string MyDictionaryToJson(Dictionary<uint, uint[]> dict)
+    {
+        var entries = dict.Select(d => $"\"{d.Key}\": [{string.Join(",", d.Value)}]");
+        return "{" + string.Join(",", entries) + "}";
     }
     // 读取文件
     public static void LoadReplay(string filePath = "")

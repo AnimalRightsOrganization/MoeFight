@@ -299,9 +299,12 @@ namespace Code.Client
 
         private void OnBattleEnd(INetSerializable reader)
         {
-            //IsStart = false;
+            Debug.Log("OnBattleEnd: save replay");
             //SaveReplay();
+            string json = ReplayManager.MyDictionaryToJson(ggpo_recieve);
+            Debug.Log(json);
 
+            //IsStart = false;
             //Application.targetFrameRate = 15;
             //Time.fixedDeltaTime = 1f / 15;
         }
