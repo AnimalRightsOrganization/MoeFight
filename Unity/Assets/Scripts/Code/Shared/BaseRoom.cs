@@ -19,15 +19,15 @@ namespace Code.Shared
 
         public virtual void Dispose() { }
 
-        public static int CheckWinnerSeatId(int hostHP, int guestHP)
-        {
-            int winnerSeatId = 0;
-            if (hostHP == guestHP)
-                winnerSeatId = -1;
-            else
-                winnerSeatId = hostHP > guestHP ? 0 : 1;
-            return winnerSeatId;
-        }
+        //public static int CheckWinnerSeatId(int hostHP, int guestHP)
+        //{
+        //    int winnerSeatId = 0;
+        //    if (hostHP == guestHP)
+        //        winnerSeatId = -1;
+        //    else
+        //        winnerSeatId = hostHP > guestHP ? 0 : 1;
+        //    return winnerSeatId;
+        //}
 
         public override string ToString()
         {

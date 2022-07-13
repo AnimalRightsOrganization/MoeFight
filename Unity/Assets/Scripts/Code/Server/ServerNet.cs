@@ -741,7 +741,7 @@ namespace Code.Server
             // 解析客户端消息
             var cmd = new C2S_BattleEndPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] {player}battle end, host:{cmd.HostHP} vs guest:{cmd.GuestHP}, time left:{cmd.TimeLeft}s");
+            UnityEngine.Debug.Log($"[S] {player}battle end, Winner:{cmd.Winner}");
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
@@ -749,8 +749,8 @@ namespace Code.Server
             serverRoom.EndCount++;
 
             // 给上报者回包
-            short winnerSeatId = (short)BaseRoom.CheckWinnerSeatId(cmd.HostHP, cmd.GuestHP);
-            var packet = new S2C_BattleEndPacket { WinnerSeatId = winnerSeatId };
+            //short winnerSeatId = (short)BaseRoom.CheckWinnerSeatId(cmd.Winner, cmd.GuestHP);
+            var packet = new S2C_BattleEndPacket { WinnerSeatId = cmd.Winner };
             peer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
 
             // 收到双方消息，关闭房间
