@@ -320,8 +320,10 @@ namespace Code.Client
             if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(password))
             {
                 Debug.LogError("用户名或密码未填");
-                var ui = UIManager.Get().Push<UI_Toast>();
-                ui.Show("用户名或密码未填");
+                var connect = UIManager.Get().Push<UI_Connect>();
+                connect.Pop();
+                var toast = UIManager.Get().Push<UI_Toast>();
+                toast.Show("用户名或密码未填");
                 return;
             }
 

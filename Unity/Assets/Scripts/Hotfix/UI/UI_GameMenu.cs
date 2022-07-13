@@ -193,7 +193,7 @@ namespace HotFix
             {
                 m_ResultText.text = "YOU WIN";
             }
-            else if (packet.WinnerSeatId == ClientNet.Get.m_PlayerManager.RivalPlayer.SeatId)
+            else if (packet.WinnerSeatId == ClientNet.Get.m_PlayerManager.RivalPlayer?.SeatId)
             {
                 m_ResultText.text = "Game Over";
             }

@@ -95,6 +95,11 @@ public class CharacterView : MonoBehaviour
         CharacterState currentState = character.state;
         Animation currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
+        if (currentState == CharacterState.DIE && character.framesInState >= currentAnimation.totalFrames)
+        {
+            //Debug.LogError(character.framesInState); //持续++。死亡动画播放完，彻底不再播放动画。
+            return;
+        }
         animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
 
         // x and y position

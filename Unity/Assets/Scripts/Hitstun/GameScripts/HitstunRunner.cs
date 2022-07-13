@@ -45,7 +45,7 @@ public class HitstunRunner : MonoBehaviour
     {
         // Fix the FPS
         Application.targetFrameRate = Constants.FPS;
-        Time.fixedDeltaTime = 1f / (float)Constants.FPS;
+        Time.fixedDeltaTime = 1f / Constants.FPS;
         // Init LocalSession
         LocalSession.Init(new GameState(), new NonGameState());
         // Init NonGameState

@@ -37,7 +37,7 @@ namespace Code.Client
             {
                 runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.HostPlayer.RoleIndex;
                 runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.GuestPlayer.RoleIndex;
-                Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
+                //Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
             }
 
             EventManager.RegisterEvent(OnNetCallback);
@@ -296,8 +296,11 @@ namespace Code.Client
 
         private void OnBattleEnd(INetSerializable reader)
         {
-            //DoGameEnd();
+            //IsStart = false;
             //SaveReplay();
+
+            //Application.targetFrameRate = 15;
+            //Time.fixedDeltaTime = 1f / 15;
         }
 
         // 重连恢复场景

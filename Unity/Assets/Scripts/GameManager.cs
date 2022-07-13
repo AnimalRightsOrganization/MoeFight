@@ -126,7 +126,7 @@ public class GameManager : MonoBehaviour
     }
     public void CleanBattle()
     {
-        Destroy(logic);
+        Destroy(logic.gameObject);
         //logic.gameObject.SetActive(false);
         //logic.Reset();
     }

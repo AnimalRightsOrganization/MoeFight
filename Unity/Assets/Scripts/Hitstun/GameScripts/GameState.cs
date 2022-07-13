@@ -228,6 +228,7 @@ public class GameState
                 HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
+                    defendingChar.SetCharacterState(CharacterState.DIE);
                     HotFix.UIManager.doSetGameEnd?.Invoke(attacker);
                 }
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
@@ -242,6 +243,7 @@ public class GameState
                 HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
+                    defendingChar.SetCharacterState(CharacterState.DIE);
                     HotFix.UIManager.doSetGameEnd?.Invoke(attacker);
                 }
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");

@@ -427,6 +427,9 @@ public class Character
 
         switch (state)
         {
+            // DIE STATE
+            case CharacterState.DIE:
+                break;
             // IDLE STATE
             case CharacterState.STAND:
             // WALK_FORWARD STATE

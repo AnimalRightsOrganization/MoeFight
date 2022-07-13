@@ -35,24 +35,38 @@ public class TestWindow : EditorWindow
         }
         if (GUILayout.Button("PVE"))
         {
+            if (ClientNet.Get.m_PlayerManager.LocalPlayer == null)
+            {
+                Debug.LogError("请先登录");
+                return;
+            }
             ClientPlayer host = new ClientPlayer("test1", 1);
             ClientPlayer guest = new ClientPlayer("BOT", -1);
             ClientNet.Get.m_ClientRoom = new ClientRoom(1, host, guest);
             ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.TestPVE;
 
-            var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-            UnityEngine.Object.Instantiate(asset);
-            HotFix.UIManager.Get().PopAll();
-
-            ClientNet.Get.SendTestPVE();
+            System.Action action = () =>
+            {
+                HotFix.UIManager.Get().PopAll();
+                HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
+                ClientNet.Get.SendTestPVE();
+            };
+            GameManager.Get.LoadBattleAsync(action);
         }
         if (GUILayout.Button("PVP"))
         {
-            var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
-            UnityEngine.Object.Instantiate(asset);
-            HotFix.UIManager.Get().PopAll();
-
-            ClientNet.Get.SendTestPVP();
+            if (ClientNet.Get.m_PlayerManager.LocalPlayer == null)
+            {
+                Debug.LogError("请先登录");
+                return;
+            }
+            System.Action action = () =>
+            {
+                HotFix.UIManager.Get().PopAll();
+                HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
+                ClientNet.Get.SendTestPVP();
+            };
+            GameManager.Get.LoadBattleAsync(action);
         }
 
         if (GUILayout.Button("打印预测"))
