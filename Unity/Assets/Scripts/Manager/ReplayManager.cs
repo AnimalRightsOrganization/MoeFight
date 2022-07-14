@@ -1,5 +1,7 @@
 ﻿using System.IO;
+using System.Text;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
@@ -142,10 +144,29 @@ public class ReplayManager
         File.WriteAllBytes(filePath, bytes);
         Debug.Log($"replay saved in: {filePath}");
     }
-    public static string MyDictionaryToJson(Dictionary<uint, uint[]> dict)
+    public static async void SaveReplay(Dictionary<uint, uint[]> dict)
     {
+        string folder = ConstValue.REPLAY_FOLDER;
+        if (!Directory.Exists(folder))
+            Directory.CreateDirectory(folder);
+        string fileName = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string filePath = $"{folder}/{fileName}.bytes";
+        if (File.Exists(filePath))
+            File.Delete(filePath);
+
         var entries = dict.Select(d => $"\"{d.Key}\": [{string.Join(",", d.Value)}]");
-        return "{" + string.Join(",", entries) + "}";
+        string json = "{" + string.Join(",", entries) + "}";
+        //File.WriteAllText(filePath, json);
+        await WriteTextAsync(filePath, json);
+    }
+    static async Task WriteTextAsync(string filePath, string text)
+    {
+        byte[] data = Encoding.Unicode.GetBytes(text);
+        using (var fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+        {
+            await fs.WriteAsync(data, 0, data.Length);
+            Debug.Log($"write to: {filePath}");
+        };
     }
     // 读取文件
     public static void LoadReplay(string filePath = "")

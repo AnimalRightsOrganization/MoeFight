@@ -300,9 +300,7 @@ namespace Code.Client
         private void OnBattleEnd(INetSerializable reader)
         {
             Debug.Log("OnBattleEnd: save replay");
-            //SaveReplay();
-            string json = ReplayManager.MyDictionaryToJson(ggpo_recieve);
-            Debug.Log(json);
+            ReplayManager.SaveReplay(ggpo_recieve);
 
             //IsStart = false;
             //Application.targetFrameRate = 15;

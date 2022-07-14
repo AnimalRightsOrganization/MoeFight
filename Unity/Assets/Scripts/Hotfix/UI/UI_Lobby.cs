@@ -187,9 +187,7 @@ namespace HotFix
 
         void OnReplayButtonClick()
         {
-            //UIManager.Get().Push<UI_Replay>();
-            var ui = UIManager.Get().Push<UI_Toast>();
-            ui.Show("敬请期待");
+            UIManager.Get().Push<UI_Replay>();
         }
 
         void OnSettingsButtonClick()
