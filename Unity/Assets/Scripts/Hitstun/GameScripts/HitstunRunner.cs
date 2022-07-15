@@ -120,7 +120,7 @@ public class HitstunRunner : MonoBehaviour
             // oldBuffer是执行输入前一帧的 LocalSession.gs
             // load old gamestate and re-simulate
             GameState.FromBytes(LocalSession.gs, oldBuffer);
-            LocalSession.gs.Update(inputs, 0);
+            LocalSession.gs.Update(inputs, 0); //返回再更新
 
 
             // 这里会产生错误
@@ -149,7 +149,7 @@ public class HitstunRunner : MonoBehaviour
         {
             nextStep = false;
 
-            GameState.FromBytes(LocalSession.gs, oldBuffer); //快照
+            //GameState.FromBytes(LocalSession.gs, oldBuffer);
             LocalSession.gs.Update(inputs, 0);
 
             // 运算结束，驱动角色、子弹、相机

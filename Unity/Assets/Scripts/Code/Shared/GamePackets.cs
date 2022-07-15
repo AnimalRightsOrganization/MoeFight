@@ -30,7 +30,7 @@ namespace Code.Shared
         Reconnect   = 6,    //异常掉线，等待重连
     }
 
-    public enum SeatInfo : short
+    public enum SeatInfo : sbyte
     {
         NONE        = -1,   //没人或不在房间
         HOST        = 0,    //主位
@@ -283,7 +283,7 @@ namespace Code.Shared
 
     public struct C2S_BattleEndPacket : INetSerializable
     {
-        public byte Winner;
+        public sbyte Winner;
 
         public void Serialize(NetDataWriter writer)
         {
@@ -291,7 +291,7 @@ namespace Code.Shared
         }
         public void Deserialize(NetDataReader reader)
         {
-            Winner = reader.GetByte();
+            Winner = reader.GetSByte();
         }
     }
     #endregion
@@ -645,7 +645,7 @@ namespace Code.Shared
     // 比赛结算（认输/战死/时间到）
     public struct S2C_BattleEndPacket : INetSerializable
     {
-        public short WinnerSeatId; //获胜方的座位Id
+        public sbyte WinnerSeatId; //获胜方的座位Id
         //public int Score; //得分
 
         public void Serialize(NetDataWriter writer)
@@ -654,7 +654,7 @@ namespace Code.Shared
         }
         public void Deserialize(NetDataReader reader)
         {
-            WinnerSeatId = reader.GetShort();
+            WinnerSeatId = reader.GetSByte();
         }
     }
     #endregion

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TestDriver : MonoBehaviour
 {
@@ -43,6 +42,8 @@ public class TestDriver : MonoBehaviour
         recvTick++;
         uint[] inputs = rep.inputs[recvTick];
         runner.OnReplayUpdate(inputs);
+
+        //Snapshot(recvTick);
     }
 
     void OnGUI()

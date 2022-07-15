@@ -867,8 +867,6 @@ namespace Code.Server
 
                 string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 serverRoom.BattleID = $"{timeStr}_{hostPlayer.PeerId}_{guestPlayer.PeerId}";
-                //int randSeed = System.Guid.NewGuid().GetHashCode();
-                //serverRoom.Seed = randSeed;
                 serverRoom.MapId = 0; //来自客户端
                 serverRoom.BattleMode = BattleMode.Matching;
             }

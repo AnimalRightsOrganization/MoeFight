@@ -7,7 +7,7 @@
         private int _roomid = -1; //-1是在Lobby
         public int RoomId => _roomid;
         private SeatInfo _seatid = SeatInfo.NONE; //0是主位，1是客位
-        public short SeatId => (short)_seatid;
+        public sbyte SeatId => (sbyte)_seatid;
         private PlayerStatus _status = PlayerStatus.Offline;
         public PlayerStatus Status => _status;
         

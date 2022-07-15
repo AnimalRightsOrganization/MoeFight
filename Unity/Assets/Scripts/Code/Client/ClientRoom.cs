@@ -3,6 +3,7 @@ using Code.Shared;
 
 namespace Code.Client
 {
+    [System.Serializable]
     public class ClientRoom : BaseRoom
     {
         public ClientPlayer HostPlayer;

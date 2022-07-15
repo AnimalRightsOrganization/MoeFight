@@ -80,7 +80,7 @@ namespace HotFix
             FileInfo[] fileInfo = dirInfo.GetFiles();
             await Task.CompletedTask;
             fileInfo.OrderBy(x => x.CreationTime);
-            await Task.Delay(200);
+            await Task.Delay(100);
 
             for (int i = 0; i < fileInfo.Length; i++)
             {
@@ -115,12 +115,10 @@ namespace HotFix
                 }
 
                 script.transform.SetAsLastSibling(); //迟创建的放下面
-                await Task.CompletedTask;
-                script.InitData(file);
-                await Task.CompletedTask;
+                await script.InitData(file);
             }
 
-            await Task.Delay(200);
+            await Task.Delay(100);
             connect.Pop();
         }
     }

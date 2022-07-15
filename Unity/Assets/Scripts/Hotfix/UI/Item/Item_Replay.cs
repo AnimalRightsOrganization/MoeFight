@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using Code.Shared;
@@ -28,25 +29,22 @@ namespace HotFix
             m_ResultText = transform.Find("Button/ResultText").GetComponent<Text>();
         }
 
-        public Item_Replay InitData(FileInfo file)
+        public async Task<Item_Replay> InitData(FileInfo file)
         {
-            /*
-            ReplayFormat repInfo = GameManager.GetReplayInfo(file.FullName);
-            //repInfo.sceneData.Host.RoleIndex //TODO: 绘制头像
-
+            var repInfo = await ReplayManager.LoadReplay(file.FullName);
             this.SetFilePath(file.FullName);
-            this.SetHostName(repInfo.sceneData.Host.UserName);
-            this.SetGuestName(repInfo.sceneData.Guest.UserName);
-            this.SetMap($"{repInfo.sceneData.MapId}");
+            this.SetHostName(repInfo.scene.Host.UserName);
+            this.SetGuestName(repInfo.scene.Guest.UserName);
+            this.SetMap($"{repInfo.scene.MapId}");
             this.SetTime($"{file.CreationTime}");
 
-            var mySeatId = repInfo.sceneData.Host.UserName == Client.GetInstance().m_PlayerManager.LocalPlayer.UserName ? 0 : 1;
+            var mySeatId = repInfo.scene.Host.UserName == ClientNet.Get.m_PlayerManager.LocalPlayer.UserName ? 0 : 1;
             var result = BattleResult.Draw;
-            if (repInfo.WinnerSeatId == -1)
+            if (repInfo.winnerId == -1)
             {
                 result = BattleResult.Draw;
             }
-            else if (repInfo.WinnerSeatId == mySeatId)
+            else if (repInfo.winnerId == mySeatId)
             {
                 result = BattleResult.Win;
             }
@@ -55,7 +53,6 @@ namespace HotFix
                 result = BattleResult.Lose;
             }
             this.SetResult(result);
-            */
             return this;
         }
         private Item_Replay SetFilePath(string path)
@@ -104,7 +101,6 @@ namespace HotFix
         private void OnLoadScene()
         {
             var ui_replay = UIManager.Get().GetUI<UI_Replay>();
-            //ui_replay.m_CanvasGroup.interactable = false;
 
             string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
             var host = new ClientPlayer("host", 0); //单机时，host都是自己

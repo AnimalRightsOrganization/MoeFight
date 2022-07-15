@@ -20,7 +20,7 @@ public static class LocalSession
         {
             inputs[i] = ReadInputs(ngs.players[i].controllerId);
         }
-        gs.Update(inputs, 0);
+        gs.Update(inputs, 0); //直接更新
         return inputs;
     }
 
@@ -104,7 +104,7 @@ public static class LocalSession
     }
     public static uint[] RunFrameNext(uint[] inputs)
     {
-        gs.Update(inputs, 0);
+        gs.Update(inputs, 0); //直接更新
         return inputs;
     }
 }

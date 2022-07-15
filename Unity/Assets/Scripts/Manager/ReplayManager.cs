@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 public class ReplayFormat
 {
     public S2C_LoadScenePacket scene;
+    public sbyte winnerId;
     public byte battleMode;
     public Dictionary<uint, uint[]> inputs; //下发帧
 

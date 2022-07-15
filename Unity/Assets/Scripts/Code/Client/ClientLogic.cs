@@ -10,6 +10,7 @@ namespace Code.Client
     {
         private int mySeatId;
         private int remoteSeatId;
+        private BattleMode myBattleMode;
 
         public uint DELAY_FRAMES = 0;
         public bool IsStart;
@@ -39,8 +40,18 @@ namespace Code.Client
                 runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.GuestPlayer.RoleIndex;
                 //Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
             }
+        }
 
+        void OnEnable()
+        {
             EventManager.RegisterEvent(OnNetCallback);
+
+            myBattleMode = ClientNet.Get.m_ClientRoom.BattleMode;
+        }
+
+        void OnDisable()
+        {
+            EventManager.UnRegisterEvent(OnNetCallback);
         }
 
         void OnGUI()
@@ -72,6 +83,20 @@ namespace Code.Client
         {
             if (!IsStart) return;
 
+            switch (myBattleMode)
+            {
+                case BattleMode.Matching:
+                case BattleMode.TestPVE:
+                    BattleLoop();
+                    break;
+                case BattleMode.Replay:
+                    ReplayLoop();
+                    break;
+            }
+        }
+
+        private void BattleLoop()
+        {
             //①收集本地按键，发送，预测?
             sendTick++;
             uint input = LocalSession.GetInput();
@@ -159,6 +184,12 @@ namespace Code.Client
 
             CheckGameEnd();
         }
+        private void ReplayLoop()
+        {
+            recvTick++;
+            //uint[] inputs = rep.inputs[recvTick];
+            //runner.OnReplayUpdate(inputs);
+        }
 
         // 预测
         private void Predict(uint tick)
@@ -210,7 +241,7 @@ namespace Code.Client
         }
 
 
-        void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
+        private void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
             {
@@ -300,10 +331,12 @@ namespace Code.Client
         private void OnBattleEnd(INetSerializable reader)
         {
             Debug.Log("OnBattleEnd: save replay");
+            var packet = (S2C_BattleEndPacket)reader;
+
             var clientRoom = ClientNet.Get.m_ClientRoom;
             var hostPlayer = ClientNet.Get.m_ClientRoom.HostPlayer;
             var guestPlayer = ClientNet.Get.m_ClientRoom.GuestPlayer;
-            var packet = new S2C_LoadScenePacket
+            var scene = new S2C_LoadScenePacket
             {
                 RoomId = (short)clientRoom.RoomID,
                 BattleId = clientRoom.BattleID,
@@ -311,7 +344,7 @@ namespace Code.Client
                 Host = new PlayerLoadPacket { RoleIndex = hostPlayer.RoleIndex, UserName = hostPlayer.UserName },
                 Guest = new PlayerLoadPacket { RoleIndex = guestPlayer.RoleIndex, UserName = guestPlayer.UserName },
             };
-            var rep = new ReplayFormat { scene = packet, battleMode = (byte)clientRoom.BattleMode, inputs = ggpo_recieve };
+            var rep = new ReplayFormat { scene = scene, battleMode = (byte)clientRoom.BattleMode, winnerId = packet.WinnerSeatId, inputs = ggpo_recieve };
             ReplayManager.SaveReplay(rep);
 
             //IsStart = false;
