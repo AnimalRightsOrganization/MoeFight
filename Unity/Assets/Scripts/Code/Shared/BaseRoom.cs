@@ -7,7 +7,6 @@ namespace Code.Shared
     {
         public readonly int RoomID;     //当前房间ID（1~65535）
         public string BattleID;         //服务器战斗编号
-        public int Seed;                //随机种子
         public byte MapId = 0;          //地图编号
         public BattleMode BattleMode;   //房间模式
 

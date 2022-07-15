@@ -143,6 +143,20 @@ public class HitstunRunner : MonoBehaviour
         }
     }
 
+    public void OnReplayUpdate(uint[] inputs)
+    {
+        if (running || nextStep)
+        {
+            nextStep = false;
+
+            GameState.FromBytes(LocalSession.gs, oldBuffer); //快照
+            LocalSession.gs.Update(inputs, 0);
+
+            // 运算结束，驱动角色、子弹、相机
+            UpdateGameView(LocalSession.gs);
+        }
+    }
+
     void OnDestroy()
     {
         if (buffer.IsCreated)

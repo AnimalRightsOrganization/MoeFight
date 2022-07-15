@@ -1,8 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class TestDriver : MonoBehaviour
 {
     HitstunRunner runner;
+
+    private uint recvTick;
+    private ReplayFormat rep;
 
     private GUIStyle style1;
     private int posX1;
@@ -13,13 +17,16 @@ public class TestDriver : MonoBehaviour
         runner = FindObjectOfType<HitstunRunner>();
     }
 
-    void OnEnable()
+    async void OnEnable()
     {
         style1 = new GUIStyle();
         style1.fontSize = 25;
         style1.normal.textColor = Color.red;
         posX1 = Screen.width / 4;
         posY = Screen.height - 50;
+
+        string filePath = $"{ConstValue.REPLAY_FOLDER}/20220715_143520.bytes";
+        rep = await ReplayManager.LoadReplay(filePath);
     }
 
     void FixedUpdate()
@@ -27,8 +34,15 @@ public class TestDriver : MonoBehaviour
         runner.SaveOldBuffer();
 
         // 必须备份一个oldBuffer，不然帧数多一
-        uint[] inputs = LocalSession.RunFrame();
-        runner.OnFixedUpdate(inputs);
+        //uint[] inputs = LocalSession.RunFrame();
+        //runner.OnFixedUpdate(inputs);
+
+        if (rep == null || rep.inputs.Count <= recvTick)
+            return;
+
+        recvTick++;
+        uint[] inputs = rep.inputs[recvTick];
+        runner.OnReplayUpdate(inputs);
     }
 
     void OnGUI()

@@ -71,6 +71,7 @@ public class GameState
         }
     }
 
+    //byte[]转世界state
     public static void FromByteArray(GameState gs, byte[] bytes)
     {
         Assert.IsNotNull(gs);
@@ -82,6 +83,7 @@ public class GameState
             }
         }
     }
+    //世界state转byte[]
     public static byte[] ToByteArray(GameState gs)
     {
         using (var memoryStream = new MemoryStream())

@@ -69,11 +69,6 @@ public class TestWindow : EditorWindow
             GameManager.Get.LoadBattleAsync(action);
         }
 
-        if (GUILayout.Button("打印预测"))
-        {
-            ReplayWindow.ShowWindow();
-        }
-
         if (GUILayout.Button("打印服务器"))
         {
             ServerNet.Get.m_PlayerManager.Print();

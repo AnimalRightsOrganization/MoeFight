@@ -300,7 +300,19 @@ namespace Code.Client
         private void OnBattleEnd(INetSerializable reader)
         {
             Debug.Log("OnBattleEnd: save replay");
-            ReplayManager.SaveReplay(ggpo_recieve);
+            var clientRoom = ClientNet.Get.m_ClientRoom;
+            var hostPlayer = ClientNet.Get.m_ClientRoom.HostPlayer;
+            var guestPlayer = ClientNet.Get.m_ClientRoom.GuestPlayer;
+            var packet = new S2C_LoadScenePacket
+            {
+                RoomId = (short)clientRoom.RoomID,
+                BattleId = clientRoom.BattleID,
+                MapId = clientRoom.MapId,
+                Host = new PlayerLoadPacket { RoleIndex = hostPlayer.RoleIndex, UserName = hostPlayer.UserName },
+                Guest = new PlayerLoadPacket { RoleIndex = guestPlayer.RoleIndex, UserName = guestPlayer.UserName },
+            };
+            var rep = new ReplayFormat { scene = packet, battleMode = (byte)clientRoom.BattleMode, inputs = ggpo_recieve };
+            ReplayManager.SaveReplay(rep);
 
             //IsStart = false;
             //Application.targetFrameRate = 15;
