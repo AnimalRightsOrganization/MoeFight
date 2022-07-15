@@ -47,6 +47,14 @@ namespace Code.Client
             EventManager.RegisterEvent(OnNetCallback);
 
             myBattleMode = ClientNet.Get.m_ClientRoom.BattleMode;
+
+
+            style1 = new GUIStyle();
+            style1.fontSize = 25;
+            style1.normal.textColor = Color.red;
+            posX1 = Screen.width / 4;
+            posX2 = Screen.width / 4 * 3;
+            posY = Screen.height - 50;
         }
 
         void OnDisable()
@@ -391,93 +399,20 @@ namespace Code.Client
             Debug.Log($"pred:{ggpo_predict.Count}, recv:{ggpo_recieve.Count}, ");
         }
 
-        private GUIStyle _style1;
-        private GUIStyle style1
-        {
-            get
-            {
-                if (_style1 == null)
-                {
-                    _style1 = new GUIStyle();
-                    _style1.fontSize = 25;
-                    _style1.normal.textColor = Color.red;
-                }
-                return _style1;
-            }
-        }
-        private Transform _view0;
-        private Transform view0
-        {
-            get
-            {
-                if (_view0 == null)
-                {
-                    _view0 = runner.transform.GetChild(0);
-                }
-                return _view0;
-            }
-        }
-        private Transform _view1;
-        private Transform view1
-        {
-            get
-            {
-                if (_view1 == null)
-                {
-                    _view1 = runner.transform.GetChild(1);
-                }
-                return _view1;
-            }
-        }
-        private int _posX1;
-        private int posX1
-        {
-            get
-            {
-                if (_posX1 == 0)
-                {
-                    _posX1 = Screen.width / 4;
-                }
-                return _posX1;
-            }
-        }
-        private int _posX2;
-        private int posX2
-        {
-            get
-            {
-                if (_posX2 == 0)
-                {
-                    _posX2 = Screen.width / 4 * 3;
-                }
-                return _posX2;
-            }
-        }
-        private int _posY;
-        private int posY
-        {
-            get
-            {
-                if (_posY == 0)
-                {
-                    _posY = Screen.height - 50;
-                }
-                return _posY;
-            }
-        }
+
+        private GUIStyle style1;
+        private int posX1;
+        private int posX2;
+        private int posY;
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            //if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "Client") return;
-            //if (_netManager == null || _netManager.IsRunning == false) return;
             if (!IsStart) return;
 
-            //Gizmos.color = Color.yellow;
-            //Gizmos.DrawSphere(transform.position + Vector3.up * 2, 0.1f);
             var x0 = LocalSession.gs.characters[0].position.x.ToString();
             var x1 = LocalSession.gs.characters[1].position.x.ToString();
-            UnityEditor.Handles.Label(view0.position, x0, style1);
-            UnityEditor.Handles.Label(view1.position, x1, style1);
+            UnityEditor.Handles.Label(runner.characterViews[0].transform.position, x0, style1);
+            UnityEditor.Handles.Label(runner.characterViews[1].transform.position, x1, style1);
         }
 #endif
     }
