@@ -6,7 +6,7 @@ namespace Code.Server
 {
     public class ServerRoomManager
     {
-        const int MAX_ROOMS = 64;
+        const int MAX_ROOMS = 128;
         const int MIN_INDEX = 1;
         protected Dictionary<int, ServerRoom> dic_rooms;
         public int Count => dic_rooms.Count;
@@ -14,7 +14,6 @@ namespace Code.Server
         public ServerRoomManager()
         {
             dic_rooms = new Dictionary<int, ServerRoom>();
-            //m_BattleRoomList = new List<ServerRoom>();
             dic_battles = new Dictionary<int, ServerRoom>();
         }
 

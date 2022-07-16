@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Code.Shared;
+using Code.Client;
 
 namespace HotFix
 {
@@ -30,6 +32,8 @@ namespace HotFix
         public void InitData(string path)
         {
             StartCoroutine(WaitForStart(path));
+
+            GameManager.Get.logic.IsStart = true;
         }
 
         IEnumerator WaitForStart(string path)

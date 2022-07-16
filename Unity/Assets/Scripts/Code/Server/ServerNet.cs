@@ -530,10 +530,15 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] OnMatchQuitReceived: [{peer.Id}]{player.UserName}@Room#{player.RoomId}");
+            UnityEngine.Debug.Log($"[S] OnMatchQuitReceived: [{peer.Id}]{player.UserName}@Room#{player.RoomId}@Seat#{player.SeatId}");
 
             // 通知房间内的另一个人，并移除列表。
             int serverRoomID = player.RoomId;
+            if (serverRoomID <= 0)
+            {
+                UnityEngine.Debug.LogError($"err: room #{serverRoomID} not exist");
+                return;
+            }
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
 

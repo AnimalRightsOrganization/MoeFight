@@ -221,21 +221,29 @@ namespace HotFix
 
         void OnBackButtonClick()
         {
-            ClientNet.Get.SendMatchQuit();
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Training:
+                    this.Pop();
+                    break;
+                case BattleMode.Matching:
+                    ClientNet.Get.SendMatchQuit();
+                    break;
+            }
         }
 
         void OnSendSelection(int id)
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Matching:
-                    ClientNet.Get.SendSelection(id);
-                    break;
                 case BattleMode.Editor:
                 case BattleMode.Training:
                     var packet = new S2C_RoleSelectPacket { SeatId = (byte)0, RoleIndex = (byte)id };
                     localPlayer.RoleIndex = packet.RoleIndex;
                     OnRoleSelect(packet);
+                    break;
+                case BattleMode.Matching:
+                    ClientNet.Get.SendSelection(id);
                     break;
                 default:
                     Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
@@ -247,9 +255,6 @@ namespace HotFix
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Matching:
-                    ClientNet.Get.SendGameReady();
-                    break;
                 case BattleMode.Editor:
                 case BattleMode.Training:
                     var serverRoom = ClientNet.Get.m_ClientRoom;
@@ -263,6 +268,11 @@ namespace HotFix
                     };
                     serverRoom.DoInit(packet);
 
+                    m_ConfirmBtn[0].gameObject.SetActive(false);
+                    m_ReadyObj[0].SetActive(true);
+                    m_ConfirmBtn[1].gameObject.SetActive(false);
+                    m_ReadyObj[1].SetActive(true);
+
                     System.Action action = () =>
                     {
                         UIManager.Get().PopAll();
@@ -270,6 +280,9 @@ namespace HotFix
                         ClientNet.Get.SendTestPVE();
                     };
                     GameManager.Get.LoadBattleAsync(action);
+                    break;
+                case BattleMode.Matching:
+                    ClientNet.Get.SendGameReady();
                     break;
                 default:
                     Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");

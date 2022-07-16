@@ -363,7 +363,12 @@ namespace HotFix
         {
             UIManager.doSetGameEnd = null;
             Debug.Log($"delegate gameEnd: {winner}");
-            ClientNet.Get.SendBattleEnd((sbyte)winner);
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Matching:
+                    ClientNet.Get.SendBattleEnd((sbyte)winner);
+                    break;
+            }
         }
         #endregion
     }

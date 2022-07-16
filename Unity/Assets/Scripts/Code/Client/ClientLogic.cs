@@ -10,7 +10,8 @@ namespace Code.Client
     {
         private int mySeatId;
         private int remoteSeatId;
-        private BattleMode myBattleMode;
+        public BattleMode myBattleMode;
+        private ReplayFormat rep;
 
         public uint DELAY_FRAMES = 0;
         public bool IsStart;
@@ -42,11 +43,13 @@ namespace Code.Client
             }
         }
 
-        void OnEnable()
+        async void OnEnable()
         {
             EventManager.RegisterEvent(OnNetCallback);
 
             myBattleMode = ClientNet.Get.m_ClientRoom.BattleMode;
+            string filePath = $"{ConstValue.MY_REPLAY_FOLDER}/20220716_130952.bytes";
+            rep = await ReplayManager.LoadReplay(filePath);
 
 
             style1 = new GUIStyle();
@@ -194,9 +197,12 @@ namespace Code.Client
         }
         private void ReplayLoop()
         {
+            if (rep == null || rep.inputs.Count <= recvTick)
+                return;
+
             recvTick++;
-            //uint[] inputs = rep.inputs[recvTick];
-            //runner.OnReplayUpdate(inputs);
+            uint[] inputs = rep.inputs[recvTick];
+            runner.OnReplayUpdate(inputs);
         }
 
         // 预测

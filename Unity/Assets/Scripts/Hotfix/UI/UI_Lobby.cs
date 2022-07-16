@@ -179,7 +179,7 @@ namespace HotFix
 
             // 创建房间管理
             ClientNet.Get.m_ClientRoom = new ClientRoom(packet.RoomId, localPlayer, rivalPlayer);
-            ClientNet.Get.m_ClientRoom.BattleMode = BattleMode.Training;
+            ClientNet.Get.m_ClientRoom.BattleMode = (BattleMode)packet.BattleMode;
 
 
             UIManager.Get().Push<UI_RoleSelect>();

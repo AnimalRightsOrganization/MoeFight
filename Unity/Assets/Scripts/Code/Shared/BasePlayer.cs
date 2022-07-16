@@ -5,7 +5,7 @@
         public int Ping; //延迟
 
         private int _roomid = -1; //-1是在Lobby
-        public int RoomId => _roomid;
+        public int RoomId => _roomid; //1开始
         private SeatInfo _seatid = SeatInfo.NONE; //0是主位，1是客位
         public sbyte SeatId => (sbyte)_seatid;
         private PlayerStatus _status = PlayerStatus.Offline;
