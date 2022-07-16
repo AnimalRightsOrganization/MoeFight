@@ -91,12 +91,10 @@ namespace Code.Shared
     }
     public enum BattleMode
     {
-        Editor      = 0, //编辑器调试（hitstun）
-        TestPVE     = 1,
-        TestPVP     = 2,
-        Matching    = 3, //匹配（正常）
-        Replay      = 4, //回放
-        //Training    = 5, //训练
+        Editor      = 0, //编辑器调试（单机、hitstun）
+        Training    = 1, //训练（PVE）
+        Matching    = 2, //匹配（PVP）
+        Replay      = 3, //回放
         //Arcade      = 6, //剧情（人机）
     }
     public enum BattleResult

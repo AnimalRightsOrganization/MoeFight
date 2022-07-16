@@ -16,22 +16,24 @@ namespace HotFix
         [SerializeField] Text m_TimeText;
         [SerializeField] Text m_ResultText;
         private string replayPath;
+        private ReplayFormat repInfo;
         private Color[] colors = new Color[] { new Color(1, .503f, 0.586f), new Color(1f, .917f, .5f), new Color(.5f, 1f, .75f) };
 
         void Awake()
         {
             m_SelfBtn = transform.Find("Button").GetComponent<Button>();
-            m_SelfBtn.onClick.AddListener(OnLoadScene);
             m_HostText = transform.Find("Button/HostText").GetComponent<Text>();
             m_GuestText = transform.Find("Button/GuestText").GetComponent<Text>();
             m_MapText = transform.Find("Button/MapText").GetComponent<Text>();
             m_TimeText = transform.Find("Button/TimeText").GetComponent<Text>();
             m_ResultText = transform.Find("Button/ResultText").GetComponent<Text>();
+
+            m_SelfBtn.onClick.AddListener(OnLoadScene);
         }
 
         public async Task<Item_Replay> InitData(FileInfo file)
         {
-            var repInfo = await ReplayManager.LoadReplay(file.FullName);
+            repInfo = await ReplayManager.LoadReplay(file.FullName);
             this.SetFilePath(file.FullName);
             this.SetHostName(repInfo.scene.Host.UserName);
             this.SetGuestName(repInfo.scene.Guest.UserName);
@@ -40,7 +42,7 @@ namespace HotFix
 
             var mySeatId = repInfo.scene.Host.UserName == ClientNet.Get.m_PlayerManager.LocalPlayer.UserName ? 0 : 1;
             var result = BattleResult.Draw;
-            if (repInfo.winnerId == -1)
+            if (repInfo.winnerId == 2)
             {
                 result = BattleResult.Draw;
             }
@@ -100,8 +102,22 @@ namespace HotFix
 
         private void OnLoadScene()
         {
-            var ui_replay = UIManager.Get().GetUI<UI_Replay>();
+            ClientPlayer host = new ClientPlayer(repInfo.scene.Host.UserName, 0);
+            ClientPlayer guest = new ClientPlayer(repInfo.scene.Guest.UserName, 1);
+            ClientRoom clientRoom = new ClientRoom(repInfo.scene.RoomId, host, guest);
+            clientRoom.DoInit(repInfo.scene);
+            clientRoom.BattleMode = BattleMode.Replay;
+            ClientNet.Get.m_ClientRoom = clientRoom;
 
+            System.Action action = () =>
+            {
+                UIManager.Get().PopAll();
+                UIManager.Get().Push<UI_GameMenu>();
+                var ui_replay = UIManager.Get().Push<UI_ReplayMenu>();
+                ui_replay.InitData(replayPath);
+            };
+            GameManager.Get.LoadBattleAsync(action);
+            /*
             string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
             var host = new ClientPlayer("host", 0); //单机时，host都是自己
             var guest = new ClientPlayer("guest", 1);
@@ -127,6 +143,7 @@ namespace HotFix
                 ui.InitData(replayPath);
             };
             GameManager.Get.LoadBattleAsync(action);
+            */
         }
     }
 }

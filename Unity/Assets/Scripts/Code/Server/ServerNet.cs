@@ -272,7 +272,7 @@ namespace Code.Server
             ServerPlayer bot = new ServerPlayer("BOT");
 
             ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
-            serverRoom.BattleMode = BattleMode.TestPVE;
+            serverRoom.BattleMode = BattleMode.Training;
             serverRoom.DoInit();
             m_RoomManager.SetBattle(serverRoom);
             UnityEngine.Debug.Log($"PVE create room#{serverRoom.RoomID}");
@@ -299,7 +299,7 @@ namespace Code.Server
                 var guest = m_PlayerManager.GetPlayerByPeerId(1);
 
                 ServerRoom serverRoom = m_RoomManager.CreateServerRoom(host, guest);
-                serverRoom.BattleMode = BattleMode.TestPVP;
+                serverRoom.BattleMode = BattleMode.Matching;
                 serverRoom.DoInit();
                 m_RoomManager.SetBattle(serverRoom);
 

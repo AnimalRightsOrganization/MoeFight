@@ -232,7 +232,7 @@ namespace HotFix
                     ClientNet.Get.SendSelection(id);
                     break;
                 case BattleMode.Editor:
-                case BattleMode.TestPVE:
+                case BattleMode.Training:
                     var packet = new S2C_RoleSelectPacket { SeatId = (byte)0, RoleIndex = (byte)id };
                     localPlayer.RoleIndex = packet.RoleIndex;
                     OnRoleSelect(packet);
@@ -251,7 +251,7 @@ namespace HotFix
                     ClientNet.Get.SendGameReady();
                     break;
                 case BattleMode.Editor:
-                case BattleMode.TestPVE:
+                case BattleMode.Training:
                     var serverRoom = ClientNet.Get.m_ClientRoom;
                     var packet = new S2C_LoadScenePacket
                     {

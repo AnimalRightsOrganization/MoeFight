@@ -43,7 +43,7 @@ public class TestWindow : EditorWindow
             ClientPlayer host = new ClientPlayer("test1", 1);
             ClientPlayer guest = new ClientPlayer("BOT", -1);
             ClientNet.Get.m_ClientRoom = new ClientRoom(1, host, guest);
-            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.TestPVE;
+            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.Training;
 
             System.Action action = () =>
             {
@@ -67,11 +67,6 @@ public class TestWindow : EditorWindow
                 ClientNet.Get.SendTestPVP();
             };
             GameManager.Get.LoadBattleAsync(action);
-        }
-
-        if (GUILayout.Button("打印服务器"))
-        {
-            ServerNet.Get.m_PlayerManager.Print();
         }
     }
 }

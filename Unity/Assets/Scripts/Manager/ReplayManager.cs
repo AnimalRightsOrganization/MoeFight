@@ -35,7 +35,7 @@ public class ReplayManager
     // 写入
     public static async void SaveReplay(ReplayFormat dict)
     {
-        string folder = ConstValue.REPLAY_FOLDER;
+        string folder = ConstValue.MY_REPLAY_FOLDER;
         if (!Directory.Exists(folder))
             Directory.CreateDirectory(folder);
         string fileName = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");

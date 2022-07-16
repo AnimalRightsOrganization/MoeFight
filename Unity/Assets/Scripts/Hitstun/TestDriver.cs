@@ -24,8 +24,8 @@ public class TestDriver : MonoBehaviour
         posX1 = Screen.width / 4;
         posY = Screen.height - 50;
 
-        string filePath = $"{ConstValue.REPLAY_FOLDER}/20220715_143520.bytes";
-        rep = await ReplayManager.LoadReplay(filePath);
+        //string filePath = $"{ConstValue.REPLAY_FOLDER}/20220715_143520.bytes";
+        //rep = await ReplayManager.LoadReplay(filePath);
     }
 
     void FixedUpdate()

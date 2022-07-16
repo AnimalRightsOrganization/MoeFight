@@ -10,13 +10,13 @@ namespace HotFix
     public class UI_Replay : UIBase
     {
         private GameObject m_ItemPrefab;
-        [SerializeField] List<Item_Replay> object_pool;
-        [SerializeField] List<Item_Replay> recycle_pool;
+        public List<Item_Replay> object_pool;
+        public List<Item_Replay> recycle_pool;
+        public Transform m_List;
 
-        [SerializeField] Text m_TitleText;
-        [SerializeField] Button m_BackBtn;
-        [SerializeField] Text m_BackText;
-        [SerializeField] Transform m_List;
+        public Button m_BackBtn;
+        public Text m_BackText;
+        public Text m_TitleText;
 
         void Awake()
         {
@@ -24,19 +24,19 @@ namespace HotFix
             object_pool = new List<Item_Replay>();
             recycle_pool = new List<Item_Replay>();
 
-            m_TitleText = transform.Find("Top/Title").GetComponent<Text>();
             m_BackBtn = transform.Find("Top/BackBtn").GetComponent<Button>();
             m_BackText = transform.Find("Top/BackBtn/Text").GetComponent<Text>();
+            m_TitleText = transform.Find("Top/Title").GetComponent<Text>();
             m_List = transform.Find("List");
 
-            m_BackBtn.onClick.AddListener(OnBackButtonClick);
+            m_BackBtn.onClick.AddListener(this.Pop);
         }
 
         void OnEnable()
         {
-            ReadReplayAsync();
-
             ApplyLanguage();
+
+            ReadReplayAsync();
         }
 
         void OnDisable()
@@ -52,13 +52,10 @@ namespace HotFix
 
         public override void ApplyLanguage()
         {
-            m_TitleText.text = "Replay";
-            m_BackText.text = "BACK";
-        }
+            var config = ConfigManager.Get();
 
-        void OnBackButtonClick()
-        {
-            this.Pop();
+            m_BackText.text = config.GetWord(25);
+            m_TitleText.text = config.GetWord(26);
         }
 
         // 读取本地文件
@@ -67,8 +64,7 @@ namespace HotFix
             var connect = UIManager.Get().Push<UI_Connect>();
             await Task.CompletedTask;
 
-            //string folder = $"{ConstValue.REPLAY_FOLDER}/{Code.Client.ClientNet.Get.m_PlayerManager.LocalPlayer.UserName}";
-            string folder = ConstValue.REPLAY_FOLDER;
+            string folder = ConstValue.MY_REPLAY_FOLDER;
             if (Directory.Exists(folder) == false)
             {
                 Debug.LogError("没有录像文件");

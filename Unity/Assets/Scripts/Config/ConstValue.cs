@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using UnityEngine;
+using Code.Client;
 
 public class ConstValue
 {
@@ -126,13 +127,31 @@ public class ConstValue
     #endregion
 
 
-#if UNITY_EDITOR
-    public static string REPLAY_FOLDER = $"{Directory.GetParent(Application.dataPath)}/Replay";
-    public static string DUMP_FOLDER = $"{Directory.GetParent(Application.dataPath)}/Dump";
-#else
-    public static string REPLAY_FOLDER = $"{Application.persistentDataPath}/Replay";
+    static string _replay_folder;
+    static string REPLAY_FOLDER
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_replay_folder))
+            {
+                _replay_folder = $"{Application.persistentDataPath}/Replay";
+                if (Directory.Exists(_replay_folder) == false)
+                    Directory.CreateDirectory(_replay_folder);
+            }
+            return _replay_folder;
+        }
+    }
+    static string LOCAL_PLAYER_NAME
+    {
+        get
+        {
+            var localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
+            string userName = localPlayer == null ? "Unknown" : localPlayer.UserName;
+            return userName;
+        }
+    }
+    public static string MY_REPLAY_FOLDER => $"{REPLAY_FOLDER}/{LOCAL_PLAYER_NAME}";
     public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
-#endif
 
 
     #region GameLogic

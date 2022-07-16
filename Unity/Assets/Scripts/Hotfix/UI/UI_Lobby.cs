@@ -167,7 +167,7 @@ namespace HotFix
             var packet = new S2C_MatchResultPacket
             {
                 Code = 0,
-                BattleMode = (byte)(BattleMode.TestPVE),
+                BattleMode = (byte)(BattleMode.Training),
                 RoomId = 1,
                 Host = new UserInfo { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId },
                 Guest = new UserInfo { UserName = "BOT", PeerId = 1 },
@@ -179,7 +179,7 @@ namespace HotFix
 
             // 创建房间管理
             ClientNet.Get.m_ClientRoom = new ClientRoom(packet.RoomId, localPlayer, rivalPlayer);
-            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.TestPVE;
+            ClientNet.Get.m_ClientRoom.BattleMode = BattleMode.Training;
 
 
             UIManager.Get().Push<UI_RoleSelect>();

@@ -93,8 +93,8 @@ namespace Code.Client
 
             switch (myBattleMode)
             {
+                case BattleMode.Training:
                 case BattleMode.Matching:
-                case BattleMode.TestPVE:
                     BattleLoop();
                     break;
                 case BattleMode.Replay:

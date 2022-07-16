@@ -220,8 +220,7 @@ namespace HotFix
             {
                 case BattleMode.Editor:
                 case BattleMode.Replay:
-                case BattleMode.TestPVE:
-                case BattleMode.TestPVP:
+                case BattleMode.Training:
                     titleStr = "确定退出？";
                     yesAction = () =>
                     {

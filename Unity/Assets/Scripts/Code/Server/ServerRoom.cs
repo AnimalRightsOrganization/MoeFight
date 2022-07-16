@@ -87,7 +87,7 @@ namespace Code.Server
             {
                 case BattleMode.Editor:
                     break;
-                case BattleMode.TestPVE:
+                case BattleMode.Training:
                     {
                         // 只有一人，收到就下发
                         var packet = new S2C_InputPacket
@@ -106,7 +106,6 @@ namespace Code.Server
                         //Debug.Log($"server tick: {Tick}");
                     }
                     break;
-                case BattleMode.TestPVP:
                 case BattleMode.Matching:
                     {
                         if (dic_recv.ContainsKey(cmd.frameNumber) == false)
