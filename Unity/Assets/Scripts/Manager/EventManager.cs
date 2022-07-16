@@ -40,3 +40,19 @@ public class UserEventManager
         userEventList.Invoke(type);
     }
 }
+
+public delegate void ShowSkillText(int pid, string content);
+public delegate void SetTimeText(string second);
+public delegate void SetCurrentHp(int pid, int hp);
+public delegate void SetGameEnd(int winner);
+public delegate void ReplayUpdate(uint frameID);
+public delegate void SetAnimeSpeed(float speed);
+public class BattleEvent
+{
+    public static ShowSkillText doShowSkillText;
+    public static SetTimeText doSetTimeText;
+    public static SetCurrentHp doSetCurrentHp;
+    public static SetGameEnd doSetGameEnd;
+    public static ReplayUpdate doReplayUpdate;
+    public static SetAnimeSpeed doSetAnimeSpeed;
+}

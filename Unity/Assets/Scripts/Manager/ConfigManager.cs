@@ -12,7 +12,6 @@ public class ConfigManager : MonoBehaviour
     }
 
     public GlobalConfig globalConfig;
-    //public InputConfig inputConfig;
 
     // 多语言
     public Languages currentLanguage = Languages.Chinese;
@@ -36,7 +35,6 @@ public class ConfigManager : MonoBehaviour
     void Awake()
     {
         globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
-        //inputConfig = ResManager.LoadConfig("Configs/InputConfig") as InputConfig;
 
         var langConfig = ResManager.LoadBytes("Configs/Language");
         m_Languages = JsonMapper.ToObject<LanguageNode[]>(langConfig);

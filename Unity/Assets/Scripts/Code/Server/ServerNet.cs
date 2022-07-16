@@ -264,12 +264,9 @@ namespace Code.Server
         #region Handler
         private void OnTestPVE(NetPacketReader reader, NetPeer peer)
         {
-            var cmd = new C2S_JoinPacket();
-            cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] PVE [{peer.Id}]{cmd.UserName}");
-
             ServerPlayer player = (ServerPlayer)peer.Tag;
             ServerPlayer bot = new ServerPlayer("BOT");
+            UnityEngine.Debug.Log($"[S] PVE [{peer.Id}]{player.UserName}");
 
             ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
             serverRoom.BattleMode = BattleMode.Training;
@@ -287,11 +284,8 @@ namespace Code.Server
 
         private void OnTestPVP(NetPacketReader reader, NetPeer peer)
         {
-            var cmd = new C2S_JoinPacket();
-            cmd.Deserialize(reader);
-
             ServerPlayer player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{cmd.UserName}---{m_PlayerManager.Count}/2");
+            UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{player.UserName}---{m_PlayerManager.Count}/2");
 
             if (m_PlayerManager.Count == 2)
             {

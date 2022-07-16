@@ -331,19 +331,19 @@ namespace HotFix
         #region 委托
         void BindDelegete()
         {
-            UIManager.doShowSkillText = ShowSkill;
-            UIManager.doSetTimeText = SetTime;
-            UIManager.doSetCurrentHp = SetCurrentHp;
-            UIManager.doSetGameEnd = SetGameEnd;
+            BattleEvent.doShowSkillText = ShowSkill;
+            BattleEvent.doSetTimeText = SetTime;
+            BattleEvent.doSetCurrentHp = SetCurrentHp;
+            BattleEvent.doSetGameEnd = SetGameEnd;
         }
         void UnbindDelegete()
         {
-            UIManager.doShowSkillText = null;
-            UIManager.doSetTimeText = null;
-            UIManager.doSetCurrentHp = null;
-            UIManager.doSetGameEnd = null;
-            UIManager.doReplayUpdate = null;
-            UIManager.doSetAnimeSpeed = null;
+            BattleEvent.doShowSkillText = null;
+            BattleEvent.doSetTimeText = null;
+            BattleEvent.doSetCurrentHp = null;
+            BattleEvent.doSetGameEnd = null;
+            BattleEvent.doReplayUpdate = null;
+            BattleEvent.doSetAnimeSpeed = null;
         }
         void ShowSkill(int pid, string content)
         {
@@ -363,11 +363,12 @@ namespace HotFix
         }
         void SetGameEnd(int winner)
         {
-            UIManager.doSetGameEnd = null;
-            Debug.Log($"delegate gameEnd: {winner}");
+            BattleEvent.doSetGameEnd = null;
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
+                case BattleMode.Training:
                 case BattleMode.Matching:
+                    Debug.Log($"delegate gameEnd: {winner}");
                     ClientNet.Get.SendBattleEnd((sbyte)winner);
                     break;
             }

@@ -48,7 +48,7 @@ public class CharacterView : MonoBehaviour
         model = Instantiate(prefab, transform).transform;
         model.name = "model";
         animator = model.GetComponentInChildren<Animator>();
-        HotFix.UIManager.doSetAnimeSpeed += SetAnimeSpeed;
+        BattleEvent.doSetAnimeSpeed += SetAnimeSpeed;
 
         // load sprites from animation data and store them into dictionary
         foreach (KeyValuePair<string, Animation> kvp in data.animations)

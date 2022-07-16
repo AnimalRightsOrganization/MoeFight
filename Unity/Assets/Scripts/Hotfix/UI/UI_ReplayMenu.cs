@@ -9,7 +9,7 @@ namespace HotFix
         public Toggle m_PlayTog;
         public Slider m_ProgressBar;
         public Text m_TickText;
-        private EventTriggerNotice notice;
+        private UIEventSystem notice;
 
         void Awake()
         {
@@ -20,14 +20,14 @@ namespace HotFix
             m_PlayTog.onValueChanged.AddListener(OnPlay);
             m_ProgressBar.onValueChanged.AddListener(OnSliderChanged);
 
-            if (m_ProgressBar.GetComponent<EventTriggerNotice>() == false)
-                m_ProgressBar.gameObject.AddComponent<EventTriggerNotice>();
-            notice = m_ProgressBar.GetComponent<EventTriggerNotice>();
+            if (m_ProgressBar.GetComponent<UIEventSystem>() == false)
+                m_ProgressBar.gameObject.AddComponent<UIEventSystem>();
+            notice = m_ProgressBar.GetComponent<UIEventSystem>();
             notice.onDrag = OnDrag;
             notice.onEndDrag = OnEndDrag;
             notice.onPointClick = OnEndDrag;
 
-            UIManager.doReplayUpdate = SetProgressValue;
+            BattleEvent.doReplayUpdate = SetProgressValue;
         }
 
         public void InitData(ReplayFormat info)
@@ -104,8 +104,8 @@ namespace HotFix
             // 血条
             int hp1 = LocalSession.gs.characters[0].health;
             int hp2 = LocalSession.gs.characters[1].health;
-            UIManager.doSetCurrentHp?.Invoke(1, hp1);
-            UIManager.doSetCurrentHp?.Invoke(2, hp2);
+            BattleEvent.doSetCurrentHp?.Invoke(1, hp1);
+            BattleEvent.doSetCurrentHp?.Invoke(2, hp2);
         }
     }
 }

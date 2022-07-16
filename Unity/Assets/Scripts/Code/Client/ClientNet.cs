@@ -105,7 +105,7 @@ namespace Code.Client
             {
                 case PacketType.S2C_TestPVE:
                     {
-                        var packet = new EmptyPacket();
+                        var packet = new S2C_JoinResultPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }
@@ -230,14 +230,6 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_LackInput:
-                    {
-                        var packet = new S2C_LackInputPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
-                        Debug.Log("Trigger S2C_LackInput");
-                    }
-                    break;
                 default:
                     Debug.Log("Unhandled packet: " + pt);
                     break;
@@ -288,14 +280,12 @@ namespace Code.Client
 
         public void SendTestPVE()
         {
-            var cmd = new C2S_JoinPacket { UserName = m_PlayerManager.LocalPlayer.UserName };
-            SendPacketSerializable(PacketType.C2S_TestPVE, cmd);
+            SendPacketSerializable(PacketType.C2S_TestPVE, new EmptyPacket());
         }
 
         public void SendTestPVP()
         {
-            var cmd = new C2S_JoinPacket { UserName = m_PlayerManager.LocalPlayer.UserName };
-            SendPacketSerializable(PacketType.C2S_TestPVP, cmd);
+            SendPacketSerializable(PacketType.C2S_TestPVP, new EmptyPacket());
         }
 
         public void SendInput(C2S_InputPacket cmd)
@@ -423,7 +413,6 @@ namespace Code.Client
 
         public void SendLackInput(uint start = 0, uint end = 0)
         {
-            Debug.Log("[C] SendLackInput");
             var cmd = new C2S_LackInputPacket { startTick = start, endTick = end };
             SendPacketSerializable(PacketType.C2S_LackInput, cmd);
         }

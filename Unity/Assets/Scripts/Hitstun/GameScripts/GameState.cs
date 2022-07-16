@@ -227,11 +227,11 @@ public class GameState
                 int defender = (attacker + 1) % 2;
                 int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
-                HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
+                BattleEvent.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
                     defendingChar.SetCharacterState(CharacterState.DIE);
-                    HotFix.UIManager.doSetGameEnd?.Invoke(attacker);
+                    BattleEvent.doSetGameEnd?.Invoke(attacker);
                 }
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
@@ -242,11 +242,11 @@ public class GameState
                 int defender = (attacker + 1) % 2;
                 int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
-                HotFix.UIManager.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
+                BattleEvent.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
                     defendingChar.SetCharacterState(CharacterState.DIE);
-                    HotFix.UIManager.doSetGameEnd?.Invoke(attacker);
+                    BattleEvent.doSetGameEnd?.Invoke(attacker);
                 }
                 Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }

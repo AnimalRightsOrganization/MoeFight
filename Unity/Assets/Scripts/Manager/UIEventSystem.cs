@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public delegate void OnDragDelegate();
 public delegate void OnEndDragDelegate();
 public delegate void OnPointerClickDelegate();
-public class EventTriggerNotice : MonoBehaviour
+public class UIEventSystem : MonoBehaviour
     , IPointerClickHandler
     , IDragHandler
     , IEndDragHandler

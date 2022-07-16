@@ -30,12 +30,6 @@ public class CreateConfig : Editor
         CreateAsset<GlobalConfig>();
     }
 
-    [MenuItem("Tools/创建配置/InputConfig")]
-    static void CreateInputConfig()
-    {
-        CreateAsset<InputConfig>();
-    }
-
     [MenuItem("Tools/创建配置/选中角色配置")]
     static void SelectCharacterConfig()
     {

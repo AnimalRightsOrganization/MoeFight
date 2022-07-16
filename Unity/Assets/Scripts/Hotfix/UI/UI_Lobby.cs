@@ -87,12 +87,12 @@ namespace HotFix
                 case PacketType.S2C_LogoutResult:
                     OnLogoutResult(reader);
                     break;
-                case PacketType.S2C_BattleReconnect:
-                    OnBattleReconnect(reader);
-                    break;
                 case PacketType.S2C_Settings:
                     ApplyLanguage();
                     break;
+                //case PacketType.S2C_BattleReconnect:
+                //    OnBattleReconnect(reader);
+                //    break;
             }
         }
 
@@ -131,7 +131,7 @@ namespace HotFix
                     {
                         UIManager.Get().PopAll();
                         UIManager.Get().Push<UI_GameMenu>();
-                        ClientNet.Get.SendLackInput(); //请求帧数据
+                        //ClientNet.Get.SendLackInput(); //请求帧数据
                     };
                     GameManager.Get.LoadBattleAsync(action); //跳转比赛
 

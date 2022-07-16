@@ -95,7 +95,7 @@ namespace Code.Shared
         Training    = 1, //训练（PVE）
         Matching    = 2, //匹配（PVP）
         Replay      = 3, //回放
-        //Arcade      = 6, //剧情（人机）
+        //Arcade      = 4, //剧情（人机）
     }
     public enum BattleResult
     {
@@ -157,20 +157,6 @@ namespace Code.Shared
     #endregion
 
     #region 上行
-    public struct C2S_JoinPacket : INetSerializable
-    {
-        public string UserName; //账号
-
-        public void Serialize(NetDataWriter writer)
-        {
-            writer.Put(UserName);
-        }
-        public void Deserialize(NetDataReader reader)
-        {
-            UserName = reader.GetString();
-        }
-    }
-
     public struct C2S_InputPacket : INetSerializable
     {
         public uint frameNumber;

@@ -21,19 +21,19 @@ namespace Code.Client
         }
 
         public bool IsStart;
-        public uint DELAY_FRAMES = 0;
-        public uint sendTick;
-        public uint recvTick;
-        public uint rendTick;
-        public Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
-        public Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
-        public Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
+        [SerializeField] uint DELAY_FRAMES = 0;
+        [SerializeField] uint sendTick;
+        [SerializeField] uint recvTick;
+        [SerializeField] uint rendTick;
+        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
+        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
+        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
         private List<uint> predicted;
         private HitstunRunner runner;
 
-        private int mySeatId;
-        private int remoteSeatId;
-        public BattleMode myBattleMode;
+        [SerializeField] int mySeatId;
+        [SerializeField] int remoteSeatId;
+        [SerializeField] BattleMode myBattleMode;
         private ReplayFormat repInfo;
 
         #region 内置函数
@@ -187,13 +187,12 @@ namespace Code.Client
             uint[] inputs = repInfo.inputs[recvTick];
             runner.OnReplayUpdate(inputs);
 
-            UIManager.doReplayUpdate?.Invoke(recvTick);
+            BattleEvent.doReplayUpdate?.Invoke(recvTick);
         }
         #endregion
 
 
         #region 战斗系统
-        // 预测
         private void Predict(uint tick)
         {
             uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];
@@ -204,7 +203,6 @@ namespace Code.Client
             //预测完成后，让角色跑预测帧。
             Process(tick, _inputs);
         }
-        // 回滚
         private void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
@@ -212,7 +210,6 @@ namespace Code.Client
                 $"\nP1:{LocalSession.gs.characters[0].position}---hp:{LocalSession.gs.characters[0].health}" +
                 $"\nP2:{LocalSession.gs.characters[1].position}---hp:{LocalSession.gs.characters[1].health}");
         }
-        // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
         {
             runner.SaveOldBuffer();
@@ -222,24 +219,22 @@ namespace Code.Client
 
             Snapshot(tick);
         }
-        // 快照
         private void Snapshot(uint tick)
         {
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
-        // 结束判定（①时间，②血量）
         private void CheckGameEnd()
         {
-            if (UIManager.doSetGameEnd == null) return;
+            if (BattleEvent.doSetGameEnd == null) return;
 
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
-            UIManager.doSetTimeText?.Invoke($"{leftTime}");
+            BattleEvent.doSetTimeText?.Invoke($"{leftTime}");
 
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
-                UIManager.doSetGameEnd.Invoke(2);
+                BattleEvent.doSetGameEnd.Invoke(2);
             }
         }
         #endregion
@@ -259,17 +254,17 @@ namespace Code.Client
             // 血条
             int hp1 = LocalSession.gs.characters[0].health;
             int hp2 = LocalSession.gs.characters[1].health;
-            UIManager.doSetCurrentHp?.Invoke(1, hp1);
-            UIManager.doSetCurrentHp?.Invoke(2, hp2);
+            BattleEvent.doSetCurrentHp?.Invoke(1, hp1);
+            BattleEvent.doSetCurrentHp?.Invoke(2, hp2);
         }
         public void PlayReplay()
         {
-            UIManager.doSetAnimeSpeed?.Invoke(1f);
+            BattleEvent.doSetAnimeSpeed?.Invoke(1f);
             IsStart = true;
         }
         public void PauseReplay()
         {
-            UIManager.doSetAnimeSpeed?.Invoke(0);
+            BattleEvent.doSetAnimeSpeed?.Invoke(0);
             IsStart = false;
         }
         public void RollbackReplay(uint tick)
@@ -308,34 +303,26 @@ namespace Code.Client
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
                     OnBattleEnd(reader);
                     break;
-                case PacketType.S2C_LackInput:
-                    OnLackInput(reader);
-                    break;
             }
         }
 
         private void OnTestPVE(INetSerializable reader)
         {
-            Debug.Log("[S2C] 单人测试");
-
-            mySeatId = 0;
-            remoteSeatId = 1;
-
-            IsStart = true;
-
-            UIManager.Get().Push<UI_GameMenu>();
+            var packet = (S2C_JoinResultPacket)reader;
+            Debug.Log($"[S2C] 单人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
+            if (packet.Code == 0)
+            {
+                UIManager.Get().Push<UI_GameMenu>();
+                IsStart = true;
+            }
         }
 
         private void OnTestPVP(INetSerializable reader)
         {
             var packet = (S2C_JoinResultPacket)reader;
             Debug.Log($"[S2C] 双人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
-
             if (packet.Code == 0)
             {
-                mySeatId = packet.HostName.Equals(ClientNet.Get.m_PlayerManager.LocalPlayer.UserName) ? packet.HostId : packet.GuestId;
-                remoteSeatId = (mySeatId + 1) % 2;
-
                 IsStart = true;
             }
         }
@@ -395,45 +382,6 @@ namespace Code.Client
             //IsStart = false;
             //Application.targetFrameRate = 15;
             //Time.fixedDeltaTime = 1f / 15;
-        }
-
-        // 重连恢复场景
-        private static Dictionary<uint, uint[]> ConvertRecv(S2C_LackInputPacket packet)
-        {
-            Dictionary<uint, uint[]> recv = new Dictionary<uint, uint[]>();
-
-            for (int i = 0; i < packet.inputs.Length; i++)
-            {
-                if (i == 0) continue; //删掉废帧0
-
-                S2C_InputPacket input = packet.inputs[i];
-
-                uint tick = (uint)i;
-                uint[] _inputs = input.inputs;
-                recv[tick] = _inputs;
-            }
-
-            return recv;
-        }
-        private void OnLackInput(INetSerializable reader)
-        {
-            var packet = (S2C_LackInputPacket)reader;
-            Debug.Log($"缺失帧: {packet.frameNumber}/{packet.inputs.Length}个"); //63/64
-
-            ggpo_recieve = ConvertRecv(packet);
-
-            for (uint t = 1; t < packet.frameNumber; t++)
-            {
-                uint[] _inputs = ggpo_recieve[t];
-                ggpo_predict[t] = _inputs;
-                Process(t, _inputs);
-            }
-
-            sendTick = packet.frameNumber;
-            recvTick = packet.frameNumber;
-            rendTick = packet.frameNumber;
-            //IsStart= true;
-            Debug.Log($"pred:{ggpo_predict.Count}, recv:{ggpo_recieve.Count}, ");
         }
         #endregion
     }
