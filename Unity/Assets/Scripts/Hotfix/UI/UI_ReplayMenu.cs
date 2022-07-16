@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using Code.Shared;
 using Code.Client;
 
 namespace HotFix
@@ -11,55 +10,47 @@ namespace HotFix
         [SerializeField] Toggle m_PlayTog;
         [SerializeField] Slider m_ProgressBar;
         [SerializeField] Text m_TickText;
-        //[SerializeField] EventTriggerNotice notice;
+        private EventTriggerNotice notice;
+        private ReplayFormat repInfo;
 
         void Awake()
         {
             m_PlayTog = transform.Find("ReplayPanel/PlayTog").GetComponent<Toggle>();
-            m_PlayTog.onValueChanged.AddListener(OnPlay);
-            m_TickText = transform.Find("ReplayPanel/TickText").GetComponent<Text>();
             m_ProgressBar = transform.Find("ReplayPanel/ProgressBar").GetComponent<Slider>();
+            m_TickText = transform.Find("ReplayPanel/TickText").GetComponent<Text>();
+
+            m_PlayTog.onValueChanged.AddListener(OnPlay);
             m_ProgressBar.onValueChanged.AddListener(OnSliderChanged);
 
-            //if (m_ProgressBar.GetComponent<EventTriggerNotice>() == false)
-            //    m_ProgressBar.gameObject.AddComponent<EventTriggerNotice>();
-            //notice = m_ProgressBar.GetComponent<EventTriggerNotice>();
-            //notice.onDrag = OnDrag;
-            //notice.onEndDrag = OnEndDrag;
-            //notice.onPointClick = OnEndDrag;
+            if (m_ProgressBar.GetComponent<EventTriggerNotice>() == false)
+                m_ProgressBar.gameObject.AddComponent<EventTriggerNotice>();
+            notice = m_ProgressBar.GetComponent<EventTriggerNotice>();
+            notice.onDrag = OnDrag;
+            notice.onEndDrag = OnEndDrag;
+            notice.onPointClick = OnEndDrag;
+
+            UIManager.doReplayUpdate = SetProgressValue;
         }
 
-        public void InitData(string path)
+        public void InitData(ReplayFormat info)
         {
-            StartCoroutine(WaitForStart(path));
-
-            GameManager.Get.logic.IsStart = true;
-        }
-
-        IEnumerator WaitForStart(string path)
-        {
-            //var curScene = SceneManager.GetActiveScene().name;
-            //Debug.Log($"WaitForStart.Before: {curScene}"); //Client
-            //yield return new WaitUntil(() => GameManager.Instance != null);
-            //curScene = SceneManager.GetActiveScene().name;
-            //Debug.Log($"WaitForStart.After: {curScene}"); //Game
-
-            //int frameCount = GameManager.Instance.LoadReplay(path);
-            yield return new WaitForEndOfFrame();
+            repInfo = info;
 
             m_ProgressBar.value = 0;
-            //m_ProgressBar.maxValue = frameCount;
+            m_ProgressBar.maxValue = info.inputs.Count;
+
+            m_PlayTog.isOn = true;
         }
 
         void OnPlay(bool value)
         {
             if (value)
             {
-                //GameManager.Instance.PlayReplay();
+                ClientLogic.Get.PlayReplay();
             }
             else
             {
-                //GameManager.Instance.PauseReplay();
+                ClientLogic.Get.PauseReplay();
             }
         }
 
@@ -69,7 +60,7 @@ namespace HotFix
             //Debug.Log($"<color=green>进度条改变：{frameID}/{m_ProgressBar.maxValue}</color>");
             m_TickText.text = $"{frameID} / {m_ProgressBar.maxValue}";
         }
-        public void SetProgressValue(int frameID)
+        public void SetProgressValue(uint frameID)
         {
             //Debug.Log($"<color=yellow>回放进度条：{frameID}/{BattleManager.Instance.replayBuffer.Count}</color>");
             m_ProgressBar.value = frameID; //会导致执行OnDragSlider()
@@ -79,8 +70,8 @@ namespace HotFix
             //Debug.Log($"OnDrag：{m_ProgressBar.value}");
 
             // 测试
-            //int frameID = (int)m_ProgressBar.value;
-            //BattleManager.Instance.RollBackTo(frameID);
+            uint frameID = (uint)m_ProgressBar.value;
+            ClientLogic.Get.Rollback(frameID);
         }
         // 指定帧
         public void OnEndDrag()
@@ -103,10 +94,9 @@ namespace HotFix
         void SnapToFrame(ushort frameID)
         {
             Debug.Log($"<color=red>OnEndDrag：{frameID}</color>");
-            //GameManager.Instance.PauseReplay();
-            //GameManager.Instance.RollBackTo(frameID);
-            //GameManager.Instance.LogicUpdate(); //更新一帧
-            //GameManager.Instance.GetRole(1).SetCrossFade("Idle");
+            ClientLogic.Get.PauseReplay();
+            ClientLogic.Get.Rollback(frameID);
+            //ClientLogic.Get.LogicUpdate(); //更新一帧
         }
     }
 }

@@ -15,7 +15,6 @@ namespace HotFix
         [SerializeField] Text m_MapText;
         [SerializeField] Text m_TimeText;
         [SerializeField] Text m_ResultText;
-        private string replayPath;
         private ReplayFormat repInfo;
         private Color[] colors = new Color[] { new Color(1, .503f, 0.586f), new Color(1f, .917f, .5f), new Color(.5f, 1f, .75f) };
 
@@ -34,7 +33,6 @@ namespace HotFix
         public async Task<Item_Replay> InitData(FileInfo file)
         {
             repInfo = await ReplayManager.LoadReplay(file.FullName);
-            this.SetFilePath(file.FullName);
             this.SetHostName(repInfo.scene.Host.UserName);
             this.SetGuestName(repInfo.scene.Guest.UserName);
             this.SetMap($"{repInfo.scene.MapId}");
@@ -55,11 +53,6 @@ namespace HotFix
                 result = BattleResult.Lose;
             }
             this.SetResult(result);
-            return this;
-        }
-        private Item_Replay SetFilePath(string path)
-        {
-            replayPath = path;
             return this;
         }
         private Item_Replay SetHostName(string txt)
@@ -114,7 +107,7 @@ namespace HotFix
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
                 var ui_replay = UIManager.Get().Push<UI_ReplayMenu>();
-                ui_replay.InitData(replayPath);
+                ui_replay.InitData(repInfo);
             };
             GameManager.Get.LoadBattleAsync(action);
             /*

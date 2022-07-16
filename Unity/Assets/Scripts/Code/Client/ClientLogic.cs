@@ -3,18 +3,30 @@ using UnityEngine;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using HotFix;
 
 namespace Code.Client
 {
     public class ClientLogic : MonoBehaviour
     {
+        static ClientLogic _instance;
+        public static ClientLogic Get
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = FindObjectOfType<ClientLogic>();
+                return _instance;
+            }
+        }
+
         private int mySeatId;
         private int remoteSeatId;
         public BattleMode myBattleMode;
-        private ReplayFormat rep;
+        private ReplayFormat repInfo;
 
-        public uint DELAY_FRAMES = 0;
-        public bool IsStart;
+        private uint DELAY_FRAMES = 0;
+        private bool IsStart;
         public uint sendTick;
         public uint recvTick;
         public uint rendTick;
@@ -49,7 +61,7 @@ namespace Code.Client
 
             myBattleMode = ClientNet.Get.m_ClientRoom.BattleMode;
             string filePath = $"{ConstValue.MY_REPLAY_FOLDER}/20220716_130952.bytes";
-            rep = await ReplayManager.LoadReplay(filePath);
+            repInfo = await ReplayManager.LoadReplay(filePath);
 
 
             style1 = new GUIStyle();
@@ -197,12 +209,24 @@ namespace Code.Client
         }
         private void ReplayLoop()
         {
-            if (rep == null || rep.inputs.Count <= recvTick)
+            if (repInfo == null || repInfo.inputs.Count <= recvTick)
                 return;
 
             recvTick++;
-            uint[] inputs = rep.inputs[recvTick];
+            uint[] inputs = repInfo.inputs[recvTick];
             runner.OnReplayUpdate(inputs);
+
+            Snapshot(recvTick);
+
+            UIManager.doReplayUpdate?.Invoke(recvTick);
+        }
+        public void PlayReplay()
+        {
+            IsStart = true;
+        }
+        public void PauseReplay()
+        {
+            IsStart = false;
         }
 
         // 预测
@@ -217,7 +241,7 @@ namespace Code.Client
             Process(tick, _inputs);
         }
         // 回滚
-        private void Rollback(uint tick)
+        public void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
             Debug.Log($"回滚到第{tick}帧状态: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
@@ -233,7 +257,7 @@ namespace Code.Client
             Snapshot(tick);
         }
         // 快照
-        private void Snapshot(uint tick)
+        public void Snapshot(uint tick)
         {
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);

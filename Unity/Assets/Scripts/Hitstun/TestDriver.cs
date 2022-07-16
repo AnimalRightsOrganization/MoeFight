@@ -5,7 +5,7 @@ public class TestDriver : MonoBehaviour
     HitstunRunner runner;
 
     private uint recvTick;
-    private ReplayFormat rep;
+    private ReplayFormat repInfo;
 
     private GUIStyle style1;
     private int posX1;
@@ -16,7 +16,7 @@ public class TestDriver : MonoBehaviour
         runner = FindObjectOfType<HitstunRunner>();
     }
 
-    async void OnEnable()
+    void OnEnable()
     {
         style1 = new GUIStyle();
         style1.fontSize = 25;
@@ -25,7 +25,7 @@ public class TestDriver : MonoBehaviour
         posY = Screen.height - 50;
 
         //string filePath = $"{ConstValue.REPLAY_FOLDER}/20220715_143520.bytes";
-        //rep = await ReplayManager.LoadReplay(filePath);
+        //repInfo = await ReplayManager.LoadReplay(filePath);
     }
 
     void FixedUpdate()
@@ -36,11 +36,11 @@ public class TestDriver : MonoBehaviour
         //uint[] inputs = LocalSession.RunFrame();
         //runner.OnFixedUpdate(inputs);
 
-        if (rep == null || rep.inputs.Count <= recvTick)
+        if (repInfo == null || repInfo.inputs.Count <= recvTick)
             return;
 
         recvTick++;
-        uint[] inputs = rep.inputs[recvTick];
+        uint[] inputs = repInfo.inputs[recvTick];
         runner.OnReplayUpdate(inputs);
 
         //Snapshot(recvTick);

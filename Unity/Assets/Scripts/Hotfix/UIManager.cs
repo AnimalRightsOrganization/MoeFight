@@ -7,6 +7,7 @@ namespace HotFix
     public delegate void SetTimeText(string second);
     public delegate void SetCurrentHp(int pid, int hp);
     public delegate void SetGameEnd(int winner);
+    public delegate void ReplayUpdate(uint frameID);
     public class UIManager : MonoBehaviour
     {
         static UIManager _instance;
@@ -23,6 +24,7 @@ namespace HotFix
         public static SetTimeText doSetTimeText;
         public static SetCurrentHp doSetCurrentHp;
         public static SetGameEnd doSetGameEnd;
+        public static ReplayUpdate doReplayUpdate;
 
         // UI存储栈
         public Dictionary<string, UIBase> stack;
