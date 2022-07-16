@@ -26,8 +26,7 @@ namespace Code.Client
             MapId = packet.MapId;
             HostPlayer.RoleIndex = packet.Host.RoleIndex;
             GuestPlayer.RoleIndex = packet.Guest.RoleIndex;
-
-            Debug.Log($"房间初始化: {HostPlayer.RoleIndex} vs {GuestPlayer.RoleIndex}");
+            //Debug.Log($"房间初始化: {HostPlayer.RoleIndex} vs {GuestPlayer.RoleIndex}");
         }
     }
 }

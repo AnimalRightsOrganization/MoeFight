@@ -13,98 +13,56 @@ public static class LocalSession
         ngs = _ngs;
     }
 
-    public static uint[] RunFrame()
+    public static uint[] RunFrame(uint[] inputs)
     {
-        uint[] inputs = new uint[ngs.players.Length];
-        for (int i = 0; i < inputs.Length; ++i)
-        {
-            inputs[i] = ReadInputs(ngs.players[i].controllerId);
-        }
         gs.Update(inputs, 0); //直接更新
         return inputs;
     }
 
-    // 键盘输入，左右两边控制
-    static uint ReadInputs(int controllerId)
+    public static uint ReadInputs()
     {
         uint input = 0;
 
-        if (controllerId == 0)
+        if (Input.GetKey(KeyCode.W))
         {
-            if (Input.GetKey(KeyCode.W))
-            {
-                input |= (uint)KeyPress.KEY_UP;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                input |= (uint)KeyPress.KEY_DOWN;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                input |= (uint)KeyPress.KEY_LEFT;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                input |= (uint)KeyPress.KEY_RIGHT;
-            }
-            if (Input.GetKey(KeyCode.U))
-            {
-                input |= (uint)KeyPress.KEY_LP;
-            }
-            if (Input.GetKey(KeyCode.I))
-            {
-                input |= (uint)KeyPress.KEY_MP;
-            }
-            if (Input.GetKey(KeyCode.O))
-            {
-                input |= (uint)KeyPress.KEY_HP;
-            }
-            if (Input.GetKey(KeyCode.J))
-            {
-                input |= (uint)KeyPress.KEY_LK;
-            }
-            if (Input.GetKey(KeyCode.K))
-            {
-                input |= (uint)KeyPress.KEY_MK;
-            }
-            if (Input.GetKey(KeyCode.L))
-            {
-                input |= (uint)KeyPress.KEY_HK;
-            }
+            input |= (uint)KeyPress.KEY_UP;
         }
-        else if (controllerId == 1)
+        if (Input.GetKey(KeyCode.S))
         {
-            if (Input.GetKey(KeyCode.UpArrow))
-            {
-                input |= (uint)KeyPress.KEY_UP;
-            }
-            if (Input.GetKey(KeyCode.DownArrow))
-            {
-                input |= (uint)KeyPress.KEY_DOWN;
-            }
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                input |= (uint)KeyPress.KEY_LEFT;
-            }
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                input |= (uint)KeyPress.KEY_RIGHT;
-            }
-            if (Input.GetKey(KeyCode.RightControl))
-            {
-                input |= (uint)KeyPress.KEY_MK;
-            }
+            input |= (uint)KeyPress.KEY_DOWN;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            input |= (uint)KeyPress.KEY_LEFT;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            input |= (uint)KeyPress.KEY_RIGHT;
+        }
+        if (Input.GetKey(KeyCode.U))
+        {
+            input |= (uint)KeyPress.KEY_LP;
+        }
+        if (Input.GetKey(KeyCode.I))
+        {
+            input |= (uint)KeyPress.KEY_MP;
+        }
+        if (Input.GetKey(KeyCode.O))
+        {
+            input |= (uint)KeyPress.KEY_HP;
+        }
+        if (Input.GetKey(KeyCode.J))
+        {
+            input |= (uint)KeyPress.KEY_LK;
+        }
+        if (Input.GetKey(KeyCode.K))
+        {
+            input |= (uint)KeyPress.KEY_MK;
+        }
+        if (Input.GetKey(KeyCode.L))
+        {
+            input |= (uint)KeyPress.KEY_HK;
         }
         return input;
-    }
-
-    public static uint GetInput()
-    {
-        return ReadInputs(0);
-    }
-    public static uint[] RunFrameNext(uint[] inputs)
-    {
-        gs.Update(inputs, 0); //直接更新
-        return inputs;
     }
 }

@@ -342,6 +342,8 @@ namespace HotFix
             UIManager.doSetTimeText = null;
             UIManager.doSetCurrentHp = null;
             UIManager.doSetGameEnd = null;
+            UIManager.doReplayUpdate = null;
+            UIManager.doSetAnimeSpeed = null;
         }
         void ShowSkill(int pid, string content)
         {

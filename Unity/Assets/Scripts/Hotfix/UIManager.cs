@@ -8,6 +8,7 @@ namespace HotFix
     public delegate void SetCurrentHp(int pid, int hp);
     public delegate void SetGameEnd(int winner);
     public delegate void ReplayUpdate(uint frameID);
+    public delegate void SetAnimeSpeed(float speed);
     public class UIManager : MonoBehaviour
     {
         static UIManager _instance;
@@ -25,6 +26,7 @@ namespace HotFix
         public static SetCurrentHp doSetCurrentHp;
         public static SetGameEnd doSetGameEnd;
         public static ReplayUpdate doReplayUpdate;
+        public static SetAnimeSpeed doSetAnimeSpeed;
 
         // UI存储栈
         public Dictionary<string, UIBase> stack;
@@ -119,7 +121,6 @@ namespace HotFix
             }
             stack.Remove(scriptName);
             recyclePool.Add(scriptName, ui);
-            //ui.transform.SetAsFirstSibling(); //有性能开销
             ui.gameObject.SetActive(false);
         }
         public void PopAll()

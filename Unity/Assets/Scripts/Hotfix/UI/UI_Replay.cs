@@ -82,7 +82,7 @@ namespace HotFix
             {
                 FileInfo file = fileInfo[i];
                 await Task.CompletedTask;
-                Debug.Log($"{i}---{file.Name}");
+                //Debug.Log($"{i}---{file.Name}");
 
                 // 对象池
                 Item_Replay script = null;

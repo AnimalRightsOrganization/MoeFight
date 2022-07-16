@@ -15,7 +15,6 @@ namespace HotFix
         [SerializeField] Text m_MapText;
         [SerializeField] Text m_TimeText;
         [SerializeField] Text m_ResultText;
-        private ReplayFormat repInfo;
         private Color[] colors = new Color[] { new Color(1, .503f, 0.586f), new Color(1f, .917f, .5f), new Color(.5f, 1f, .75f) };
 
         void Awake()
@@ -32,7 +31,7 @@ namespace HotFix
 
         public async Task<Item_Replay> InitData(FileInfo file)
         {
-            repInfo = await ReplayManager.LoadReplay(file.FullName);
+            var repInfo = await ReplayManager.LoadReplay(file.FullName);
             this.SetHostName(repInfo.scene.Host.UserName);
             this.SetGuestName(repInfo.scene.Guest.UserName);
             this.SetMap($"{repInfo.scene.MapId}");
@@ -95,6 +94,7 @@ namespace HotFix
 
         private void OnLoadScene()
         {
+            var repInfo = ReplayManager.data;
             ClientPlayer host = new ClientPlayer(repInfo.scene.Host.UserName, 0);
             ClientPlayer guest = new ClientPlayer(repInfo.scene.Guest.UserName, 1);
             ClientRoom clientRoom = new ClientRoom(repInfo.scene.RoomId, host, guest);
@@ -110,33 +110,6 @@ namespace HotFix
                 ui_replay.InitData(repInfo);
             };
             GameManager.Get.LoadBattleAsync(action);
-            /*
-            string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var host = new ClientPlayer("host", 0); //单机时，host都是自己
-            var guest = new ClientPlayer("guest", 1);
-            var clientRoom = new ClientRoom(0, host, guest);
-            ClientNet.Get.m_ClientRoom = clientRoom;
-            var packet = new S2C_LoadScenePacket
-            {
-                RoomId = 0,
-                BattleId = $"{timeStr}_replay",
-                MapId = 0,
-                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = 0 },
-                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = 1 },
-            };
-            clientRoom.DoInit(packet);
-            Debug.Log($"加载录像：{clientRoom.BattleID}");
-            ClientNet.Get.m_PlayerManager.LocalPlayer.SetStatus(PlayerStatus.AtBattle);
-
-            System.Action action = () =>
-            {
-                UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
-                var ui = UIManager.Get().Push<UI_ReplayMenu>();
-                ui.InitData(replayPath);
-            };
-            GameManager.Get.LoadBattleAsync(action);
-            */
         }
     }
 }

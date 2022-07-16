@@ -20,13 +20,8 @@ namespace Code.Client
             }
         }
 
-        private int mySeatId;
-        private int remoteSeatId;
-        public BattleMode myBattleMode;
-        private ReplayFormat repInfo;
-
-        private uint DELAY_FRAMES = 0;
-        private bool IsStart;
+        public bool IsStart;
+        public uint DELAY_FRAMES = 0;
         public uint sendTick;
         public uint recvTick;
         public uint rendTick;
@@ -36,6 +31,12 @@ namespace Code.Client
         private List<uint> predicted;
         private HitstunRunner runner;
 
+        private int mySeatId;
+        private int remoteSeatId;
+        public BattleMode myBattleMode;
+        private ReplayFormat repInfo;
+
+        #region 内置函数
         void Awake()
         {
             IsStart = false;
@@ -47,59 +48,30 @@ namespace Code.Client
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
             runner = FindObjectOfType<HitstunRunner>();
-            if (ClientNet.Get.m_ClientRoom != null)
+            var clientRoom = ClientNet.Get.m_ClientRoom;
+            if (clientRoom != null)
             {
-                runner.player1Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.HostPlayer.RoleIndex;
-                runner.player2Character = (HitstunConstants.CharacterName)ClientNet.Get.m_ClientRoom.GuestPlayer.RoleIndex;
+                runner.player1Character = (HitstunConstants.CharacterName)clientRoom.HostPlayer.RoleIndex;
+                runner.player2Character = (HitstunConstants.CharacterName)clientRoom.GuestPlayer.RoleIndex;
                 //Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
+
+                mySeatId = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId;
+                remoteSeatId = (mySeatId + 1) % 2;
+                myBattleMode = clientRoom.BattleMode;
+                repInfo = ReplayManager.data;
             }
+
+            gameObject.AddComponent<ClientDebug>();
         }
 
-        async void OnEnable()
+        void OnEnable()
         {
             EventManager.RegisterEvent(OnNetCallback);
-
-            myBattleMode = ClientNet.Get.m_ClientRoom.BattleMode;
-            string filePath = $"{ConstValue.MY_REPLAY_FOLDER}/20220716_130952.bytes";
-            repInfo = await ReplayManager.LoadReplay(filePath);
-
-
-            style1 = new GUIStyle();
-            style1.fontSize = 25;
-            style1.normal.textColor = Color.red;
-            posX1 = Screen.width / 4;
-            posX2 = Screen.width / 4 * 3;
-            posY = Screen.height - 50;
         }
 
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
-        }
-
-        void OnGUI()
-        {
-            var char0 = LocalSession.gs.characters[0];
-            var data0 = LocalSession.gs.characterDatas[0];
-            var currentState0 = char0.state;
-            var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
-            int currentFrame0 = (int)char0.framesInState % currentAnimation0.totalFrames;
-
-            var char1 = LocalSession.gs.characters[1];
-            var data1 = LocalSession.gs.characterDatas[1];
-            var currentState1 = char1.state;
-            var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
-            int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
-
-            string log = $"Tick: {LocalSession.gs.frameNumber}" +
-                $"\nping: {ClientNet.Get._ping}";
-            GUI.Label(new Rect(10, 10, 100, 50), log, style1);
-
-
-            string state1 = $"{currentState0}: {currentFrame0}";
-            GUI.Label(new Rect(posX1, posY, 100, 50), state1, style1);
-            string state2 = $"{currentState1}: {currentFrame1}";
-            GUI.Label(new Rect(posX2, posY, 100, 50), state2, style1);
         }
 
         void FixedUpdate()
@@ -117,12 +89,11 @@ namespace Code.Client
                     break;
             }
         }
-
-        private void BattleLoop()
+        void BattleLoop()
         {
             //①收集本地按键，发送，预测?
             sendTick++;
-            uint input = LocalSession.GetInput();
+            uint input = LocalSession.ReadInputs();
             var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
             ClientNet.Get.SendInput(cmd);
             ggpo_predict[sendTick] = new uint[2];
@@ -207,7 +178,7 @@ namespace Code.Client
 
             CheckGameEnd();
         }
-        private void ReplayLoop()
+        void ReplayLoop()
         {
             if (repInfo == null || repInfo.inputs.Count <= recvTick)
                 return;
@@ -216,19 +187,12 @@ namespace Code.Client
             uint[] inputs = repInfo.inputs[recvTick];
             runner.OnReplayUpdate(inputs);
 
-            Snapshot(recvTick);
-
             UIManager.doReplayUpdate?.Invoke(recvTick);
         }
-        public void PlayReplay()
-        {
-            IsStart = true;
-        }
-        public void PauseReplay()
-        {
-            IsStart = false;
-        }
+        #endregion
 
+
+        #region 战斗系统
         // 预测
         private void Predict(uint tick)
         {
@@ -241,44 +205,87 @@ namespace Code.Client
             Process(tick, _inputs);
         }
         // 回滚
-        public void Rollback(uint tick)
+        private void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
-            Debug.Log($"回滚到第{tick}帧状态: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            Debug.Log($"回滚到第{tick}帧" +
+                $"\nP1:{LocalSession.gs.characters[0].position}---hp:{LocalSession.gs.characters[0].health}" +
+                $"\nP2:{LocalSession.gs.characters[1].position}---hp:{LocalSession.gs.characters[1].health}");
         }
         // 追帧
         private void Process(uint tick, uint[] inputs) //双方操作
         {
             runner.SaveOldBuffer();
-            LocalSession.RunFrameNext(inputs);
+            LocalSession.RunFrame(inputs);
             runner.OnFixedUpdate(inputs);
-            //Debug.Log($"执行完第{tick}帧执行后: P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            //Debug.Log($"执行完第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
         // 快照
-        public void Snapshot(uint tick)
+        private void Snapshot(uint tick)
         {
             //Debug.Log($"快照: {tick}");
             cache_buffer[tick] = GameState.ToByteArray(LocalSession.gs);
         }
-
         // 结束判定（①时间，②血量）
         private void CheckGameEnd()
         {
-            if (HotFix.UIManager.doSetGameEnd == null) return;
+            if (UIManager.doSetGameEnd == null) return;
 
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
-            HotFix.UIManager.doSetTimeText?.Invoke($"{leftTime}");
+            UIManager.doSetTimeText?.Invoke($"{leftTime}");
 
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
-                HotFix.UIManager.doSetGameEnd.Invoke(2);
+                UIManager.doSetGameEnd.Invoke(2);
             }
         }
+        #endregion
 
 
+        #region 回放系统
+        public void InitReplay()
+        {
+            for (int i = 1; i <= repInfo.inputs.Count; i++)
+            {
+                uint tick = (uint)i;
+                var inputs = repInfo.inputs[tick];
+                ProcessReplay(tick, inputs);
+            }
+            RollbackReplay(2);
+
+            // 血条
+            int hp1 = LocalSession.gs.characters[0].health;
+            int hp2 = LocalSession.gs.characters[1].health;
+            UIManager.doSetCurrentHp?.Invoke(1, hp1);
+            UIManager.doSetCurrentHp?.Invoke(2, hp2);
+        }
+        public void PlayReplay()
+        {
+            UIManager.doSetAnimeSpeed?.Invoke(1f);
+            IsStart = true;
+        }
+        public void PauseReplay()
+        {
+            UIManager.doSetAnimeSpeed?.Invoke(0);
+            IsStart = false;
+        }
+        public void RollbackReplay(uint tick)
+        {
+            Rollback(tick - 1);
+            ProcessReplay(tick, repInfo.inputs[tick]);
+        }
+        public void ProcessReplay(uint tick, uint[] inputs)
+        {
+            runner.OnReplayUpdate(inputs);
+            Snapshot(tick);
+        }
+        #endregion
+
+
+        #region 网络消息
         private void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -316,7 +323,7 @@ namespace Code.Client
 
             IsStart = true;
 
-            HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
+            UIManager.Get().Push<UI_GameMenu>();
         }
 
         private void OnTestPVP(INetSerializable reader)
@@ -372,8 +379,8 @@ namespace Code.Client
             var packet = (S2C_BattleEndPacket)reader;
 
             var clientRoom = ClientNet.Get.m_ClientRoom;
-            var hostPlayer = ClientNet.Get.m_ClientRoom.HostPlayer;
-            var guestPlayer = ClientNet.Get.m_ClientRoom.GuestPlayer;
+            var hostPlayer = clientRoom.HostPlayer;
+            var guestPlayer = clientRoom.GuestPlayer;
             var scene = new S2C_LoadScenePacket
             {
                 RoomId = (short)clientRoom.RoomID,
@@ -391,7 +398,7 @@ namespace Code.Client
         }
 
         // 重连恢复场景
-        public static Dictionary<uint, uint[]> ConvertRecv(S2C_LackInputPacket packet)
+        private static Dictionary<uint, uint[]> ConvertRecv(S2C_LackInputPacket packet)
         {
             Dictionary<uint, uint[]> recv = new Dictionary<uint, uint[]>();
 
@@ -428,22 +435,6 @@ namespace Code.Client
             //IsStart= true;
             Debug.Log($"pred:{ggpo_predict.Count}, recv:{ggpo_recieve.Count}, ");
         }
-
-
-        private GUIStyle style1;
-        private int posX1;
-        private int posX2;
-        private int posY;
-#if UNITY_EDITOR
-        void OnDrawGizmos()
-        {
-            if (!IsStart) return;
-
-            var x0 = LocalSession.gs.characters[0].position.x.ToString();
-            var x1 = LocalSession.gs.characters[1].position.x.ToString();
-            UnityEditor.Handles.Label(runner.characterViews[0].transform.position, x0, style1);
-            UnityEditor.Handles.Label(runner.characterViews[1].transform.position, x1, style1);
-        }
-#endif
+        #endregion
     }
 }

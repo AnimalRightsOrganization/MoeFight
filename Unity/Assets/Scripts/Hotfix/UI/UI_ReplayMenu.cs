@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using Code.Client;
 
@@ -7,11 +6,10 @@ namespace HotFix
 {
     public class UI_ReplayMenu : UIBase
     {
-        [SerializeField] Toggle m_PlayTog;
-        [SerializeField] Slider m_ProgressBar;
-        [SerializeField] Text m_TickText;
+        public Toggle m_PlayTog;
+        public Slider m_ProgressBar;
+        public Text m_TickText;
         private EventTriggerNotice notice;
-        private ReplayFormat repInfo;
 
         void Awake()
         {
@@ -34,12 +32,16 @@ namespace HotFix
 
         public void InitData(ReplayFormat info)
         {
-            repInfo = info;
-
-            m_ProgressBar.value = 0;
+            m_ProgressBar.value = 1;
             m_ProgressBar.maxValue = info.inputs.Count;
+            Debug.Log($"bar: {m_ProgressBar.value}~{m_ProgressBar.maxValue}");
 
-            m_PlayTog.isOn = true;
+            ClientLogic.Get.InitReplay();
+
+            //m_PlayTog.isOn = true;
+            m_PlayTog.isOn = false;
+            OnSliderChanged(1);
+            //SetProgressValue(1);
         }
 
         void OnPlay(bool value)
@@ -53,50 +55,57 @@ namespace HotFix
                 ClientLogic.Get.PauseReplay();
             }
         }
-
         void OnSliderChanged(float value)
         {
-            int frameID = (int)value;
-            //Debug.Log($"<color=green>进度条改变：{frameID}/{m_ProgressBar.maxValue}</color>");
+            uint frameID = (uint)value;
+            //Debug.Log($"<color=green>进度条改变: {frameID}/{m_ProgressBar.maxValue}</color>");
             m_TickText.text = $"{frameID} / {m_ProgressBar.maxValue}";
+            if (frameID >= m_ProgressBar.maxValue)
+            {
+                //Debug.Log($"End...{frameID}");
+                //m_PlayTog.isOn = false;
+            }
         }
-        public void SetProgressValue(uint frameID)
+        void SetProgressValue(uint frameID)
         {
-            //Debug.Log($"<color=yellow>回放进度条：{frameID}/{BattleManager.Instance.replayBuffer.Count}</color>");
+            //Debug.Log($"<color=yellow>回放进度条: {frameID}/{BattleManager.Instance.replayBuffer.Count}</color>");
             m_ProgressBar.value = frameID; //会导致执行OnDragSlider()
         }
-        public void OnDrag()
+        void OnDrag()
         {
-            //Debug.Log($"OnDrag：{m_ProgressBar.value}");
-
-            // 测试
+            //Debug.Log($"OnDrag: {m_ProgressBar.value}");
             uint frameID = (uint)m_ProgressBar.value;
-            ClientLogic.Get.Rollback(frameID);
+            ClientLogic.Get.RollbackReplay(frameID);
         }
         // 指定帧
-        public void OnEndDrag()
+        void OnEndDrag()
         {
-            ushort frameID = (ushort)m_ProgressBar.value;
+            uint frameID = (uint)m_ProgressBar.value;
             SnapToFrame(frameID);
         }
         // 下一帧
-        public void NextFrame()
+        void NextFrame()
         {
-            ushort frameID = (ushort)(m_ProgressBar.value + 1);
+            uint frameID = (uint)(m_ProgressBar.value + 1);
             SnapToFrame(frameID);
         }
         // 上一帧
-        public void PrevFrame()
+        void PrevFrame()
         {
-            ushort frameID = (ushort)(m_ProgressBar.value - 1);
+            uint frameID = (uint)(m_ProgressBar.value - 1);
             SnapToFrame(frameID);
         }
-        void SnapToFrame(ushort frameID)
+        void SnapToFrame(uint frameID)
         {
-            Debug.Log($"<color=red>OnEndDrag：{frameID}</color>");
+            Debug.Log($"<color=red>OnEndDrag: {frameID}</color>");
             ClientLogic.Get.PauseReplay();
-            ClientLogic.Get.Rollback(frameID);
-            //ClientLogic.Get.LogicUpdate(); //更新一帧
+            ClientLogic.Get.RollbackReplay(frameID);
+
+            // 血条
+            int hp1 = LocalSession.gs.characters[0].health;
+            int hp2 = LocalSession.gs.characters[1].health;
+            UIManager.doSetCurrentHp?.Invoke(1, hp1);
+            UIManager.doSetCurrentHp?.Invoke(2, hp2);
         }
     }
 }

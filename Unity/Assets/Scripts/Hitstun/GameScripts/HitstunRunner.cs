@@ -22,7 +22,7 @@ public class HitstunRunner : MonoBehaviour
 
     // Internal
     NativeArray<byte> buffer;
-    NativeArray<byte> oldBuffer; //快照
+    NativeArray<byte> oldBuffer;
     private bool running;
     private bool nextStep;
 
@@ -67,9 +67,21 @@ public class HitstunRunner : MonoBehaviour
         // load character data from JSON
         LoadCharacterData();
         // Init View
-        InitView(LocalSession.gs);
+        InitView();
         running = !manualStep;
         nextStep = false;
+    }
+
+    void OnDestroy()
+    {
+        if (buffer.IsCreated)
+        {
+            buffer.Dispose();
+        }
+        if (oldBuffer.IsCreated)
+        {
+            oldBuffer.Dispose();
+        }
     }
 
     public void SaveOldBuffer()
@@ -82,16 +94,7 @@ public class HitstunRunner : MonoBehaviour
         }
         oldBuffer = GameState.ToBytes(LocalSession.gs); //转到NativeArray
     }
-    /*
-    void FixedUpdate()
-    {
-        SaveOldBuffer();
 
-        // 必须备份一个oldBuffer，不然帧数多一
-        uint[] inputs = LocalSession.RunFrame();
-        OnFixedUpdate(inputs);
-    }
-    */
     public void OnFixedUpdate(uint[] inputs)
     {
         if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
@@ -157,22 +160,8 @@ public class HitstunRunner : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    void InitView()
     {
-        if (buffer.IsCreated)
-        {
-            buffer.Dispose();
-        }
-        if (oldBuffer.IsCreated)
-        {
-            oldBuffer.Dispose();
-        }
-    }
-
-    void InitView(GameState gs)
-    {
-        Debug.Log($"InitView: {characterDatas[0].name} vs {characterDatas[1].name}");
-
         characterView = ResManager.LoadPrefab("Prefabs/CharacterView").GetComponent<CharacterView>();
         characterViews = new CharacterView[Constants.NUM_PLAYERS];
 

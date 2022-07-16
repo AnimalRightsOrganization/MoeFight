@@ -32,6 +32,7 @@ public class ReplayFormat
 }
 public class ReplayManager
 {
+    public static ReplayFormat data;
     // 写入
     public static async void SaveReplay(ReplayFormat dict)
     {
@@ -60,8 +61,8 @@ public class ReplayManager
     public static async Task<ReplayFormat> LoadReplay(string filePath = "")
     {
         string json = await SimpleReadAsync(filePath);
-        var dict = JsonConvert.DeserializeObject<ReplayFormat>(json);
-        return dict;
+        data = JsonConvert.DeserializeObject<ReplayFormat>(json);
+        return data;
     }
     static async Task<string> SimpleReadAsync(string filePath = "")
     {

@@ -48,8 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f0ae0f74818a548bdbd3cc5c1c8e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DELAY_FRAMES: 4
+  myBattleMode: 0
   IsStart: 0
+  DELAY_FRAMES: 4
   sendTick: 0
   recvTick: 0
   rendTick: 0
@@ -185,7 +186,7 @@ MonoBehaviour:
   manualStep: 0
   player1Character: 0
   player2Character: 0
-  characterView: {fileID: 0}
+  characterViews: []
   mainCamera: {fileID: 1259715931958248948}
 --- !u!1 &1259715932207553054
 GameObject:
