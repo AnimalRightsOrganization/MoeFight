@@ -109,7 +109,7 @@ namespace HotFix
                 var ui_replay = UIManager.Get().Push<UI_ReplayMenu>();
                 ui_replay.InitData(repInfo);
             };
-            GameManager.Get.LoadBattleAsync(action);
+            GameManager.Get.LoadBattleAsync(action); //回放
         }
     }
 }

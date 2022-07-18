@@ -183,7 +183,7 @@ namespace HotFix
                 UIManager.Get().Push<UI_GameMenu>();
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
-            GameManager.Get.LoadBattleAsync(action);
+            GameManager.Get.LoadBattleAsync(action); //匹配赛
         }
         #endregion
 
@@ -279,7 +279,7 @@ namespace HotFix
                         UIManager.Get().Push<UI_GameMenu>();
                         ClientNet.Get.SendTestPVE();
                     };
-                    GameManager.Get.LoadBattleAsync(action);
+                    GameManager.Get.LoadBattleAsync(action); //训练
                     break;
                 case BattleMode.Matching:
                     ClientNet.Get.SendGameReady();

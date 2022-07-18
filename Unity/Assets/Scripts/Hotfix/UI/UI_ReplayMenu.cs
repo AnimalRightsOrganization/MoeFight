@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Code.Client;
+using System.Threading.Tasks;
 
 namespace HotFix
 {
@@ -10,94 +11,76 @@ namespace HotFix
         public Slider m_ProgressBar;
         public Text m_TickText;
         private UIEventSystem notice;
+        private uint lastFrame;
 
         void Awake()
         {
             m_PlayTog = transform.Find("ReplayPanel/PlayTog").GetComponent<Toggle>();
             m_ProgressBar = transform.Find("ReplayPanel/ProgressBar").GetComponent<Slider>();
             m_TickText = transform.Find("ReplayPanel/TickText").GetComponent<Text>();
-
-            m_PlayTog.onValueChanged.AddListener(OnPlay);
-            m_ProgressBar.onValueChanged.AddListener(OnSliderChanged);
-
             if (m_ProgressBar.GetComponent<UIEventSystem>() == false)
                 m_ProgressBar.gameObject.AddComponent<UIEventSystem>();
             notice = m_ProgressBar.GetComponent<UIEventSystem>();
-            notice.onDrag = OnDrag;
-            notice.onEndDrag = OnEndDrag;
-            notice.onPointClick = OnEndDrag;
 
-            BattleEvent.doReplayUpdate = SetProgressValue;
+            m_PlayTog.onValueChanged.AddListener(OnPlay);
+            m_ProgressBar.onValueChanged.AddListener(OnSliderChanged);
+            notice.onDrag = OnSnap;
+            notice.onEndDrag = OnSnap;
+            notice.onPointClick = OnSnap;
+            BattleEvent.doReplayUpdate = OnUpdateValue; //replay main loop
         }
 
         public void InitData(ReplayFormat info)
         {
-            m_ProgressBar.value = 1;
-            m_ProgressBar.maxValue = info.inputs.Count;
-            Debug.Log($"bar: {m_ProgressBar.value}~{m_ProgressBar.maxValue}");
-
             ClientLogic.Get.InitReplay();
 
-            //m_PlayTog.isOn = true;
-            m_PlayTog.isOn = false;
-            OnSliderChanged(1);
-            //SetProgressValue(1);
+            m_ProgressBar.minValue = 1;
+            m_ProgressBar.maxValue = info.inputs.Count;
+            m_ProgressBar.value = 1;
+            OnSliderChanged(1); //更新文字
+            Debug.Log($"bar: {m_ProgressBar.value}~{m_ProgressBar.maxValue}");
+
+            m_PlayTog.isOn = false; //不自动开始
         }
 
-        void OnPlay(bool value)
+        async void OnPlay(bool value)
         {
             if (value)
             {
                 ClientLogic.Get.PlayReplay();
+                uint frameID = (uint)m_ProgressBar.value;
+                if (frameID >= m_ProgressBar.maxValue)
+                {
+                    await Task.Delay(500); //等待死亡动画播完
+                    m_PlayTog.isOn = false;
+                }
             }
             else
             {
                 ClientLogic.Get.PauseReplay();
             }
         }
-        void OnSliderChanged(float value)
+        async void OnSliderChanged(float value)
         {
             uint frameID = (uint)value;
-            //Debug.Log($"<color=green>进度条改变: {frameID}/{m_ProgressBar.maxValue}</color>");
             m_TickText.text = $"{frameID} / {m_ProgressBar.maxValue}";
+            //Debug.Log($"<color=green>SliderChanged: {frameID}/{m_ProgressBar.maxValue}</color>");
+
             if (frameID >= m_ProgressBar.maxValue)
             {
-                //Debug.Log($"End...{frameID}");
-                //m_PlayTog.isOn = false;
+                await Task.Delay(500); //等待死亡动画播完
+                m_PlayTog.isOn = false;
             }
         }
-        void SetProgressValue(uint frameID)
-        {
-            //Debug.Log($"<color=yellow>回放进度条: {frameID}/{BattleManager.Instance.replayBuffer.Count}</color>");
-            m_ProgressBar.value = frameID; //会导致执行OnDragSlider()
-        }
-        void OnDrag()
-        {
-            //Debug.Log($"OnDrag: {m_ProgressBar.value}");
-            uint frameID = (uint)m_ProgressBar.value;
-            ClientLogic.Get.RollbackReplay(frameID);
-        }
-        // 指定帧
-        void OnEndDrag()
+        void OnSnap()
         {
             uint frameID = (uint)m_ProgressBar.value;
-            SnapToFrame(frameID);
-        }
-        // 下一帧
-        void NextFrame()
-        {
-            uint frameID = (uint)(m_ProgressBar.value + 1);
-            SnapToFrame(frameID);
-        }
-        // 上一帧
-        void PrevFrame()
-        {
-            uint frameID = (uint)(m_ProgressBar.value - 1);
-            SnapToFrame(frameID);
-        }
-        void SnapToFrame(uint frameID)
-        {
-            Debug.Log($"<color=red>OnEndDrag: {frameID}</color>");
+            if (lastFrame == frameID) return; //避免重复执行
+            lastFrame = frameID;
+            Debug.Log($"<color=red>SnapToFrame: {frameID}</color>");
+
+            //OnSliderChanged()执行完，才能得到鼠标指定的帧
+            m_PlayTog.isOn = false; //会触发执行OnPlay()
             ClientLogic.Get.PauseReplay();
             ClientLogic.Get.RollbackReplay(frameID);
 
@@ -106,6 +89,10 @@ namespace HotFix
             int hp2 = LocalSession.gs.characters[1].health;
             BattleEvent.doSetCurrentHp?.Invoke(1, hp1);
             BattleEvent.doSetCurrentHp?.Invoke(2, hp2);
+        }
+        void OnUpdateValue(uint frameID)
+        {
+            m_ProgressBar.value = frameID;
         }
     }
 }

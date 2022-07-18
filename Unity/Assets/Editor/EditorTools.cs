@@ -51,7 +51,7 @@ public class TestWindow : EditorWindow
                 HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
                 ClientNet.Get.SendTestPVE();
             };
-            GameManager.Get.LoadBattleAsync(action);
+            GameManager.Get.LoadBattleAsync(action); //测试PVE
         }
         if (GUILayout.Button("PVP"))
         {
@@ -66,7 +66,7 @@ public class TestWindow : EditorWindow
                 HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
                 ClientNet.Get.SendTestPVP();
             };
-            GameManager.Get.LoadBattleAsync(action);
+            GameManager.Get.LoadBattleAsync(action); //测试PVP
         }
     }
 }

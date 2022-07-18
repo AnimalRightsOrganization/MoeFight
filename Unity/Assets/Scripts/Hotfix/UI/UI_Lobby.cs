@@ -133,7 +133,7 @@ namespace HotFix
                         UIManager.Get().Push<UI_GameMenu>();
                         //ClientNet.Get.SendLackInput(); //请求帧数据
                     };
-                    GameManager.Get.LoadBattleAsync(action); //跳转比赛
+                    GameManager.Get.LoadBattleAsync(action); //重连
 
                     //追帧，完成后发送恢复比赛
 

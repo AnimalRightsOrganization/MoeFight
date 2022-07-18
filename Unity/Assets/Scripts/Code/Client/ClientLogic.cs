@@ -243,13 +243,15 @@ namespace Code.Client
         #region 回放系统
         public void InitReplay()
         {
+            // 所有帧跑一遍，生成快照
             for (int i = 1; i <= repInfo.inputs.Count; i++)
             {
                 uint tick = (uint)i;
                 var inputs = repInfo.inputs[tick];
                 ProcessReplay(tick, inputs);
             }
-            RollbackReplay(2);
+            // 返回第一帧
+            RollbackReplay(1);
 
             // 血条
             int hp1 = LocalSession.gs.characters[0].health;
@@ -269,8 +271,11 @@ namespace Code.Client
         }
         public void RollbackReplay(uint tick)
         {
-            Rollback(tick - 1);
-            ProcessReplay(tick, repInfo.inputs[tick]);
+            recvTick = tick;
+            uint lastTick = (tick == 1) ? 1 : tick - 1;
+            uint[] inputs = (tick == 1) ? new uint[2] { 0, 0 } : repInfo.inputs[tick];
+            Rollback(lastTick);
+            ProcessReplay(tick, inputs);
         }
         public void ProcessReplay(uint tick, uint[] inputs)
         {
