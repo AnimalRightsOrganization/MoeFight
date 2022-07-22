@@ -225,6 +225,7 @@ namespace HotFix
             {
                 case BattleMode.Training:
                     this.Pop();
+                    localPlayer.ResetToLobby();
                     break;
                 case BattleMode.Matching:
                     ClientNet.Get.SendMatchQuit();

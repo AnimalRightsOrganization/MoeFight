@@ -63,17 +63,14 @@ namespace Code.Client
 
             gameObject.AddComponent<ClientDebug>();
         }
-
         void OnEnable()
         {
             EventManager.RegisterEvent(OnNetCallback);
         }
-
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
         }
-
         void FixedUpdate()
         {
             if (!IsStart) return;
@@ -191,7 +188,6 @@ namespace Code.Client
         }
         #endregion
 
-
         #region 战斗系统
         private void Predict(uint tick)
         {
@@ -239,7 +235,6 @@ namespace Code.Client
         }
         #endregion
 
-
         #region 回放系统
         public void InitReplay()
         {
@@ -284,7 +279,6 @@ namespace Code.Client
         }
         #endregion
 
-
         #region 网络消息
         private void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
@@ -310,7 +304,6 @@ namespace Code.Client
                     break;
             }
         }
-
         private void OnTestPVE(INetSerializable reader)
         {
             var packet = (S2C_JoinResultPacket)reader;
@@ -321,7 +314,6 @@ namespace Code.Client
                 IsStart = true;
             }
         }
-
         private void OnTestPVP(INetSerializable reader)
         {
             var packet = (S2C_JoinResultPacket)reader;
@@ -331,7 +323,6 @@ namespace Code.Client
                 IsStart = true;
             }
         }
-
         private void OnRecvInput(INetSerializable reader)
         {
             var packet = (S2C_InputPacket)reader;
@@ -340,7 +331,6 @@ namespace Code.Client
             ggpo_recieve[server_tick] = packet.inputs;
             //Debug.Log($"<color=grey>---收到第{server_tick}帧</color>");
         }
-
         private void OnBattleStart(INetSerializable reader)
         {
             var packet = (S2C_BattleStartPacket)reader;
@@ -359,12 +349,10 @@ namespace Code.Client
                 IsStart = true;
             }
         }
-
         private void OnBattlePause(INetSerializable reader)
         {
             IsStart = false;
         }
-
         private void OnBattleEnd(INetSerializable reader)
         {
             Debug.Log("OnBattleEnd: save replay");
