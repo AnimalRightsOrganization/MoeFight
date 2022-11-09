@@ -4,8 +4,8 @@ using System.Diagnostics;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
 using Code.Client;
-using Code.Server;
 using Debug = UnityEngine.Debug;
 
 public class TestWindow : EditorWindow
@@ -101,65 +101,76 @@ public class EditorTools : Editor
     [MenuItem("Tools/启动/客户端 %_F11", false)]
     static void RunClient()
     {
-        string filepath = $"D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Client\\{Application.productName}.exe";
+        var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
+        string filepath = $"{curr_info}/Builds/Client/Client.exe";
+
         Process.Start(filepath);
     }
     [MenuItem("Tools/启动/服务器 %_F12", false)]
     static void RunServer()
     {
-        string filepath = $"D:\\Documents\\GitHub\\MoeFight\\Unity\\Build\\Server\\{Application.productName}.exe";
+        var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
+        string filepath = $"{curr_info}/Builds/Server/GameServer.exe";
+
         Process.Start(filepath);
     }
 
-    [MenuItem("Tools/打包/客户端", false)]
-    static void BuildWindows()
-    {
-        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Client.unity", true) };
-        //EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
-
-        string curr_dir = Environment.CurrentDirectory;
-        var curr_info = new DirectoryInfo(curr_dir);
-        string build_root = $"{curr_info}/Build";
-        if (!Directory.Exists(build_root))
-            Directory.CreateDirectory(build_root);
-        string build_dir = $"{build_root}/Client";
-        if (Directory.Exists(build_dir))
-            Directory.Delete(build_dir, true);
-        Directory.CreateDirectory(build_dir);
-
-        BuildPlayerOptions opt = new BuildPlayerOptions();
-        opt.scenes = new string[] { "Assets/Scenes/Client.unity" };
-        opt.locationPathName = $"{build_dir}/{Application.productName}.exe";
-        opt.target = BuildTarget.StandaloneWindows64;
-        opt.options = BuildOptions.None;
-        BuildPipeline.BuildPlayer(opt);
-        Debug.Log($"打包成功: {opt.locationPathName}");
-    }
     [MenuItem("Tools/打包/服务器", false)]
-    static void BuildServer()
+    static void BuildServer_Win64()
     {
         //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Server.unity", true) };
         //EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
 
-        string curr_dir = Environment.CurrentDirectory;
-        var curr_info = new DirectoryInfo(curr_dir);
-        string build_root = $"{curr_info}/Build";
-        if (!Directory.Exists(build_root))
-            Directory.CreateDirectory(build_root);
-        string build_dir = $"{build_root}/Server";
-        if (Directory.Exists(build_dir))
-            Directory.Delete(build_dir, true);
-        Directory.CreateDirectory(build_dir);
+        var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
+        string builds_dir = $"{curr_info}/Builds/Server";
 
-        BuildPlayerOptions opt = new BuildPlayerOptions();
-        opt.scenes = new string[] { "Assets/Scenes/Server.unity" };
-        opt.locationPathName = $"{build_dir}/{Application.productName}.exe";
-        opt.target = BuildTarget.StandaloneWindows64;
-        opt.options = BuildOptions.None;
-        BuildPipeline.BuildPlayer(opt);
-        Debug.Log($"打包成功: {opt.locationPathName}");
+        BuildPlayerOptions opt = new BuildPlayerOptions
+        {
+            scenes = new string[] { "Assets/Scenes/Server.unity" },
+            locationPathName = $"{builds_dir}/GameServer.exe",
+            target = BuildTarget.StandaloneWindows64,
+#if UNITY_2021_1_OR_NEWER
+            options = BuildOptions.ShowBuiltPlayer | BuildOptions.Development | BuildOptions.EnableDeepProfilingSupport,
+            subtarget = (int)StandaloneBuildSubtarget.Server,
+#else
+            options = BuildOptions.EnableHeadlessMode | BuildOptions.ShowBuiltPlayer | BuildOptions.Development
+#endif
+        };
+
+        BuildReport report = BuildPipeline.BuildPlayer(opt);
+
+        BuildSummary summary = report.summary;
+        if (summary.result == BuildResult.Succeeded)
+            Debug.Log($"打包成功: {opt.locationPathName}");
+        if (summary.result == BuildResult.Failed)
+            Debug.LogError("打包失败");
     }
-    static void BuildAndroid()
+    [MenuItem("Tools/打包/客户端", false)]
+    static void BuildClient_Win64()
+    {
+        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Client.unity", true) };
+        //EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+
+        var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
+        string builds_dir = $"{curr_info}/Builds/Client";
+
+        BuildPlayerOptions opt = new BuildPlayerOptions
+        {
+            scenes = new string[] { "Assets/Scenes/Client.unity" },
+            locationPathName = Path.Combine(builds_dir, "Client.exe"),
+            target = BuildTarget.StandaloneWindows64,
+            options = BuildOptions.ShowBuiltPlayer | BuildOptions.Development,
+        };
+
+        BuildReport report = BuildPipeline.BuildPlayer(opt);
+
+        BuildSummary summary = report.summary;
+        if (summary.result == BuildResult.Succeeded)
+            Debug.Log($"打包成功: {opt.locationPathName}");
+        if (summary.result == BuildResult.Failed)
+            Debug.LogError("打包失败");
+    }
+    static void BuildClient_Android()
     {
         EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Android, BuildTarget.Android);
 
@@ -169,7 +180,7 @@ public class EditorTools : Editor
         //PlayerSettings.bundleVersion = string.Format("{0}.{1}.{2}", GameConfig.clientVersions[0],
         //    GameConfig.clientVersions[1] * 100 + GameConfig.clientVersions[2], GameConfig.clientVersions[3]);
     }
-    static void BuildiOS()
+    static void BuildClient_iOS()
     {
         EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.iOS, BuildTarget.iOS);
 

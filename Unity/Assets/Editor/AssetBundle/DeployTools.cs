@@ -7,7 +7,7 @@ using LitJson;
 
 public class DeployTools : EditorWindow
 {
-    [MenuItem("Tools/打包/AllInOne")]
+    [MenuItem("Tools/打包/AllInOne", false)]
     static void AddWindow()
     {
         Rect rect = new Rect(0, 0, 600, 400);

@@ -76,7 +76,7 @@ public class ExcelTools : EditorWindow
 		}
 	}
 
-	[MenuItem("Tools/打包/导表")]
+	[MenuItem("Tools/打包/导表", false)]
 	static void GenerateJson()
 	{
 		string curr_dir = System.Environment.CurrentDirectory;

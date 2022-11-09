@@ -9,6 +9,7 @@ namespace Code.Shared
         public string BattleID;         //服务器战斗编号
         public byte MapId = 0;          //地图编号
         public BattleMode BattleMode;   //房间模式
+        public BattleStage BattleStage;
 
         public BaseRoom(int id)
         {
