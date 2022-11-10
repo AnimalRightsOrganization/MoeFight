@@ -57,6 +57,8 @@ namespace Code.Server
                 return false;
             }
 
+            //UnityEngine.Application.targetFrameRate = 50; //0.02, 默认1E-05
+
             m_RoomManager = new ServerRoomManager();
             m_PlayerManager = new ServerPlayerManager();
             m_WaitingPeers = new List<ServerPlayer>();
@@ -85,6 +87,16 @@ namespace Code.Server
         protected void Update()
         {
             _netManager.PollEvents();
+
+            //UpdateRoom();
+        }
+        protected void UpdateRoom()
+        {
+            //var rooms = m_RoomManager.GetBattles();
+            //foreach (var bt in rooms)
+            //{
+            //    bt.Value.DoUpdate();
+            //}
         }
         #endregion
 
@@ -660,6 +672,7 @@ namespace Code.Server
                     serverRoom.Send(writer);
 
                     serverRoom.DoInit();
+                    serverRoom.BattleStage = BattleStage.Ready;
                 }
             }
             else if (cmd.Stage == 1)
@@ -674,6 +687,7 @@ namespace Code.Server
 
                     // 标记为战场，方便主循环Update中取
                     m_RoomManager.SetBattle(serverRoom);
+                    serverRoom.BattleStage = BattleStage.Running;
                 }
             }
             else if (cmd.Stage == 2)
@@ -682,6 +696,7 @@ namespace Code.Server
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
                 serverRoom.Send(writer);
                 UnityEngine.Debug.Log($"server resume battle");
+                serverRoom.BattleStage = BattleStage.Pause;
             }
             else
             {

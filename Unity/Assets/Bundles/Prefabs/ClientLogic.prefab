@@ -48,12 +48,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f0ae0f74818a548bdbd3cc5c1c8e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myBattleMode: 0
   IsStart: 0
-  DELAY_FRAMES: 4
+  DELAY_FRAMES: 3
   sendTick: 0
   recvTick: 0
   rendTick: 0
+  mySeatId: 0
+  remoteSeatId: 0
+  myBattleMode: 0
 --- !u!1 &1259715931958248950
 GameObject:
   m_ObjectHideFlags: 0

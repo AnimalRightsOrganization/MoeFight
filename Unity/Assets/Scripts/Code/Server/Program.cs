@@ -8,7 +8,6 @@ namespace Rollback
     internal class Program : MonoBehaviour
     {
         static ServerNet server;
-        static bool isStarted = false;
         
         async void Start()
         {
@@ -23,7 +22,6 @@ namespace Rollback
                 {
                     Debug.Log($"StartServer, listen on {ServerNet.Port}");
                     await server.StartProgram();
-                    isStarted = true;
                 }
 
                 return 0;

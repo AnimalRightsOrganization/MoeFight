@@ -70,6 +70,11 @@ namespace Code.Server
         public uint Tick;
         public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始
 
+        // 20ms/帧
+        private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
+        private int halfRTT; //半程延迟，5帧，100ms
+
+
         public void DoInit()
         {
             EndCount = 0;
@@ -87,9 +92,8 @@ namespace Code.Server
             {
                 case BattleMode.Editor:
                     break;
-                case BattleMode.Training:
+                case BattleMode.Training: //单人，收到就下发
                     {
-                        // 只有一人，收到就下发
                         var packet = new S2C_InputPacket
                         {
                             frameNumber = cmd.frameNumber,
@@ -135,12 +139,6 @@ namespace Code.Server
             }
         }
 
-        // 掉线倒计时
-        public void CutDown()
-        {
-            //ConstValue.DROP_WAIT_TIME;
-        }
-
         // 把帧集合打包成下发的格式
         public S2C_LackInputPacket ConvertInputs()
         {
@@ -170,7 +168,7 @@ namespace Code.Server
             }
             catch (System.Exception e)
             {
-                UnityEngine.Debug.LogError(e);
+                Debug.LogError(e);
             }
 
             return packet;
