@@ -88,16 +88,21 @@ namespace Code.Client
         }
         void BattleLoop()
         {
-            //①收集本地按键，发送，预测?
+            //①收集本地按键，发送。
             sendTick++;
             uint input = LocalSession.ReadInputs();
-            var cmd = new C2S_InputPacket { frameNumber = sendTick, input = input };
+            var cmd = new C2S_InputPacket
+            {
+                frameNumber = sendTick,
+                input = input,
+            };
             ClientNet.Get.SendInput(cmd);
+
             ggpo_predict[sendTick] = new uint[2];
             ggpo_predict[sendTick][mySeatId] = input;
             //Debug.Log($"发送: {sendTick}---{input}");
 
-            //②Delay-Based，要求自己也延迟。
+            //②Delay-Based，本地模拟延迟。
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
             {
                 rendTick = (uint)i;
@@ -173,6 +178,7 @@ namespace Code.Client
                 }
             }
 
+            // 检查游戏结束
             CheckGameEnd();
         }
         void ReplayLoop()
@@ -371,10 +377,6 @@ namespace Code.Client
             };
             var rep = new ReplayFormat { scene = scene, battleMode = (byte)clientRoom.BattleMode, winnerId = packet.WinnerSeatId, inputs = ggpo_recieve };
             ReplayManager.SaveReplay(rep);
-
-            //IsStart = false;
-            //Application.targetFrameRate = 15;
-            //Time.fixedDeltaTime = 1f / 15;
         }
         #endregion
     }

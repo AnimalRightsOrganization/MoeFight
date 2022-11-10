@@ -8,6 +8,6 @@ public class GlobalConfig : ScriptableObject
     public string Key = "ExampleGame";
 
     public ushort renderFPS = 60;   //渲染频率(30/60/90)
-    public ushort logicFPS = 50;    //帧同步频率(30/60)
+    public ushort logicFPS = 60;    //帧同步频率(30/60)
     public int TotalSecond = 99;    //比赛时长99(s)
 }

@@ -57,7 +57,7 @@ namespace Code.Server
                 return false;
             }
 
-            //UnityEngine.Application.targetFrameRate = 50; //0.02, 默认1E-05
+            //UnityEngine.Application.targetFrameRate = 60; //0.02, 默认1E-05
 
             m_RoomManager = new ServerRoomManager();
             m_PlayerManager = new ServerPlayerManager();
@@ -663,7 +663,7 @@ namespace Code.Server
             // 判断阶段
             if (cmd.Stage == 0)
             {
-                // 等待集齐两条，再广播。
+                // 等待双方场景切换完毕，再广播。
                 if (serverRoom.Stage_0_Count == 2)
                 {
                     // 让客户端开始倒计时。
@@ -677,7 +677,7 @@ namespace Code.Server
             }
             else if (cmd.Stage == 1)
             {
-                // 等待集齐两条，再广播。
+                // 等待双方倒计时结束，再广播。
                 if (serverRoom.Stage_1_Count == 2)
                 {
                     // 此时客户端倒计时结束。服务器完成第一帧同步，同时下发。
