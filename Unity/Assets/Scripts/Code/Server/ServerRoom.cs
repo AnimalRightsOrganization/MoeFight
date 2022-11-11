@@ -68,7 +68,7 @@ namespace Code.Server
 
         // 独立的帧同步对象
         public uint Tick;
-        public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始
+        public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
         // 20ms/帧
         private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。

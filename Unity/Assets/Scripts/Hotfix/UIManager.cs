@@ -48,8 +48,15 @@ namespace HotFix
             UIBase ui = null;
             if (stack.TryGetValue(scriptName, out ui) == false)
             {
-                Debug.LogError($"还没有创建：{scriptName}");
-                return null;
+                if (recyclePool.TryGetValue(scriptName, out ui) == false)
+                {
+                    Debug.LogError($"还没有创建：{scriptName}");
+                    return null;
+                }
+                else
+                {
+                    Debug.Log($"{scriptName}处于未激活状态");
+                }
             }
             return ui.GetComponent<T>();
         }
@@ -103,6 +110,11 @@ namespace HotFix
             if (ui == null)
             {
                 Debug.LogError("没有需要销毁的UI");
+                return;
+            }
+            if (stack.ContainsKey(scriptName) == false)
+            {
+                Debug.LogError($"没有需要销毁的UI：{scriptName}");
                 return;
             }
             stack.Remove(scriptName);

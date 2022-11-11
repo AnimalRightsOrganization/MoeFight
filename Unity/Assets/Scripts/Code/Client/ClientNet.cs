@@ -290,6 +290,10 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
+            // 模拟丢包
+            //int rd = UnityEngine.Random.Range(0, 10);
+            //if (rd == 5) return;
+
             SendPacketSerializable(PacketType.C2S_Input, cmd);
         }
         //以上是测试，保留

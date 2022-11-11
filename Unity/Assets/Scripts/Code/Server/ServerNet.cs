@@ -126,13 +126,13 @@ namespace Code.Server
 
                 if (player.Status == PlayerStatus.AtBattle)
                 {
-                    // 1.掉线（保留房间）
-                    // 2.杀掉进程（主动发送认输）
+                    // 一方断线，保留房间，给另一方发等待。
+                    // 双方断线，销毁房间。
                     //switch (disconnectInfo.Reason)
                     //{
-                    //    case DisconnectReason.Timeout: //超时
+                    //    case DisconnectReason.Timeout: //关闭网络，超时
                     //        break;
-                    //    case DisconnectReason.RemoteConnectionClose: //主动关闭
+                    //    case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
                     //        break;
                     //}
 
