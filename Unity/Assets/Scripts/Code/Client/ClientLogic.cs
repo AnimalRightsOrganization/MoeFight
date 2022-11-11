@@ -361,10 +361,15 @@ namespace Code.Client
         }
         private void OnBattleEnd(INetSerializable reader)
         {
-            Debug.Log("OnBattleEnd: save replay");
             var packet = (S2C_BattleEndPacket)reader;
 
             var clientRoom = ClientNet.Get.m_ClientRoom;
+            if (clientRoom.BattleMode == BattleMode.Training)
+            {
+                Debug.LogError("训练不保存录像");
+                return;
+            }
+
             var hostPlayer = clientRoom.HostPlayer;
             var guestPlayer = clientRoom.GuestPlayer;
             var scene = new S2C_LoadScenePacket
@@ -377,6 +382,7 @@ namespace Code.Client
             };
             var rep = new ReplayFormat { scene = scene, battleMode = (byte)clientRoom.BattleMode, winnerId = packet.WinnerSeatId, inputs = ggpo_recieve };
             ReplayManager.SaveReplay(rep);
+            Debug.Log("OnBattleEnd: save replay");
         }
         #endregion
     }

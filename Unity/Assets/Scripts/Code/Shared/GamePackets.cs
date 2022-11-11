@@ -56,6 +56,7 @@ namespace Code.Shared
         C2S_GameReady       ,   //请求准备
         C2S_BattleStart     ,   //请求开始战斗
         C2S_BattlePause     ,   //请求暂停战斗
+        C2S_BattleDrop      ,   //对方断线，服务器暂停
         C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
         // S2C /////////////
@@ -74,7 +75,8 @@ namespace Code.Shared
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         S2C_BattleReconnect ,   //重连战斗
         S2C_BattleStart     ,   //开始战斗（第一帧同步）
-        S2C_BattlePause     ,   //暂停战斗（暂停帧同步）
+        S2C_BattlePause     ,   //暂停战斗（客户端暂停，每人每局一次机会）
+        S2C_BattleDrop      ,   //暂停战斗（服务器暂停，一方断线）
         S2C_BattleEnd       ,   //比赛结束，结算
     }
 

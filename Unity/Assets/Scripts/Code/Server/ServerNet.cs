@@ -126,6 +126,9 @@ namespace Code.Server
 
                 if (player.Status == PlayerStatus.AtBattle)
                 {
+                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+
                     // 一方断线，保留房间，给另一方发等待。
                     // 双方断线，销毁房间。
                     //switch (disconnectInfo.Reason)
@@ -136,8 +139,6 @@ namespace Code.Server
                     //        break;
                     //}
 
-                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
                     if (otherPlayer.IsBot == false)
                     {
                         // ①掉线暂停
@@ -147,9 +148,14 @@ namespace Code.Server
                         var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
                         otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
                         otherPlayer.ResetToLobby();
+
+                        //serverRoom.CutDown(); //①掉线开始倒计时
+                        //m_RoomManager.RemoveServerRoom(serverRoomID); //②掉线结算解散
                     }
-                    //serverRoom.CutDown(); //①掉线开始倒计时
-                    m_RoomManager.RemoveServerRoom(serverRoomID); //②掉线结算解散
+                    else
+                    {
+                        m_RoomManager.RemoveServerRoom(serverRoomID);
+                    }
                 }
                 else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
                 {
@@ -157,7 +163,7 @@ namespace Code.Server
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
                     if (otherPlayer != null)
                     {
-                        var packet = new S2C_MatchResultPacket { Code = 2 };
+                        var packet = new S2C_MatchResultPacket { Code = 2 }; //解散房间，另一人退至大厅
                         otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
                     }
                     m_RoomManager.RemoveServerRoom(serverRoomID);
