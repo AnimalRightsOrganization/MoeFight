@@ -13,14 +13,14 @@ namespace HotFix
             m_Anim = m_Panel.GetComponent<Animator>();
         }
 
-        public void Idle()
+        public void FadeIn()
         {
-            m_Anim.Play("Idle");
+            m_Anim.Play("FadeIn");
         }
 
-        public void Play()
+        public void FadeOut()
         {
-            m_Anim.Play("Play");
+            m_Anim.Play("FadeOut");
         }
     }
 }

@@ -201,8 +201,11 @@ namespace HotFix
             await Task.Delay(1000);
 
             var ui_versus = UIManager.Get().Push<UI_Versus>();
-            ui_versus.Play();
+            ui_versus.FadeIn();
             await Task.Delay(1000);
+
+            //ui_versus.FadeOut();
+            //await Task.Delay(1000);
 
             // 跳转场景
             System.Action action = () =>
@@ -238,8 +241,11 @@ namespace HotFix
             await Task.Delay(1000);
 
             var ui_versus = UIManager.Get().Push<UI_Versus>();
-            ui_versus.Play();
+            ui_versus.FadeIn();
             await Task.Delay(1000);
+
+            //ui_versus.FadeOut();
+            //await Task.Delay(1000);
 
             ///*
             // 跳转场景

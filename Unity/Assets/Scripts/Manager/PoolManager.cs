@@ -27,7 +27,7 @@ public class PoolManager : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             string charaName = ((CharacterName)i).ToString();
-            Debug.Log($"{i}---{charaName}");
+            //Debug.Log($"{i}---{charaName}");
 
             var prefab = ResManager.LoadPrefab($"Prefabs/{charaName}");
             var lst = new List<GameObject>();
@@ -107,7 +107,7 @@ public class PoolManager : MonoBehaviour
             for (int i = active_list.Count - 1; i >= 0; i--)
             {
                 var obj = active_list[i];
-                Debug.Log($"{i}: {obj.gameObject.name}");
+                //Debug.Log($"{i}: {obj.gameObject.name}");
 
                 //active_list.Remove(obj);
                 //dic_inactive[charaName].Add(obj);
