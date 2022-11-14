@@ -112,9 +112,7 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_TestPVP:
                     {
-                        var packet = new S2C_JoinResultPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
+                        Debug.LogError("没有TestPVP模式");
                     }
                     break;
                 case PacketType.S2C_Input:

@@ -290,12 +290,6 @@ namespace Code.Client
         {
             switch (eventID)
             {
-                case PacketType.S2C_TestPVE:
-                    OnTestPVE(reader);
-                    break;
-                case PacketType.S2C_TestPVP:
-                    OnTestPVP(reader);
-                    break;
                 case PacketType.S2C_Input:
                     OnRecvInput(reader);
                     break;
@@ -308,25 +302,6 @@ namespace Code.Client
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
                     OnBattleEnd(reader);
                     break;
-            }
-        }
-        private void OnTestPVE(INetSerializable reader)
-        {
-            var packet = (S2C_JoinResultPacket)reader;
-            Debug.Log($"[S2C] 单人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
-            if (packet.Code == 0)
-            {
-                UIManager.Get().Push<UI_GameMenu>();
-                IsStart = true;
-            }
-        }
-        private void OnTestPVP(INetSerializable reader)
-        {
-            var packet = (S2C_JoinResultPacket)reader;
-            Debug.Log($"[S2C] 双人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
-            if (packet.Code == 0)
-            {
-                IsStart = true;
             }
         }
         private void OnRecvInput(INetSerializable reader)

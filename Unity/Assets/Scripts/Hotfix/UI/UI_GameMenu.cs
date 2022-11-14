@@ -130,6 +130,8 @@ namespace HotFix
             EventManager.UnRegisterEvent(OnNetCallback);
 
             UnbindDelegete();
+
+            PoolManager.Get().DespawnAll();
         }
 
         public static Transform GetParent(int index)

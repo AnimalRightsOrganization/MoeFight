@@ -182,6 +182,7 @@ namespace HotFix
             ClientNet.Get.m_ClientRoom.BattleMode = (BattleMode)packet.BattleMode;
 
 
+            UIManager.Get().PopAll();
             UIManager.Get().Push<UI_RoleSelect>();
         }
 

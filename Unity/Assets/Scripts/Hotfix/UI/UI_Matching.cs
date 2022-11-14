@@ -81,7 +81,8 @@ namespace HotFix
             var packet = (S2C_MatchResultPacket)reader;
             if (packet.Code == 0) //匹配成功
             {
-                this.Pop();
+                //this.Pop();
+                UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_RoleSelect>();
             }
             else if (packet.Code == 1) //匹配取消

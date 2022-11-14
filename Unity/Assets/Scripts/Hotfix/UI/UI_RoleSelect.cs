@@ -5,6 +5,7 @@ using Code.Client;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using HitstunConstants;
 
 namespace HotFix
 {
@@ -25,6 +26,10 @@ namespace HotFix
 
         ClientPlayer localPlayer;
         ClientPlayer rivalPlayer;
+
+        GameObject stage;
+        GameObject leftChara;
+        GameObject rightChara;
 
         #region 内置方法
         void Awake()
@@ -83,11 +88,15 @@ namespace HotFix
             EventManager.RegisterEvent(OnNetCallback);
 
             InitUI();
+
+            ShowStage();
         }
 
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
+
+            HideStage();
         }
 
         public override void ApplyLanguage()
@@ -115,13 +124,16 @@ namespace HotFix
                 case PacketType.S2C_LoadScene:
                     OnLoadScene(reader);
                     break;
+                case PacketType.S2C_TestPVE:
+                    OnTestPVE(reader);
+                    break;
             }
         }
 
         private void OnRoleSelect(INetSerializable reader)
         {
             var packet = (S2C_RoleSelectPacket)reader;
-            //Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
+            Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
 
             m_HeadImages[packet.SeatId].color = Color.white;
             m_HeadImages[packet.SeatId].sprite = m_Charactors[packet.RoleIndex].image.sprite;
@@ -132,6 +144,17 @@ namespace HotFix
             int length = roleArray.Length;
             int index = packet.RoleIndex % length;
             m_Rolename[packet.SeatId].text = roleArray[index].Name;
+
+            // 角色模型
+            string charaName = ((CharacterName)index).ToString();
+            if (packet.SeatId == 0)
+            {
+                SpawnLeftChara(charaName);
+            }
+            else if (packet.SeatId == 1)
+            {
+                SpawnRightChara(charaName);
+            }
         }
 
         private void OnMatchResult(INetSerializable reader)
@@ -170,13 +193,18 @@ namespace HotFix
             ClientNet.Get.m_ClientRoom.DoInit(packet);
             Debug.Log($"[C] 比赛开始，跳转到比赛场景\n{packet}");
 
+            // 给足动画时间
             m_ConfirmBtn[0].gameObject.SetActive(false);
             m_ReadyObj[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyObj[1].SetActive(true);
-            // 先变化状态，让用户看到，再切换场景。
-            await Task.Delay(1500);
+            await Task.Delay(1000);
 
+            var ui_versus = UIManager.Get().Push<UI_Versus>();
+            ui_versus.Play();
+            await Task.Delay(1000);
+
+            // 跳转场景
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
@@ -184,6 +212,45 @@ namespace HotFix
                 ClientNet.Get.SendBattleStart(0); //切换场景完成时发
             };
             GameManager.Get.LoadBattleAsync(action); //匹配赛
+        }
+
+        private async void OnTestPVE(INetSerializable reader)
+        {
+            var packet = (S2C_JoinResultPacket)reader;
+            Debug.Log($"[S2C] 单人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
+
+            var room = ClientNet.Get.m_ClientRoom;
+            var pt = new S2C_LoadScenePacket
+            {
+                RoomId = (short)room.RoomID,
+                BattleId = room.BattleID,
+                MapId = room.MapId,
+                Host = new PlayerLoadPacket { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId, RoleIndex = localPlayer.RoleIndex },
+                Guest = new PlayerLoadPacket { UserName = rivalPlayer.UserName, PeerId = rivalPlayer.PeerId, RoleIndex = rivalPlayer.RoleIndex },
+            };
+            room.DoInit(pt);
+
+            // 给足动画时间
+            m_ConfirmBtn[0].gameObject.SetActive(false);
+            m_ReadyObj[0].SetActive(true);
+            m_ConfirmBtn[1].gameObject.SetActive(false);
+            m_ReadyObj[1].SetActive(true);
+            await Task.Delay(1000);
+
+            var ui_versus = UIManager.Get().Push<UI_Versus>();
+            ui_versus.Play();
+            await Task.Delay(1000);
+
+            ///*
+            // 跳转场景
+            System.Action action = () =>
+            {
+                UIManager.Get().PopAll();
+                UIManager.Get().Push<UI_GameMenu>();
+                ClientLogic.Get.IsStart = true;
+            };
+            GameManager.Get.LoadBattleAsync(action); //训练
+            //*/
         }
         #endregion
 
@@ -231,6 +298,7 @@ namespace HotFix
                     ClientNet.Get.SendMatchQuit();
                     break;
             }
+            UIManager.Get().Push<UI_Lobby>();
         }
 
         void OnSendSelection(int id)
@@ -258,29 +326,7 @@ namespace HotFix
             {
                 case BattleMode.Editor:
                 case BattleMode.Training:
-                    var serverRoom = ClientNet.Get.m_ClientRoom;
-                    var packet = new S2C_LoadScenePacket
-                    {
-                        RoomId = (short)serverRoom.RoomID,
-                        BattleId = serverRoom.BattleID,
-                        MapId = serverRoom.MapId,
-                        Host = new PlayerLoadPacket { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId, RoleIndex = localPlayer.RoleIndex },
-                        Guest = new PlayerLoadPacket { UserName = rivalPlayer.UserName, PeerId = rivalPlayer.PeerId, RoleIndex = rivalPlayer.RoleIndex },
-                    };
-                    serverRoom.DoInit(packet);
-
-                    m_ConfirmBtn[0].gameObject.SetActive(false);
-                    m_ReadyObj[0].SetActive(true);
-                    m_ConfirmBtn[1].gameObject.SetActive(false);
-                    m_ReadyObj[1].SetActive(true);
-
-                    System.Action action = () =>
-                    {
-                        UIManager.Get().PopAll();
-                        UIManager.Get().Push<UI_GameMenu>();
-                        ClientNet.Get.SendTestPVE();
-                    };
-                    GameManager.Get.LoadBattleAsync(action); //训练
+                    ClientNet.Get.SendTestPVE();
                     break;
                 case BattleMode.Matching:
                     ClientNet.Get.SendGameReady();
@@ -289,6 +335,54 @@ namespace HotFix
                     Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
                     break;
             }
+        }
+
+        void ShowStage()
+        {
+            if (stage == null)
+            {
+                var prefab = ResManager.LoadPrefab("Prefabs/RoleSelect");
+                stage = Instantiate(prefab);
+                stage.name = "RoleSelect";
+            }
+            else
+            {
+                stage.SetActive(true);
+            }
+
+            string defaultChara = "KEN";
+            SpawnLeftChara(defaultChara);
+            SpawnRightChara(defaultChara);
+        }
+
+        void HideStage()
+        {
+            PoolManager.Get().Despawn(leftChara);
+            PoolManager.Get().Despawn(rightChara);
+            leftChara = null;
+            rightChara = null;
+
+            stage.SetActive(false);
+        }
+
+        void SpawnLeftChara(string charaName)
+        {
+            if (leftChara != null)
+                PoolManager.Get().Despawn(leftChara);
+            leftChara = PoolManager.Get().Spawn(charaName);
+            leftChara.transform.SetParent(stage.transform);
+            leftChara.transform.position = new Vector3(0, 0, -1);
+            leftChara.transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+        void SpawnRightChara(string charaName)
+        {
+            if (rightChara != null)
+                PoolManager.Get().Despawn(rightChara);
+            rightChara = PoolManager.Get().Spawn(charaName);
+            rightChara.transform.SetParent(stage.transform);
+            rightChara.transform.position = new Vector3(0, 0, 1);
+            rightChara.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 }
