@@ -181,7 +181,9 @@ namespace HotFix
             await Task.Delay(1000);
 
             var ui_versus = UIManager.Get().Push<UI_Versus>();
-            ui_versus.FadeIn();
+            int left = packet.Host.RoleIndex;
+            int right = packet.Guest.RoleIndex;
+            ui_versus.FadeIn(left, right);
             await Task.Delay(1000);
 
             //ui_versus.FadeOut();
@@ -221,7 +223,9 @@ namespace HotFix
             await Task.Delay(1000);
 
             var ui_versus = UIManager.Get().Push<UI_Versus>();
-            ui_versus.FadeIn();
+            int left = pt.Host.RoleIndex;
+            int right = pt.Guest.RoleIndex;
+            ui_versus.FadeIn(left, right);
             await Task.Delay(1000);
 
             //ui_versus.FadeOut();

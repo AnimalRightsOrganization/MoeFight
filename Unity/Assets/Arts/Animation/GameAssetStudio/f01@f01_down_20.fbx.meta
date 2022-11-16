@@ -1,305 +1,893 @@
 fileFormatVersion: 2
 guid: 54ad143819c6d184297dd98f40492490
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: atama_n
-    100002: b_lip_center
-    100004: Back_skart1
-    100006: Back_skart2
-    100008: Back_skart3
-    100010: cheek_Left
-    100012: cheek_Right
-    100014: chin
-    100016: eye_Left
-    100018: eye_Right
-    100020: eyebrow_a_Left
-    100022: eyebrow_a_Right
-    100024: eyebrow_b_Left
-    100026: eyebrow_b_Right
-    100028: eyelid_und1_Left
-    100030: eyelid_und1_Right
-    100032: eyelid_und2_Left
-    100034: eyelid_und2_Right
-    100036: eyelid_und_Left
-    100038: eyelid_und_Right
-    100040: eyerid1_Left
-    100042: eyerid1_Right
-    100044: eyerid2_Left
-    100046: eyerid2_Right
-    100048: eyerid_Left
-    100050: eyerid_Right
-    100052: //RootNode
-    100054: face
-    100056: Front_skart1
-    100058: Front_skart2
-    100060: Front_skart3
-    100062: Glasses_Null
-    100064: Head
-    100066: Head_null
-    100068: Hips
-    100070: inner_corner_of_eye_Left
-    100072: inner_corner_of_eye_Right
-    100074: jaw
-    100076: Left_skart1
-    100078: Left_skart2
-    100080: Left_skart3
-    100082: LeftArm
-    100084: LeftArmRoll
-    100086: LeftBreast
-    100088: LeftEarring_Null
-    100090: LeftFoot
-    100092: LeftForeArm
-    100094: LeftForeArm_Helper
-    100096: LeftForeArmRoll
-    100098: LeftHand
-    100100: LeftHandIndex1
-    100102: LeftHandIndex2
-    100104: LeftHandIndex3
-    100106: LeftHandIndexNull
-    100108: LeftHanditem_Null
-    100110: LeftHandMiddle1
-    100112: LeftHandMiddle2
-    100114: LeftHandMiddle3
-    100116: LeftHandMiddleNull
-    100118: LeftHandPinky1
-    100120: LeftHandPinky2
-    100122: LeftHandPinky3
-    100124: LeftHandPinkyNull
-    100126: LeftHandRing1
-    100128: LeftHandRing2
-    100130: LeftHandRing3
-    100132: LeftHandRingNull
-    100134: LeftHandThumb1
-    100136: LeftHandThumb2
-    100138: LeftHandThumb3
-    100140: LeftHandThumbNull
-    100142: LeftHip_Helper
-    100144: LeftLeg
-    100146: LeftLeg_Helper
-    100148: LeftNipple
-    100150: LeftShoulder
-    100152: LeftToes
-    100154: LeftToesNull
-    100156: LeftUpLeg
-    100158: lip_Left
-    100160: lip_Right
-    100162: lip_t_Left
-    100164: lip_t_Right
-    100166: lip_top_Left
-    100168: lip_top_Right
-    100170: lip_u_Left
-    100172: lip_u_Right
-    100174: mayu
-    100176: Neck
-    100178: nose
-    100180: nostrir_Left
-    100182: nostrir_Right
-    100184: PelvisRoot
-    100186: Right_skart1
-    100188: Right_skart2
-    100190: Right_skart3
-    100192: RightArm
-    100194: RightArmRoll
-    100196: RightBreast
-    100198: RightEarring_Null
-    100200: RightFoot
-    100202: RightForeArm
-    100204: RightForeArm_Helper
-    100206: RightForeArmRoll
-    100208: RightHand
-    100210: RightHandIndex1
-    100212: RightHandIndex2
-    100214: RightHandIndex3
-    100216: RightHandIndexNull
-    100218: RightHanditem_Null
-    100220: RightHandMiddle1
-    100222: RightHandMiddle2
-    100224: RightHandMiddle3
-    100226: RightHandMiddleNull
-    100228: RightHandPinky1
-    100230: RightHandPinky2
-    100232: RightHandPinky3
-    100234: RightHandPinkyNull
-    100236: RightHandRing1
-    100238: RightHandRing2
-    100240: RightHandRing3
-    100242: RightHandRingNull
-    100244: RightHandThumb1
-    100246: RightHandThumb2
-    100248: RightHandThumb3
-    100250: RightHandThumbNull
-    100252: RightHip_Helper
-    100254: RightLeg
-    100256: RightLeg_Helper
-    100258: RightNipple
-    100260: RightShoulder
-    100262: RightToes
-    100264: RightToesNull
-    100266: RightUpLeg
-    100268: rip_btm_Left
-    100270: rip_btm_Right
-    100272: Spine
-    100274: Spine1
-    100276: Spine2
-    100278: Spine3
-    100280: tail_of_eye_Left
-    100282: tail_of_eye_Right
-    100284: temple_Left
-    100286: temple_Right
-    100288: u_lip_center
-    400000: atama_n
-    400002: b_lip_center
-    400004: Back_skart1
-    400006: Back_skart2
-    400008: Back_skart3
-    400010: cheek_Left
-    400012: cheek_Right
-    400014: chin
-    400016: eye_Left
-    400018: eye_Right
-    400020: eyebrow_a_Left
-    400022: eyebrow_a_Right
-    400024: eyebrow_b_Left
-    400026: eyebrow_b_Right
-    400028: eyelid_und1_Left
-    400030: eyelid_und1_Right
-    400032: eyelid_und2_Left
-    400034: eyelid_und2_Right
-    400036: eyelid_und_Left
-    400038: eyelid_und_Right
-    400040: eyerid1_Left
-    400042: eyerid1_Right
-    400044: eyerid2_Left
-    400046: eyerid2_Right
-    400048: eyerid_Left
-    400050: eyerid_Right
-    400052: //RootNode
-    400054: face
-    400056: Front_skart1
-    400058: Front_skart2
-    400060: Front_skart3
-    400062: Glasses_Null
-    400064: Head
-    400066: Head_null
-    400068: Hips
-    400070: inner_corner_of_eye_Left
-    400072: inner_corner_of_eye_Right
-    400074: jaw
-    400076: Left_skart1
-    400078: Left_skart2
-    400080: Left_skart3
-    400082: LeftArm
-    400084: LeftArmRoll
-    400086: LeftBreast
-    400088: LeftEarring_Null
-    400090: LeftFoot
-    400092: LeftForeArm
-    400094: LeftForeArm_Helper
-    400096: LeftForeArmRoll
-    400098: LeftHand
-    400100: LeftHandIndex1
-    400102: LeftHandIndex2
-    400104: LeftHandIndex3
-    400106: LeftHandIndexNull
-    400108: LeftHanditem_Null
-    400110: LeftHandMiddle1
-    400112: LeftHandMiddle2
-    400114: LeftHandMiddle3
-    400116: LeftHandMiddleNull
-    400118: LeftHandPinky1
-    400120: LeftHandPinky2
-    400122: LeftHandPinky3
-    400124: LeftHandPinkyNull
-    400126: LeftHandRing1
-    400128: LeftHandRing2
-    400130: LeftHandRing3
-    400132: LeftHandRingNull
-    400134: LeftHandThumb1
-    400136: LeftHandThumb2
-    400138: LeftHandThumb3
-    400140: LeftHandThumbNull
-    400142: LeftHip_Helper
-    400144: LeftLeg
-    400146: LeftLeg_Helper
-    400148: LeftNipple
-    400150: LeftShoulder
-    400152: LeftToes
-    400154: LeftToesNull
-    400156: LeftUpLeg
-    400158: lip_Left
-    400160: lip_Right
-    400162: lip_t_Left
-    400164: lip_t_Right
-    400166: lip_top_Left
-    400168: lip_top_Right
-    400170: lip_u_Left
-    400172: lip_u_Right
-    400174: mayu
-    400176: Neck
-    400178: nose
-    400180: nostrir_Left
-    400182: nostrir_Right
-    400184: PelvisRoot
-    400186: Right_skart1
-    400188: Right_skart2
-    400190: Right_skart3
-    400192: RightArm
-    400194: RightArmRoll
-    400196: RightBreast
-    400198: RightEarring_Null
-    400200: RightFoot
-    400202: RightForeArm
-    400204: RightForeArm_Helper
-    400206: RightForeArmRoll
-    400208: RightHand
-    400210: RightHandIndex1
-    400212: RightHandIndex2
-    400214: RightHandIndex3
-    400216: RightHandIndexNull
-    400218: RightHanditem_Null
-    400220: RightHandMiddle1
-    400222: RightHandMiddle2
-    400224: RightHandMiddle3
-    400226: RightHandMiddleNull
-    400228: RightHandPinky1
-    400230: RightHandPinky2
-    400232: RightHandPinky3
-    400234: RightHandPinkyNull
-    400236: RightHandRing1
-    400238: RightHandRing2
-    400240: RightHandRing3
-    400242: RightHandRingNull
-    400244: RightHandThumb1
-    400246: RightHandThumb2
-    400248: RightHandThumb3
-    400250: RightHandThumbNull
-    400252: RightHip_Helper
-    400254: RightLeg
-    400256: RightLeg_Helper
-    400258: RightNipple
-    400260: RightShoulder
-    400262: RightToes
-    400264: RightToesNull
-    400266: RightUpLeg
-    400268: rip_btm_Left
-    400270: rip_btm_Right
-    400272: Spine
-    400274: Spine1
-    400276: Spine2
-    400278: Spine3
-    400280: tail_of_eye_Left
-    400282: tail_of_eye_Right
-    400284: temple_Left
-    400286: temple_Right
-    400288: u_lip_center
-    7400000: Die
-    7400002: GoDown
-    9500000: //RootNode
-    2186277476908879412: ImportLogs
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: atama_n
+  - first:
+      1: 100002
+    second: b_lip_center
+  - first:
+      1: 100004
+    second: Back_skart1
+  - first:
+      1: 100006
+    second: Back_skart2
+  - first:
+      1: 100008
+    second: Back_skart3
+  - first:
+      1: 100010
+    second: cheek_Left
+  - first:
+      1: 100012
+    second: cheek_Right
+  - first:
+      1: 100014
+    second: chin
+  - first:
+      1: 100016
+    second: eye_Left
+  - first:
+      1: 100018
+    second: eye_Right
+  - first:
+      1: 100020
+    second: eyebrow_a_Left
+  - first:
+      1: 100022
+    second: eyebrow_a_Right
+  - first:
+      1: 100024
+    second: eyebrow_b_Left
+  - first:
+      1: 100026
+    second: eyebrow_b_Right
+  - first:
+      1: 100028
+    second: eyelid_und1_Left
+  - first:
+      1: 100030
+    second: eyelid_und1_Right
+  - first:
+      1: 100032
+    second: eyelid_und2_Left
+  - first:
+      1: 100034
+    second: eyelid_und2_Right
+  - first:
+      1: 100036
+    second: eyelid_und_Left
+  - first:
+      1: 100038
+    second: eyelid_und_Right
+  - first:
+      1: 100040
+    second: eyerid1_Left
+  - first:
+      1: 100042
+    second: eyerid1_Right
+  - first:
+      1: 100044
+    second: eyerid2_Left
+  - first:
+      1: 100046
+    second: eyerid2_Right
+  - first:
+      1: 100048
+    second: eyerid_Left
+  - first:
+      1: 100050
+    second: eyerid_Right
+  - first:
+      1: 100052
+    second: //RootNode
+  - first:
+      1: 100054
+    second: face
+  - first:
+      1: 100056
+    second: Front_skart1
+  - first:
+      1: 100058
+    second: Front_skart2
+  - first:
+      1: 100060
+    second: Front_skart3
+  - first:
+      1: 100062
+    second: Glasses_Null
+  - first:
+      1: 100064
+    second: Head
+  - first:
+      1: 100066
+    second: Head_null
+  - first:
+      1: 100068
+    second: Hips
+  - first:
+      1: 100070
+    second: inner_corner_of_eye_Left
+  - first:
+      1: 100072
+    second: inner_corner_of_eye_Right
+  - first:
+      1: 100074
+    second: jaw
+  - first:
+      1: 100076
+    second: Left_skart1
+  - first:
+      1: 100078
+    second: Left_skart2
+  - first:
+      1: 100080
+    second: Left_skart3
+  - first:
+      1: 100082
+    second: LeftArm
+  - first:
+      1: 100084
+    second: LeftArmRoll
+  - first:
+      1: 100086
+    second: LeftBreast
+  - first:
+      1: 100088
+    second: LeftEarring_Null
+  - first:
+      1: 100090
+    second: LeftFoot
+  - first:
+      1: 100092
+    second: LeftForeArm
+  - first:
+      1: 100094
+    second: LeftForeArm_Helper
+  - first:
+      1: 100096
+    second: LeftForeArmRoll
+  - first:
+      1: 100098
+    second: LeftHand
+  - first:
+      1: 100100
+    second: LeftHandIndex1
+  - first:
+      1: 100102
+    second: LeftHandIndex2
+  - first:
+      1: 100104
+    second: LeftHandIndex3
+  - first:
+      1: 100106
+    second: LeftHandIndexNull
+  - first:
+      1: 100108
+    second: LeftHanditem_Null
+  - first:
+      1: 100110
+    second: LeftHandMiddle1
+  - first:
+      1: 100112
+    second: LeftHandMiddle2
+  - first:
+      1: 100114
+    second: LeftHandMiddle3
+  - first:
+      1: 100116
+    second: LeftHandMiddleNull
+  - first:
+      1: 100118
+    second: LeftHandPinky1
+  - first:
+      1: 100120
+    second: LeftHandPinky2
+  - first:
+      1: 100122
+    second: LeftHandPinky3
+  - first:
+      1: 100124
+    second: LeftHandPinkyNull
+  - first:
+      1: 100126
+    second: LeftHandRing1
+  - first:
+      1: 100128
+    second: LeftHandRing2
+  - first:
+      1: 100130
+    second: LeftHandRing3
+  - first:
+      1: 100132
+    second: LeftHandRingNull
+  - first:
+      1: 100134
+    second: LeftHandThumb1
+  - first:
+      1: 100136
+    second: LeftHandThumb2
+  - first:
+      1: 100138
+    second: LeftHandThumb3
+  - first:
+      1: 100140
+    second: LeftHandThumbNull
+  - first:
+      1: 100142
+    second: LeftHip_Helper
+  - first:
+      1: 100144
+    second: LeftLeg
+  - first:
+      1: 100146
+    second: LeftLeg_Helper
+  - first:
+      1: 100148
+    second: LeftNipple
+  - first:
+      1: 100150
+    second: LeftShoulder
+  - first:
+      1: 100152
+    second: LeftToes
+  - first:
+      1: 100154
+    second: LeftToesNull
+  - first:
+      1: 100156
+    second: LeftUpLeg
+  - first:
+      1: 100158
+    second: lip_Left
+  - first:
+      1: 100160
+    second: lip_Right
+  - first:
+      1: 100162
+    second: lip_t_Left
+  - first:
+      1: 100164
+    second: lip_t_Right
+  - first:
+      1: 100166
+    second: lip_top_Left
+  - first:
+      1: 100168
+    second: lip_top_Right
+  - first:
+      1: 100170
+    second: lip_u_Left
+  - first:
+      1: 100172
+    second: lip_u_Right
+  - first:
+      1: 100174
+    second: mayu
+  - first:
+      1: 100176
+    second: Neck
+  - first:
+      1: 100178
+    second: nose
+  - first:
+      1: 100180
+    second: nostrir_Left
+  - first:
+      1: 100182
+    second: nostrir_Right
+  - first:
+      1: 100184
+    second: PelvisRoot
+  - first:
+      1: 100186
+    second: Right_skart1
+  - first:
+      1: 100188
+    second: Right_skart2
+  - first:
+      1: 100190
+    second: Right_skart3
+  - first:
+      1: 100192
+    second: RightArm
+  - first:
+      1: 100194
+    second: RightArmRoll
+  - first:
+      1: 100196
+    second: RightBreast
+  - first:
+      1: 100198
+    second: RightEarring_Null
+  - first:
+      1: 100200
+    second: RightFoot
+  - first:
+      1: 100202
+    second: RightForeArm
+  - first:
+      1: 100204
+    second: RightForeArm_Helper
+  - first:
+      1: 100206
+    second: RightForeArmRoll
+  - first:
+      1: 100208
+    second: RightHand
+  - first:
+      1: 100210
+    second: RightHandIndex1
+  - first:
+      1: 100212
+    second: RightHandIndex2
+  - first:
+      1: 100214
+    second: RightHandIndex3
+  - first:
+      1: 100216
+    second: RightHandIndexNull
+  - first:
+      1: 100218
+    second: RightHanditem_Null
+  - first:
+      1: 100220
+    second: RightHandMiddle1
+  - first:
+      1: 100222
+    second: RightHandMiddle2
+  - first:
+      1: 100224
+    second: RightHandMiddle3
+  - first:
+      1: 100226
+    second: RightHandMiddleNull
+  - first:
+      1: 100228
+    second: RightHandPinky1
+  - first:
+      1: 100230
+    second: RightHandPinky2
+  - first:
+      1: 100232
+    second: RightHandPinky3
+  - first:
+      1: 100234
+    second: RightHandPinkyNull
+  - first:
+      1: 100236
+    second: RightHandRing1
+  - first:
+      1: 100238
+    second: RightHandRing2
+  - first:
+      1: 100240
+    second: RightHandRing3
+  - first:
+      1: 100242
+    second: RightHandRingNull
+  - first:
+      1: 100244
+    second: RightHandThumb1
+  - first:
+      1: 100246
+    second: RightHandThumb2
+  - first:
+      1: 100248
+    second: RightHandThumb3
+  - first:
+      1: 100250
+    second: RightHandThumbNull
+  - first:
+      1: 100252
+    second: RightHip_Helper
+  - first:
+      1: 100254
+    second: RightLeg
+  - first:
+      1: 100256
+    second: RightLeg_Helper
+  - first:
+      1: 100258
+    second: RightNipple
+  - first:
+      1: 100260
+    second: RightShoulder
+  - first:
+      1: 100262
+    second: RightToes
+  - first:
+      1: 100264
+    second: RightToesNull
+  - first:
+      1: 100266
+    second: RightUpLeg
+  - first:
+      1: 100268
+    second: rip_btm_Left
+  - first:
+      1: 100270
+    second: rip_btm_Right
+  - first:
+      1: 100272
+    second: Spine
+  - first:
+      1: 100274
+    second: Spine1
+  - first:
+      1: 100276
+    second: Spine2
+  - first:
+      1: 100278
+    second: Spine3
+  - first:
+      1: 100280
+    second: tail_of_eye_Left
+  - first:
+      1: 100282
+    second: tail_of_eye_Right
+  - first:
+      1: 100284
+    second: temple_Left
+  - first:
+      1: 100286
+    second: temple_Right
+  - first:
+      1: 100288
+    second: u_lip_center
+  - first:
+      4: 400000
+    second: atama_n
+  - first:
+      4: 400002
+    second: b_lip_center
+  - first:
+      4: 400004
+    second: Back_skart1
+  - first:
+      4: 400006
+    second: Back_skart2
+  - first:
+      4: 400008
+    second: Back_skart3
+  - first:
+      4: 400010
+    second: cheek_Left
+  - first:
+      4: 400012
+    second: cheek_Right
+  - first:
+      4: 400014
+    second: chin
+  - first:
+      4: 400016
+    second: eye_Left
+  - first:
+      4: 400018
+    second: eye_Right
+  - first:
+      4: 400020
+    second: eyebrow_a_Left
+  - first:
+      4: 400022
+    second: eyebrow_a_Right
+  - first:
+      4: 400024
+    second: eyebrow_b_Left
+  - first:
+      4: 400026
+    second: eyebrow_b_Right
+  - first:
+      4: 400028
+    second: eyelid_und1_Left
+  - first:
+      4: 400030
+    second: eyelid_und1_Right
+  - first:
+      4: 400032
+    second: eyelid_und2_Left
+  - first:
+      4: 400034
+    second: eyelid_und2_Right
+  - first:
+      4: 400036
+    second: eyelid_und_Left
+  - first:
+      4: 400038
+    second: eyelid_und_Right
+  - first:
+      4: 400040
+    second: eyerid1_Left
+  - first:
+      4: 400042
+    second: eyerid1_Right
+  - first:
+      4: 400044
+    second: eyerid2_Left
+  - first:
+      4: 400046
+    second: eyerid2_Right
+  - first:
+      4: 400048
+    second: eyerid_Left
+  - first:
+      4: 400050
+    second: eyerid_Right
+  - first:
+      4: 400052
+    second: //RootNode
+  - first:
+      4: 400054
+    second: face
+  - first:
+      4: 400056
+    second: Front_skart1
+  - first:
+      4: 400058
+    second: Front_skart2
+  - first:
+      4: 400060
+    second: Front_skart3
+  - first:
+      4: 400062
+    second: Glasses_Null
+  - first:
+      4: 400064
+    second: Head
+  - first:
+      4: 400066
+    second: Head_null
+  - first:
+      4: 400068
+    second: Hips
+  - first:
+      4: 400070
+    second: inner_corner_of_eye_Left
+  - first:
+      4: 400072
+    second: inner_corner_of_eye_Right
+  - first:
+      4: 400074
+    second: jaw
+  - first:
+      4: 400076
+    second: Left_skart1
+  - first:
+      4: 400078
+    second: Left_skart2
+  - first:
+      4: 400080
+    second: Left_skart3
+  - first:
+      4: 400082
+    second: LeftArm
+  - first:
+      4: 400084
+    second: LeftArmRoll
+  - first:
+      4: 400086
+    second: LeftBreast
+  - first:
+      4: 400088
+    second: LeftEarring_Null
+  - first:
+      4: 400090
+    second: LeftFoot
+  - first:
+      4: 400092
+    second: LeftForeArm
+  - first:
+      4: 400094
+    second: LeftForeArm_Helper
+  - first:
+      4: 400096
+    second: LeftForeArmRoll
+  - first:
+      4: 400098
+    second: LeftHand
+  - first:
+      4: 400100
+    second: LeftHandIndex1
+  - first:
+      4: 400102
+    second: LeftHandIndex2
+  - first:
+      4: 400104
+    second: LeftHandIndex3
+  - first:
+      4: 400106
+    second: LeftHandIndexNull
+  - first:
+      4: 400108
+    second: LeftHanditem_Null
+  - first:
+      4: 400110
+    second: LeftHandMiddle1
+  - first:
+      4: 400112
+    second: LeftHandMiddle2
+  - first:
+      4: 400114
+    second: LeftHandMiddle3
+  - first:
+      4: 400116
+    second: LeftHandMiddleNull
+  - first:
+      4: 400118
+    second: LeftHandPinky1
+  - first:
+      4: 400120
+    second: LeftHandPinky2
+  - first:
+      4: 400122
+    second: LeftHandPinky3
+  - first:
+      4: 400124
+    second: LeftHandPinkyNull
+  - first:
+      4: 400126
+    second: LeftHandRing1
+  - first:
+      4: 400128
+    second: LeftHandRing2
+  - first:
+      4: 400130
+    second: LeftHandRing3
+  - first:
+      4: 400132
+    second: LeftHandRingNull
+  - first:
+      4: 400134
+    second: LeftHandThumb1
+  - first:
+      4: 400136
+    second: LeftHandThumb2
+  - first:
+      4: 400138
+    second: LeftHandThumb3
+  - first:
+      4: 400140
+    second: LeftHandThumbNull
+  - first:
+      4: 400142
+    second: LeftHip_Helper
+  - first:
+      4: 400144
+    second: LeftLeg
+  - first:
+      4: 400146
+    second: LeftLeg_Helper
+  - first:
+      4: 400148
+    second: LeftNipple
+  - first:
+      4: 400150
+    second: LeftShoulder
+  - first:
+      4: 400152
+    second: LeftToes
+  - first:
+      4: 400154
+    second: LeftToesNull
+  - first:
+      4: 400156
+    second: LeftUpLeg
+  - first:
+      4: 400158
+    second: lip_Left
+  - first:
+      4: 400160
+    second: lip_Right
+  - first:
+      4: 400162
+    second: lip_t_Left
+  - first:
+      4: 400164
+    second: lip_t_Right
+  - first:
+      4: 400166
+    second: lip_top_Left
+  - first:
+      4: 400168
+    second: lip_top_Right
+  - first:
+      4: 400170
+    second: lip_u_Left
+  - first:
+      4: 400172
+    second: lip_u_Right
+  - first:
+      4: 400174
+    second: mayu
+  - first:
+      4: 400176
+    second: Neck
+  - first:
+      4: 400178
+    second: nose
+  - first:
+      4: 400180
+    second: nostrir_Left
+  - first:
+      4: 400182
+    second: nostrir_Right
+  - first:
+      4: 400184
+    second: PelvisRoot
+  - first:
+      4: 400186
+    second: Right_skart1
+  - first:
+      4: 400188
+    second: Right_skart2
+  - first:
+      4: 400190
+    second: Right_skart3
+  - first:
+      4: 400192
+    second: RightArm
+  - first:
+      4: 400194
+    second: RightArmRoll
+  - first:
+      4: 400196
+    second: RightBreast
+  - first:
+      4: 400198
+    second: RightEarring_Null
+  - first:
+      4: 400200
+    second: RightFoot
+  - first:
+      4: 400202
+    second: RightForeArm
+  - first:
+      4: 400204
+    second: RightForeArm_Helper
+  - first:
+      4: 400206
+    second: RightForeArmRoll
+  - first:
+      4: 400208
+    second: RightHand
+  - first:
+      4: 400210
+    second: RightHandIndex1
+  - first:
+      4: 400212
+    second: RightHandIndex2
+  - first:
+      4: 400214
+    second: RightHandIndex3
+  - first:
+      4: 400216
+    second: RightHandIndexNull
+  - first:
+      4: 400218
+    second: RightHanditem_Null
+  - first:
+      4: 400220
+    second: RightHandMiddle1
+  - first:
+      4: 400222
+    second: RightHandMiddle2
+  - first:
+      4: 400224
+    second: RightHandMiddle3
+  - first:
+      4: 400226
+    second: RightHandMiddleNull
+  - first:
+      4: 400228
+    second: RightHandPinky1
+  - first:
+      4: 400230
+    second: RightHandPinky2
+  - first:
+      4: 400232
+    second: RightHandPinky3
+  - first:
+      4: 400234
+    second: RightHandPinkyNull
+  - first:
+      4: 400236
+    second: RightHandRing1
+  - first:
+      4: 400238
+    second: RightHandRing2
+  - first:
+      4: 400240
+    second: RightHandRing3
+  - first:
+      4: 400242
+    second: RightHandRingNull
+  - first:
+      4: 400244
+    second: RightHandThumb1
+  - first:
+      4: 400246
+    second: RightHandThumb2
+  - first:
+      4: 400248
+    second: RightHandThumb3
+  - first:
+      4: 400250
+    second: RightHandThumbNull
+  - first:
+      4: 400252
+    second: RightHip_Helper
+  - first:
+      4: 400254
+    second: RightLeg
+  - first:
+      4: 400256
+    second: RightLeg_Helper
+  - first:
+      4: 400258
+    second: RightNipple
+  - first:
+      4: 400260
+    second: RightShoulder
+  - first:
+      4: 400262
+    second: RightToes
+  - first:
+      4: 400264
+    second: RightToesNull
+  - first:
+      4: 400266
+    second: RightUpLeg
+  - first:
+      4: 400268
+    second: rip_btm_Left
+  - first:
+      4: 400270
+    second: rip_btm_Right
+  - first:
+      4: 400272
+    second: Spine
+  - first:
+      4: 400274
+    second: Spine1
+  - first:
+      4: 400276
+    second: Spine2
+  - first:
+      4: 400278
+    second: Spine3
+  - first:
+      4: 400280
+    second: tail_of_eye_Left
+  - first:
+      4: 400282
+    second: tail_of_eye_Right
+  - first:
+      4: 400284
+    second: temple_Left
+  - first:
+      4: 400286
+    second: temple_Right
+  - first:
+      4: 400288
+    second: u_lip_center
+  - first:
+      74: 7400000
+    second: Die
+  - first:
+      74: 7400002
+    second: GoDown
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
   externalObjects: {}
   materials:
-    importMaterials: 1
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
@@ -308,19 +896,57 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Inbetween bone
-      rotation in copied configuration does not match rotation in animation file:\n\t'Spine1'
-      : rotation error = 4.564743 deg\n\t'Spine3' : rotation error = 4.528812 deg\n\t'LeftForeArmRoll'
-      : rotation error = 33.234261 deg\n"
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'LeftUpLeg'
+      : position error = 80.598190 mm\n\t'LeftLeg' : position error = 424.482544
+      mm\n\t'LeftFoot' : position error = 410.426758 mm\n\t'LeftToes' : position
+      error = 111.855087 mm\n\t'RightUpLeg' : position error = 80.598160 mm\n\t'RightLeg'
+      : position error = 424.482635 mm\n\t'RightFoot' : position error = 410.426392
+      mm\n\t'RightToes' : position error = 111.855125 mm\n\t'Spine' : position error
+      = 79.764008 mm\n\t'Spine1' : position error = 70.760231 mm\n\t'Spine2' : position
+      error = 62.303162 mm\n\t'Spine3' : position error = 55.983807 mm\n\t'Neck'
+      : position error = 237.803299 mm\n\t'Head' : position error = 60.725189 mm\n\t'atama_n'
+      : position error = 31.294424 mm\n\t'eye_Left' : position error = 32.695633
+      mm\n\t'eye_Right' : position error = 32.695641 mm\n\t'LeftShoulder' : position
+      error = 173.035324 mm\n\t'LeftArm' : position error = 98.284576 mm\n\t'LeftArmRoll'
+      : position error = 129.603271 mm\n\t'LeftForeArm' : position error = 117.333679
+      mm\n\t'LeftForeArmRoll' : position error = 160.228943 mm\n\t'LeftHand' : position
+      error = 76.311188 mm\n\t'LeftHandThumb1' : position error = 36.863274 mm\n\t'LeftHandThumb2'
+      : position error = 28.258797 mm\n\t'LeftHandThumb3' : position error = 22.404879
+      mm\n\t'LeftHandIndex1' : position error = 87.540077 mm\n\t'LeftHandIndex2'
+      : position error = 25.229376 mm\n\t'LeftHandIndex3' : position error = 18.693695
+      mm\n\t'LeftHandMiddle1' : position error = 84.808212 mm\n\t'LeftHandMiddle2'
+      : position error = 28.253811 mm\n\t'LeftHandMiddle3' : position error = 20.714239
+      mm\n\t'LeftHandRing1' : position error = 82.084190 mm\n\t'LeftHandRing2' :
+      position error = 26.104559 mm\n\t'LeftHandRing3' : position error = 19.581347
+      mm\n\t'LeftHandPinky1' : position error = 77.977547 mm\n\t'LeftHandPinky2'
+      : position error = 20.703266 mm\n\t'LeftHandPinky3' : position error = 15.367469
+      mm\n\t'RightShoulder' : position error = 173.032120 mm\n\t'RightArm' : position
+      error = 98.284477 mm\n\t'RightArmRoll' : position error = 129.602890 mm\n\t'RightForeArm'
+      : position error = 117.332993 mm\n\t'RightForeArmRoll' : position error = 160.228729
+      mm\n\t'RightHand' : position error = 76.311943 mm\n\t'RightHandThumb1' : position
+      error = 36.862934 mm\n\t'RightHandThumb2' : position error = 28.258738 mm\n\t'RightHandThumb3'
+      : position error = 22.402643 mm\n\t'RightHandIndex1' : position error = 87.539246
+      mm\n\t'RightHandIndex2' : position error = 25.229435 mm\n\t'RightHandIndex3'
+      : position error = 18.693203 mm\n\t'RightHandMiddle1' : position error = 84.807030
+      mm\n\t'RightHandMiddle2' : position error = 28.254025 mm\n\t'RightHandMiddle3'
+      : position error = 20.713377 mm\n\t'RightHandRing1' : position error = 82.083298
+      mm\n\t'RightHandRing2' : position error = 26.104151 mm\n\t'RightHandRing3'
+      : position error = 19.581972 mm\n\t'RightHandPinky1' : position error = 77.977173
+      mm\n\t'RightHandPinky2' : position error = 20.702204 mm\n\t'RightHandPinky3'
+      : position error = 15.368430 mm\nCopied Avatar Rig Configuration mis-match.
+      Inbetween bone rotation in copied configuration does not match rotation in
+      animation file:\n\t'Spine1' : rotation error = 4.564743 deg\n\t'Spine3' : rotation
+      error = 4.528812 deg\n\t'LeftForeArmRoll' : rotation error = 33.234261 deg\n"
     animationImportErrors: 
     animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar to
-      improve retargeting quality.\n\t'Spine1' is inbetween humanoid transforms and
-      has rotation animation that will be discarded.\n\t'Spine3' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'RightForeArm'
-      has translation animation that will be discarded.\n"
+      might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Spine1' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\t'Spine3' is inbetween
+      humanoid transforms and has rotation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -336,6 +962,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Die
       takeName: Take 001
+      internalID: 0
       firstFrame: 0
       lastFrame: 46
       wrapMode: 0
@@ -364,6 +991,7 @@ ModelImporter:
     - serializedVersion: 16
       name: GoDown
       takeName: Take 001
+      internalID: 0
       firstFrame: 0
       lastFrame: 46
       wrapMode: 0
@@ -396,25 +1024,34 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    bakeAxisConversion: 0
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -423,10 +1060,10 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
-  copyAvatar: 1
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human:
     - boneName: Hips
       humanName: Hips
@@ -606,14 +1243,6 @@ ModelImporter:
         modified: 0
     - boneName: eye_Right
       humanName: RightEye
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: jaw
-      humanName: Jaw
       limit:
         min: {x: 0, y: 0, z: 0}
         max: {x: 0, y: 0, z: 0}
@@ -1359,8 +1988,7 @@ ModelImporter:
     - name: eyebrow_a_Left
       parentName: 
       position: {x: -0.018455323, y: 0.008256498, z: -0.0007518096}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: eyebrow_b_Left
       parentName: 
@@ -1375,8 +2003,7 @@ ModelImporter:
     - name: eyebrow_a_Right
       parentName: 
       position: {x: 0.018455362, y: 0.008272946, z: 0.0005079198}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: eyebrow_b_Right
       parentName: 
@@ -1396,14 +2023,12 @@ ModelImporter:
     - name: nostrir_Left
       parentName: 
       position: {x: -0.011434082, y: -0.0023007714, z: -0.018698374}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: nostrir_Right
       parentName: 
       position: {x: 0.0114341155, y: -0.0022998787, z: -0.018698333}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: tail_of_eye_Left
       parentName: 
@@ -1423,14 +2048,12 @@ ModelImporter:
     - name: lip_top_Left
       parentName: 
       position: {x: -0.008214766, y: -0.00018536286, z: -0.002396422}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: lip_top_Right
       parentName: 
       position: {x: 0.008214771, y: -0.00018238318, z: -0.0023964518}
-      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217,
-        w: 1}
+      rotation: {x: -0.000000012119376, y: -0.000000041915843, z: 0.0000000044083217, w: 1}
       scale: {x: 1.0000001, y: 1, z: 1}
     - name: Glasses_Null
       parentName: 
@@ -1609,14 +2232,18 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 0.01
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 0
-  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 097f369125e02ee48baa29e702a5b5b9,
-    type: 3}
+  lastHumanDescriptionAvatarSource: {fileID: 9000000, guid: 097f369125e02ee48baa29e702a5b5b9, type: 3}
+  autoGenerateAvatarMappingIfUnspecified: 1
   animationType: 3
   humanoidOversampling: 1
+  avatarSetup: 2
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 

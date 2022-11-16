@@ -47,8 +47,6 @@ public class CharacterView : MonoBehaviour
         var prefab = ResManager.LoadPrefab($"Prefabs/{data.name}");
         model = Instantiate(prefab, transform).transform;
         model.name = "model";
-        //model = PoolManager.Get().Spawn(data.name).transform;
-        //model.SetParent(transform);
         animator = model.GetComponentInChildren<Animator>();
         BattleEvent.doSetAnimeSpeed += SetAnimeSpeed;
 

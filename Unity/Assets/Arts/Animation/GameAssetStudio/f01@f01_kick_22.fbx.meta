@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: b56d67ea3ae0cd64198077831a60e5ed
 ModelImporter:
-  serializedVersion: 20200
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
       1: 100000
@@ -902,20 +902,59 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
-    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Inbetween bone
-      rotation in copied configuration does not match rotation in animation file:\n\t'Spine1'
-      : rotation error = 4.564731 deg\n\t'Spine3' : rotation error = 4.528778 deg\n"
+    rigImportWarnings: "Copied Avatar Rig Configuration mis-match. Bone length in
+      copied configuration does not match position in animation file:\n\t'LeftUpLeg'
+      : position error = 80.598190 mm\n\t'LeftLeg' : position error = 424.482544
+      mm\n\t'LeftFoot' : position error = 410.426758 mm\n\t'LeftToes' : position
+      error = 111.855087 mm\n\t'RightUpLeg' : position error = 80.598160 mm\n\t'RightLeg'
+      : position error = 424.482635 mm\n\t'RightFoot' : position error = 410.426392
+      mm\n\t'RightToes' : position error = 111.855141 mm\n\t'Spine' : position error
+      = 79.764008 mm\n\t'Spine1' : position error = 70.760231 mm\n\t'Spine2' : position
+      error = 62.303162 mm\n\t'Spine3' : position error = 55.983810 mm\n\t'Neck'
+      : position error = 237.803314 mm\n\t'Head' : position error = 60.725189 mm\n\t'atama_n'
+      : position error = 31.294424 mm\n\t'eye_Left' : position error = 32.695633
+      mm\n\t'eye_Right' : position error = 32.695641 mm\n\t'LeftShoulder' : position
+      error = 173.035324 mm\n\t'LeftArm' : position error = 98.284576 mm\n\t'LeftArmRoll'
+      : position error = 129.603271 mm\n\t'LeftForeArm' : position error = 117.333679
+      mm\n\t'LeftForeArmRoll' : position error = 160.228943 mm\n\t'LeftHand' : position
+      error = 76.311188 mm\n\t'LeftHandThumb1' : position error = 36.863274 mm\n\t'LeftHandThumb2'
+      : position error = 28.258799 mm\n\t'LeftHandThumb3' : position error = 22.404879
+      mm\n\t'LeftHandIndex1' : position error = 87.540077 mm\n\t'LeftHandIndex2'
+      : position error = 25.229376 mm\n\t'LeftHandIndex3' : position error = 18.693695
+      mm\n\t'LeftHandMiddle1' : position error = 84.808212 mm\n\t'LeftHandMiddle2'
+      : position error = 28.253811 mm\n\t'LeftHandMiddle3' : position error = 20.714237
+      mm\n\t'LeftHandRing1' : position error = 82.084190 mm\n\t'LeftHandRing2' :
+      position error = 26.104561 mm\n\t'LeftHandRing3' : position error = 19.581345
+      mm\n\t'LeftHandPinky1' : position error = 77.977547 mm\n\t'LeftHandPinky2'
+      : position error = 20.703266 mm\n\t'LeftHandPinky3' : position error = 15.367471
+      mm\n\t'RightShoulder' : position error = 173.032120 mm\n\t'RightArm' : position
+      error = 98.284477 mm\n\t'RightArmRoll' : position error = 129.602890 mm\n\t'RightForeArm'
+      : position error = 117.332993 mm\n\t'RightForeArmRoll' : position error = 160.228729
+      mm\n\t'RightHand' : position error = 76.311943 mm\n\t'RightHandThumb1' : position
+      error = 36.862934 mm\n\t'RightHandThumb2' : position error = 28.258738 mm\n\t'RightHandThumb3'
+      : position error = 22.402645 mm\n\t'RightHandIndex1' : position error = 87.539246
+      mm\n\t'RightHandIndex2' : position error = 25.229429 mm\n\t'RightHandIndex3'
+      : position error = 18.693203 mm\n\t'RightHandMiddle1' : position error = 84.807045
+      mm\n\t'RightHandMiddle2' : position error = 28.254025 mm\n\t'RightHandMiddle3'
+      : position error = 20.713377 mm\n\t'RightHandRing1' : position error = 82.083298
+      mm\n\t'RightHandRing2' : position error = 26.104151 mm\n\t'RightHandRing3'
+      : position error = 19.581974 mm\n\t'RightHandPinky1' : position error = 77.977173
+      mm\n\t'RightHandPinky2' : position error = 20.702204 mm\n\t'RightHandPinky3'
+      : position error = 15.368430 mm\nCopied Avatar Rig Configuration mis-match.
+      Inbetween bone rotation in copied configuration does not match rotation in
+      animation file:\n\t'Spine1' : rotation error = 4.564731 deg\n\t'Spine3' : rotation
+      error = 4.528778 deg\n"
     animationImportErrors: 
     animationImportWarnings: "\nClip 'act209_F01_Low_kick_M' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation
       DOF on avatar to improve retargeting quality.\n\t'Spine1' is inbetween humanoid
       transforms and has rotation animation that will be discarded.\n\t'Spine3' is
       inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'RightArmRoll'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'RightForeArm'
-      has translation animation that will be discarded.\n\t'RightForeArmRoll' is
-      inbetween humanoid transforms and has rotation animation that will be discarded.\n"
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'RightForeArmRoll'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -969,6 +1008,7 @@ ModelImporter:
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 1
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -980,6 +1020,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -1181,14 +1222,6 @@ ModelImporter:
         modified: 0
     - boneName: eye_Right
       humanName: RightEye
-      limit:
-        min: {x: 0, y: 0, z: 0}
-        max: {x: 0, y: 0, z: 0}
-        value: {x: 0, y: 0, z: 0}
-        length: 0
-        modified: 0
-    - boneName: jaw
-      humanName: Jaw
       limit:
         min: {x: 0, y: 0, z: 0}
         max: {x: 0, y: 0, z: 0}
@@ -2178,7 +2211,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.01
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
@@ -2189,6 +2222,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 2
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
