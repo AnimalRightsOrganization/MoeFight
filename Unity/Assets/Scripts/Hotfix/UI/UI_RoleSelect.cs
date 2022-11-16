@@ -5,7 +5,6 @@ using Code.Client;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using HitstunConstants;
 
 namespace HotFix
 {
@@ -26,10 +25,6 @@ namespace HotFix
 
         ClientPlayer localPlayer;
         ClientPlayer rivalPlayer;
-
-        GameObject stage;
-        GameObject leftChara;
-        GameObject rightChara;
 
         #region 内置方法
         void Awake()
@@ -88,15 +83,11 @@ namespace HotFix
             EventManager.RegisterEvent(OnNetCallback);
 
             InitUI();
-
-            ShowStage();
         }
 
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
-
-            HideStage();
         }
 
         public override void ApplyLanguage()
@@ -144,17 +135,6 @@ namespace HotFix
             int length = roleArray.Length;
             int index = packet.RoleIndex % length;
             m_Rolename[packet.SeatId].text = roleArray[index].Name;
-
-            // 角色模型
-            string charaName = ((CharacterName)index).ToString();
-            if (packet.SeatId == 0)
-            {
-                SpawnLeftChara(charaName);
-            }
-            else if (packet.SeatId == 1)
-            {
-                SpawnRightChara(charaName);
-            }
         }
 
         private void OnMatchResult(INetSerializable reader)
@@ -341,54 +321,6 @@ namespace HotFix
                     Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
                     break;
             }
-        }
-
-        void ShowStage()
-        {
-            if (stage == null)
-            {
-                var prefab = ResManager.LoadPrefab("Prefabs/RoleSelect");
-                stage = Instantiate(prefab);
-                stage.name = "RoleSelect";
-            }
-            else
-            {
-                stage.SetActive(true);
-            }
-
-            string defaultChara = "KEN";
-            SpawnLeftChara(defaultChara);
-            SpawnRightChara(defaultChara);
-        }
-
-        void HideStage()
-        {
-            PoolManager.Get().Despawn(leftChara);
-            PoolManager.Get().Despawn(rightChara);
-            leftChara = null;
-            rightChara = null;
-
-            stage.SetActive(false);
-        }
-
-        void SpawnLeftChara(string charaName)
-        {
-            if (leftChara != null)
-                PoolManager.Get().Despawn(leftChara);
-            leftChara = PoolManager.Get().Spawn(charaName);
-            leftChara.transform.SetParent(stage.transform);
-            leftChara.transform.position = new Vector3(0, 0, -1);
-            leftChara.transform.localScale = new Vector3(-1, 1, 1);
-        }
-
-        void SpawnRightChara(string charaName)
-        {
-            if (rightChara != null)
-                PoolManager.Get().Despawn(rightChara);
-            rightChara = PoolManager.Get().Spawn(charaName);
-            rightChara.transform.SetParent(stage.transform);
-            rightChara.transform.position = new Vector3(0, 0, 1);
-            rightChara.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 }

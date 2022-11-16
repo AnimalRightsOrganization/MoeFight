@@ -18,7 +18,7 @@ public class TestWindow : EditorWindow
         window.titleContent = new GUIContent("调试窗口");
         window.Show();
     }
-    
+
     void OnGUI()
     {
         if (GUILayout.Button("登录.自动填写.test1"))
@@ -67,6 +67,13 @@ public class TestWindow : EditorWindow
                 ClientNet.Get.SendTestPVP();
             };
             GameManager.Get.LoadBattleAsync(action); //测试PVP
+        }
+        if (GUILayout.Button("SnapShot"))
+        {
+            string fileName = $"{Application.streamingAssetsPath}/Actor_{DateTime.Now.ToString("yyyyMMddhhmmss")}.png";
+            ScreenCapture.CaptureScreenshot(fileName);
+            Debug.Log(fileName);
+            AssetDatabase.Refresh();
         }
     }
 }

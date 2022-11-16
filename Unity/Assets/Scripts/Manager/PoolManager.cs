@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using HitstunConstants;
 
-public class PoolManager : MonoBehaviour
+public class PoolsManager : MonoBehaviour
 {
-    static PoolManager _instance;
-    public static PoolManager Get()
+    static PoolsManager _instance;
+    public static PoolsManager Get()
     {
         if (_instance == null)
-            _instance = FindObjectOfType<PoolManager>();
+            _instance = FindObjectOfType<PoolsManager>();
         return _instance;
     }
 

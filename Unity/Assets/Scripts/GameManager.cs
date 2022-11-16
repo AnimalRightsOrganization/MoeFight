@@ -112,10 +112,6 @@ public class GameManager : MonoBehaviour
         audioManager.transform.SetParent(this.transform);
         audioManager.AddComponent<AudioManager>();
 
-        GameObject poolManager = new GameObject("PoolManager");
-        poolManager.transform.SetParent(this.transform);
-        poolManager.AddComponent<PoolManager>();
-
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
     }

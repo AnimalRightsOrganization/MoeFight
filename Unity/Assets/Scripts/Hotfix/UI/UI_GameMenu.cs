@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 using DG.Tweening;
 using Code.Shared;
 using Code.Client;
@@ -130,8 +129,6 @@ namespace HotFix
             EventManager.UnRegisterEvent(OnNetCallback);
 
             UnbindDelegete();
-
-            PoolManager.Get().DespawnAll();
         }
 
         public static Transform GetParent(int index)
