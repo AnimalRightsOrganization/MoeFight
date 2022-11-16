@@ -10,7 +10,7 @@
         public sbyte SeatId => (sbyte)_seatid;
         private PlayerStatus _status = PlayerStatus.Offline;
         public PlayerStatus Status => _status;
-        
+
         public byte RoleIndex = 0; //角色编号（默认）
         public byte RoleColor = 0; //角色颜色
         public byte RoleCloth = 0; //角色时装

@@ -719,6 +719,15 @@ namespace Code.Server
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+            int chanceLeft = serverRoom.PauseChance[player.SeatId]; //剩余次数
+            if (chanceLeft <= 0)
+            {
+                // 暂停次数用尽
+                var err = WriteSerializable(PacketType.S2C_ErrorOperate, new S2C_ErrorPacket { ErrorCode = (byte)ErrorCode.PAUSE_USED } );
+                peer.Send(err, DeliveryMethod.ReliableOrdered);
+                return;
+            }
+            serverRoom.PauseChance[player.SeatId] = 0;
 
             var writer = WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket());
             serverRoom.Send(writer);

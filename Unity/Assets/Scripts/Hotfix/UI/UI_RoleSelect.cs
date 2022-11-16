@@ -231,7 +231,6 @@ namespace HotFix
             //ui_versus.FadeOut();
             //await Task.Delay(1000);
 
-            ///*
             // 跳转场景
             System.Action action = () =>
             {
@@ -240,7 +239,6 @@ namespace HotFix
                 ClientLogic.Get.IsStart = true;
             };
             GameManager.Get.LoadBattleAsync(action); //训练
-            //*/
         }
         #endregion
 

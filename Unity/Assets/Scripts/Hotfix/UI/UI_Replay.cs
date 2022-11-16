@@ -75,10 +75,12 @@ namespace HotFix
             var dirInfo = new DirectoryInfo(folder);
             FileInfo[] fileInfo = dirInfo.GetFiles();
             await Task.CompletedTask;
-            fileInfo.OrderBy(x => x.CreationTime);
+            fileInfo = fileInfo.OrderByDescending(x => x.CreationTime).ToArray(); //时间倒序
             await Task.Delay(100);
 
-            for (int i = 0; i < fileInfo.Length; i++)
+            int fileNum = Mathf.Min(6, fileInfo.Length);
+            Debug.Log($"录像数={fileInfo.Length}，显示数={fileNum}");
+            for (int i = 0; i < fileNum; i++)
             {
                 FileInfo file = fileInfo[i];
                 await Task.CompletedTask;

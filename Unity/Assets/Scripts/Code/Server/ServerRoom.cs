@@ -11,6 +11,7 @@ namespace Code.Server
     {
         public ServerPlayer hostPlayer;
         public ServerPlayer guestPlayer;
+        public int[] PauseChance = { 1, 1 };
 
         #region 房间数据
         public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id)
@@ -80,6 +81,7 @@ namespace Code.Server
             EndCount = 0;
             Tick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
+            PauseChance = new int[2] { 1, 1 };
 
             hostPlayer.SetStatus(PlayerStatus.AtBattle);
             guestPlayer.SetStatus(PlayerStatus.AtBattle);

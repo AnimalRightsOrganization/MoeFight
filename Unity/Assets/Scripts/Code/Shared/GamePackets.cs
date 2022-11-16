@@ -17,6 +17,7 @@ namespace Code.Shared
         USERNAME_USED,  //账号已经注册
         BE_KICKED,      //被踢了（顶号/GM）
         HAS_LOGIN,      //已登录
+        PAUSE_USED,     //暂停次数用尽
     }
     
     public enum PlayerStatus : byte
