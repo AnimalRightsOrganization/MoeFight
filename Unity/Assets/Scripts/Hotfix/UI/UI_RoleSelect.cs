@@ -184,7 +184,7 @@ namespace HotFix
             int left = packet.Host.RoleIndex;
             int right = packet.Guest.RoleIndex;
             ui_versus.FadeIn(left, right);
-            await Task.Delay(1000);
+            await Task.Delay(2000);
 
             //ui_versus.FadeOut();
             //await Task.Delay(1000);
@@ -226,7 +226,7 @@ namespace HotFix
             int left = pt.Host.RoleIndex;
             int right = pt.Guest.RoleIndex;
             ui_versus.FadeIn(left, right);
-            await Task.Delay(1000);
+            await Task.Delay(2000);
 
             //ui_versus.FadeOut();
             //await Task.Delay(1000);
