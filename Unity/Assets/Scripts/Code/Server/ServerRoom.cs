@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
@@ -74,6 +75,7 @@ namespace Code.Server
         // 20ms/帧
         private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
         private int halfRTT; //半程延迟，5帧，100ms
+        private DateTime[] lastInputTime = { DateTime.Now, DateTime.Now };
 
 
         public void DoInit()
@@ -82,6 +84,7 @@ namespace Code.Server
             Tick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
             PauseChance = new int[2] { 1, 1 };
+            lastInputTime = new DateTime[2] { DateTime.Now, DateTime.Now };
 
             hostPlayer.SetStatus(PlayerStatus.AtBattle);
             guestPlayer.SetStatus(PlayerStatus.AtBattle);
@@ -90,6 +93,12 @@ namespace Code.Server
         // 收到帧数据
         public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
+            // 计算半程客户端延迟
+            var current = DateTime.Now;
+            var delta = current - lastInputTime[seatId];
+            lastInputTime[seatId] = current;
+            //Debug.Log($"seat={seatId}，tick={cmd.frameNumber}，HalfRTT={delta.TotalMilliseconds}");
+
             switch (BattleMode)
             {
                 case BattleMode.Editor:

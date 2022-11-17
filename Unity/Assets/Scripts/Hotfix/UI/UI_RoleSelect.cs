@@ -124,7 +124,7 @@ namespace HotFix
         private void OnRoleSelect(INetSerializable reader)
         {
             var packet = (S2C_RoleSelectPacket)reader;
-            Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
+            //Debug.Log($"[C] 座位{packet.SeatId}，选择角色{packet.RoleIndex}");
 
             m_HeadImages[packet.SeatId].color = Color.white;
             m_HeadImages[packet.SeatId].sprite = m_Charactors[packet.RoleIndex].image.sprite;

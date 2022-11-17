@@ -32,6 +32,9 @@ namespace Code.Client
         public ClientPlayerManager m_PlayerManager;
         public int _ping;
 
+        [Range(0, 100)]
+        public int dropRate; //丢包率，编辑器测试用
+
 
         #region Inner Method
         void Awake()
@@ -288,9 +291,15 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
+#if UNITY_EDITOR
             // 模拟丢包
-            //int rd = UnityEngine.Random.Range(0, 10);
-            //if (rd == 5) return;
+            int rd = UnityEngine.Random.Range(0, 100);
+            if (rd < dropRate)
+            {
+                Debug.LogError($"丢包:{cmd.frameNumber}");
+                return;
+            }
+#endif
 
             SendPacketSerializable(PacketType.C2S_Input, cmd);
         }

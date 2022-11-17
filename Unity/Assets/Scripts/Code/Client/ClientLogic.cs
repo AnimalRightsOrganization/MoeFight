@@ -3,7 +3,6 @@ using UnityEngine;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
-using HotFix;
 
 namespace Code.Client
 {
