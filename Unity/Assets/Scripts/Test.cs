@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
+﻿using UnityEngine;
 using HitstunConstants;
-
+#if UNITY_EDITOR
+using UnityEditor;
 [CustomEditor(typeof(Test))]
 public class DemoEditor : Editor
 {
@@ -20,6 +17,7 @@ public class DemoEditor : Editor
         }
     }
 }
+#endif
 public class Test : MonoBehaviour
 {
     public uint serverTick;

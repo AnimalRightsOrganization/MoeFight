@@ -13,7 +13,7 @@ namespace Code.Server
     {
         public ServerPlayer hostPlayer;
         public ServerPlayer guestPlayer;
-        public int[] PauseChance = { 1, 1 };
+        public int[] PauseChance = { 1, 1 }; //每局暂停机会
 
         #region 房间数据
         public ServerRoom(int id, ServerPlayer host, ServerPlayer guest) : base(id)
