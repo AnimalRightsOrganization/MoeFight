@@ -156,6 +156,6 @@ public class ConstValue
 
     #region GameLogic
     public const int DROP_WAIT_TIME = 30; //掉线等待30s，未重连判负
-    public const int TOTAL_SECOND = 30; //比赛时间（s）
+    public const int TOTAL_SECOND = 60; //比赛时间（s）
     #endregion
 }

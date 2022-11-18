@@ -5,6 +5,7 @@ using UnityEngine;
 using Code.Client;
 using HotFix;
 using LitJson;
+using HitstunConstants;
 
 public class GameManager : MonoBehaviour
 {
@@ -37,7 +38,8 @@ public class GameManager : MonoBehaviour
             Screen.fullScreen = false;
             //Screen.SetResolution(540, 960);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
-            //Application.targetFrameRate = 60; //锁定渲染帧
+            Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
+            Time.fixedDeltaTime = 1f / Constants.FPS;
             QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
             //Debug.unityLogger.logEnabled = false; //release版关闭
             //Application.systemLanguage;
