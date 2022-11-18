@@ -82,6 +82,11 @@ namespace Code.Server
                 roomItem.Value.Dispose();
                 dic_rooms.Remove(roomItem.Key);
             }
+            foreach (var roomItem in dic_battles)
+            {
+                roomItem.Value.Dispose();
+                dic_rooms.Remove(roomItem.Key);
+            }
         }
 
         // 查

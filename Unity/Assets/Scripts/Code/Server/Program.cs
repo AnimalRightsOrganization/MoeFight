@@ -40,6 +40,7 @@ namespace Rollback
             Debug.Log("Dispose");
 
             server?.Dispose();
+            server = null;
         }
     }
 }

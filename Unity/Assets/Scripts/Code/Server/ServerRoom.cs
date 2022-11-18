@@ -76,6 +76,7 @@ namespace Code.Server
         private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
         private int halfRTT; //半程延迟，5帧，100ms
         private DateTime[] lastInputTime = { DateTime.Now, DateTime.Now };
+        private int delay = 1; //Update时--，==0则执行，否则等待。
 
 
         public void DoInit()
@@ -90,19 +91,29 @@ namespace Code.Server
             guestPlayer.SetStatus(PlayerStatus.AtBattle);
         }
 
+        public void DoUpdate()
+        {
+            Debug.Log(System.DateTime.Now); //每秒60次
+
+            delay--;
+            if (delay <= 0)
+            {
+
+                delay = 1;
+            }
+        }
+
         // 收到帧数据
         public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
             // 计算半程客户端延迟
-            var current = DateTime.Now;
-            var delta = current - lastInputTime[seatId];
-            lastInputTime[seatId] = current;
-            //Debug.Log($"seat={seatId}，tick={cmd.frameNumber}，HalfRTT={delta.TotalMilliseconds}");
+            //var current = DateTime.Now;
+            //var delta = current - lastInputTime[seatId];
+            //lastInputTime[seatId] = current;
+            //Debug.Log($"seat={seatId}，tick={cmd.frameNumber}，HalfRTT={delta.TotalMilliseconds}。Ping: {hostPlayer.Ping}, {guestPlayer.Ping}");
 
             switch (BattleMode)
             {
-                case BattleMode.Editor:
-                    break;
                 case BattleMode.Training: //单人，收到就下发
                     {
                         var packet = new S2C_InputPacket

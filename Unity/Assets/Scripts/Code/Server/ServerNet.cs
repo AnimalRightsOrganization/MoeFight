@@ -88,15 +88,15 @@ namespace Code.Server
         {
             _netManager.PollEvents();
 
-            //UpdateRoom();
+            UpdateRoom();
         }
         protected void UpdateRoom()
         {
-            //var rooms = m_RoomManager.GetBattles();
-            //foreach (var bt in rooms)
-            //{
-            //    bt.Value.DoUpdate();
-            //}
+            var rooms = m_RoomManager.GetBattles();
+            foreach (var bt in rooms)
+            {
+                bt.Value.DoUpdate();
+            }
         }
         #endregion
 
