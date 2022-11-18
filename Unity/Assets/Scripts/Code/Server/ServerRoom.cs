@@ -101,26 +101,29 @@ namespace Code.Server
             if (delay <= 0)
             {
                 uint buffer = (bufferTick - serverTick); //缓存帧数
-                if (buffer >= 2)
+                if (buffer >= 1)
                 {
-                    // 用一个loop，发到只剩1个帧
-                    for (int t = (int)buffer; t > 1; t--) //TODO: 测试循环
+                    // 用一个loop，发送所有
+                    // t = buffer → t = 1
+                    for (int t = (int)buffer; t > 0; t--)
                     {
                         serverTick++; //服务器走帧
+                        var input = dic_recv[serverTick];
                         var packet = new S2C_InputPacket
                         {
                             frameNumber = serverTick,
-                            inputs = new uint[] { dic_recv[serverTick][0], dic_recv[serverTick][1] }
+                            inputs = new uint[] { input[0], input[1] },
                         };
                         var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
                     }
 
-                    delay = 1;
+                    delay = 1; //服务器已经适应客户端速度，之后保持为1
                 }
                 else
                 {
-                    delay = Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / 17;
+                    float Delta = Time.fixedDeltaTime * 1000;
+                    delay = Mathf.CeilToInt(Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / Delta); //重新计算
                 }
             }
             else
