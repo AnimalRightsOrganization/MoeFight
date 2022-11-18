@@ -5,6 +5,7 @@ using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using Debug = UnityEngine.Debug;
+using UnityEngine;
 
 namespace Code.Server
 {
@@ -69,23 +70,24 @@ namespace Code.Server
         public int EndCount = 0;
 
         // 独立的帧同步对象
-        public uint Tick;
-        public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
+        private uint serverTick;
+        private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
         // 20ms/帧
-        private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
-        private int halfRTT; //半程延迟，5帧，100ms
-        private DateTime[] lastInputTime = { DateTime.Now, DateTime.Now };
+        //private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
+        //private int halfRTT; //半程延迟，5帧，100ms
+        //private DateTime[] lastInputTime = { DateTime.Now, DateTime.Now };
         private int delay = 1; //Update时--，==0则执行，否则等待。
+        private uint bufferTick;
 
 
         public void DoInit()
         {
             EndCount = 0;
-            Tick = 0;
+            serverTick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
             PauseChance = new int[2] { 1, 1 };
-            lastInputTime = new DateTime[2] { DateTime.Now, DateTime.Now };
+            //lastInputTime = new DateTime[2] { DateTime.Now, DateTime.Now };
 
             hostPlayer.SetStatus(PlayerStatus.AtBattle);
             guestPlayer.SetStatus(PlayerStatus.AtBattle);
@@ -93,13 +95,37 @@ namespace Code.Server
 
         public void DoUpdate()
         {
-            Debug.Log(System.DateTime.Now); //每秒60次
+            //Debug.Log(System.DateTime.Now); //每秒60次
 
             delay--;
             if (delay <= 0)
             {
+                uint buffer = (bufferTick - serverTick); //缓存帧数
+                if (buffer >= 2)
+                {
+                    // 用一个loop，发到只剩1个帧
+                    for (int t = (int)buffer; t > 1; t--) //TODO: 测试循环
+                    {
+                        serverTick++; //服务器走帧
+                        var packet = new S2C_InputPacket
+                        {
+                            frameNumber = serverTick,
+                            inputs = new uint[] { dic_recv[serverTick][0], dic_recv[serverTick][1] }
+                        };
+                        var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
+                        Send(writer);
+                    }
 
-                delay = 1;
+                    delay = 1;
+                }
+                else
+                {
+                    delay = Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / 17;
+                }
+            }
+            else
+            {
+                // 跳过，等待下一帧执行
             }
         }
 
@@ -128,12 +154,13 @@ namespace Code.Server
                         dic_recv[cmd.frameNumber][seatId] = cmd.input;
                         dic_recv[cmd.frameNumber][1] = 0;
 
-                        Tick = cmd.frameNumber;
+                        serverTick = cmd.frameNumber;
                         //Debug.Log($"server tick: {Tick}");
                     }
                     break;
                 case BattleMode.Matching:
                     {
+                        /*
                         if (dic_recv.ContainsKey(cmd.frameNumber) == false)
                         {
                             //Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
@@ -154,7 +181,22 @@ namespace Code.Server
                             var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                             Send(writer);
 
-                            Tick = cmd.frameNumber;
+                            serverTick = cmd.frameNumber;
+                        }
+                        */
+
+                        //②这里仅收集，Update中下发
+                        //dic_recv.TryAdd(cmd.frameNumber, new Dictionary<int, uint>());
+                        if (dic_recv.ContainsKey(cmd.frameNumber) == false)
+                        {
+                            dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
+                            dic_recv[cmd.frameNumber][seatId] = cmd.input; //快的
+                        }
+                        else
+                        {
+                            dic_recv[cmd.frameNumber][seatId] = cmd.input; //慢的
+
+                            bufferTick = cmd.frameNumber; //缓存到第几帧
                         }
                     }
                     break;
@@ -168,7 +210,7 @@ namespace Code.Server
 
             try
             {
-                S2C_InputPacket[] array = new S2C_InputPacket[Tick + 1]; //多一个废帧[0]
+                S2C_InputPacket[] array = new S2C_InputPacket[serverTick + 1]; //多一个废帧[0]
 
                 for (int i = 0; i < array.Length; i++)
                 {
@@ -185,7 +227,7 @@ namespace Code.Server
                     }
                 }
 
-                packet.frameNumber = Tick;
+                packet.frameNumber = serverTick;
                 packet.inputs = array;
             }
             catch (System.Exception e)
