@@ -123,43 +123,53 @@ namespace Code.Server
             if (player != null)
             {
                 int serverRoomID = player.RoomId;
+                ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
 
                 if (player.Status == PlayerStatus.AtBattle)
                 {
-                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
 
-                    // 一方断线，保留房间，给另一方发等待。
-                    // 双方断线，销毁房间。
-                    //switch (disconnectInfo.Reason)
-                    //{
-                    //    case DisconnectReason.Timeout: //关闭网络，超时
-                    //        break;
-                    //    case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
-                    //        break;
-                    //}
-
-                    if (otherPlayer.IsBot == false)
+                    //if (otherPlayer.IsBot == false)
+                    if (serverRoom.BattleMode == BattleMode.Matching)
                     {
-                        // ①掉线暂停
-                        //otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattlePause, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                        // 方案①掉线暂停
+                        if (otherPlayer.Status == PlayerStatus.AtBattle)
+                        {
+                            // 一方断线，保留房间，给另一方发等待。
+                            switch (disconnectInfo.Reason)
+                            {
+                                case DisconnectReason.Timeout: //关闭网络，超时
+                                case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
+                                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleDrop, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                                    player.SetStatus(PlayerStatus.Reconnect);
+                                    //serverRoom.CutDown(); //掉线倒计时
+                                    break;
+                                default:
+                                    UnityEngine.Debug.Log($"disconnect by: {disconnectInfo.Reason}");
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            // 双方都断线，销毁房间，移除用户。
+                            m_RoomManager.RemoveServerRoom(serverRoomID);
 
-                        // ②掉线直接结算
-                        var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
-                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
-                        otherPlayer.ResetToLobby();
+                            m_PlayerManager.RemovePlayer(peer.Id);
+                            m_PlayerManager.RemovePlayer(otherPlayer.AssociatedPeer.Id);
+                        }
 
-                        //serverRoom.CutDown(); //①掉线开始倒计时
-                        //m_RoomManager.RemoveServerRoom(serverRoomID); //②掉线结算解散
+                        // 方案②掉线直接结算
+                        //var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
+                        //otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
+                        //otherPlayer.ResetToLobby();
                     }
                     else
                     {
-                        m_RoomManager.RemoveServerRoom(serverRoomID);
+                        m_RoomManager.RemoveServerRoom(serverRoomID); //解散房间
                     }
                 }
                 else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
                 {
-                    ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
                     if (otherPlayer != null)
                     {
@@ -215,6 +225,9 @@ namespace Code.Server
                     break;
                 case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
+                    break;
+                case PacketType.C2S_BattleReconnect:
+                    OnBattleReconnectReceived(reader, peer);
                     break;
                 case PacketType.C2S_LogoutReq:
                     OnLogoutReceived(reader, peer);
@@ -382,7 +395,7 @@ namespace Code.Server
 
             #region 登录逻辑
             ServerPlayer player = null;
-            /*
+            ///*
             ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(cmd.UserName);
             // 校验是否已登录，是否重连
             bool isReconnect = false;
@@ -405,7 +418,7 @@ namespace Code.Server
                 }
             }
             else
-            */
+            //*/
             {
                 player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
                 m_PlayerManager.AddPlayer(player);
@@ -435,34 +448,62 @@ namespace Code.Server
             UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
 #endif
 
-            /*
-            // 第三个包，重连战场
+            ///*
+            // 第三个包，重连数据
             if (isReconnect)
             {
                 int serverRoomID = player.RoomId;
                 ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-                ServerPlayer p1 = serverRoom.hostPlayer as ServerPlayer;
-                ServerPlayer p2 = serverRoom.guestPlayer as ServerPlayer;
+                ServerPlayer p1 = serverRoom.hostPlayer;
+                ServerPlayer p2 = serverRoom.guestPlayer;
 
-                // 服务器下令开始
+                // 下发房间信息，弹出是否重连
+                // 是，下发所有帧
+                // 否，结算比赛，关闭弹窗
                 var packet3 = new S2C_LoadScenePacket
                 {
                     RoomId = (short)serverRoomID,
                     BattleId = serverRoom.BattleID,
-                    Seed = serverRoom.Seed,
                     MapId = serverRoom.MapId,
-                    BattleMode = (byte)serverRoom.BattleMode,
                     Host = new PlayerLoadPacket { UserName = p1.UserName, PeerId = p1.PeerId, RoleIndex = p1.RoleIndex },
                     Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
                 };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
-
-                // 下发缺失帧
-                //var packet4 = serverRoom.ConvertInputs();
-                //UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
-                //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
-            }*/
+            }
+            //*/
 #endregion
+        }
+
+        private void OnBattleReconnectReceived(NetPacketReader reader, NetPeer peer)
+        {
+            if (peer.Tag == null) return;
+            var player = (ServerPlayer)peer.Tag;
+            int serverRoomID = player.RoomId;
+            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
+
+            var cmd = new C2S_BattleReconnectPacket();
+            cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[S] {peer.Id} reconnect: {cmd.Select}");
+
+            if (cmd.Select == false)
+            {
+                // 认输结算
+                var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
+                var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
+                serverRoom.Send(writer);
+
+                m_RoomManager.RemoveServerRoom(serverRoomID);
+                player.ResetToLobby();
+                otherPlayer.ResetToLobby();
+            }
+            else
+            {
+                // 下发所有帧
+                var packet = serverRoom.ConvertInputs();
+                UnityEngine.Debug.Log($"{packet.frameNumber}/{packet.inputs.Length}");
+                peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet), DeliveryMethod.ReliableOrdered);
+            }
         }
 
         private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)

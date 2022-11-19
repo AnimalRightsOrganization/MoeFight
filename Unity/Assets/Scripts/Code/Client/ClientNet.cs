@@ -216,19 +216,26 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                case PacketType.S2C_BattleDrop: //对方掉线，等待30秒
+                    {
+                        var packet = new EmptyPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
+                case PacketType.S2C_BattleReconnect: //掉线方登录，提示返回比赛
+                    {
+                        var packet = new S2C_LoadScenePacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+                    }
+                    break;
                 case PacketType.S2C_BattleEnd:
                     {
                         var packet = new S2C_BattleEndPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer); //用UI_GameResult接收
                         OnUserStatusChanged(pt, packet); //AtBattle→AtLobby
-                    }
-                    break;
-                case PacketType.S2C_BattleReconnect:
-                    {
-                        var packet = new S2C_LoadScenePacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
                     }
                     break;
                 default:
