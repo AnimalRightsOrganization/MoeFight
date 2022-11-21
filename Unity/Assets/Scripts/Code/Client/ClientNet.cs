@@ -234,14 +234,14 @@ namespace Code.Client
                 case PacketType.S2C_LackInput:
                 case PacketType.S2C_BattleInputs:
                     {
-                        Debug.Log($"[C] Battle Inputs");
+                        Debug.Log($"[C] Battle Lack Inputs");
                         var packet = new S2C_LackInputPacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
 
                         //在大厅收到
-                        //var size = (packet.inputs.Length * 12 + 4) / 1024;
-                        //Debug.Log($"收到比赛数据：{packet.frameNumber}条，{size}KB");
+                        var size = (packet.inputs.Length * 12 + 4) / 1024;
+                        Debug.Log($"收到比赛数据：{packet.frameNumber}条，{size}KB");
                     }
                     break;
                 case PacketType.S2C_BattleEnd:

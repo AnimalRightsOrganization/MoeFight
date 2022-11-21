@@ -141,7 +141,7 @@ namespace Code.Server
                                 case DisconnectReason.Timeout: //关闭网络，超时
                                 case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
                                     otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleDrop, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
-                                    player.SetStatus(PlayerStatus.Reconnect);
+                                    player.SetStatus(PlayerStatus.Reconnect); //把离线者标记未断线重连
                                     //serverRoom.CutDown(); //掉线倒计时
                                     break;
                                 default:
@@ -885,14 +885,14 @@ namespace Code.Server
 
             var cmd = new C2S_LackInputPacket();
             cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] LackInput received: {cmd.startTick}~{cmd.endTick}");
+            //UnityEngine.Debug.Log($"[S] LackInput received: {cmd.startTick}~{cmd.endTick}");
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
 
             // 下发缺失帧
             var packet4 = serverRoom.ConvertInputs();
-            UnityEngine.Debug.Log($"{packet4.frameNumber}/{packet4.inputs.Length}");
+            UnityEngine.Debug.Log($"S2C: {packet4.frameNumber}/{packet4.inputs.Length}");
             peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
         }
         #endregion
