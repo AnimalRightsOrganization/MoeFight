@@ -228,9 +228,6 @@ namespace Code.Server
                 case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
                     break;
-                case PacketType.C2S_BattleReconnect:
-                    OnBattleReconnectReceived(reader, peer);
-                    break;
                 case PacketType.C2S_LogoutReq:
                     OnLogoutReceived(reader, peer);
                     break;
@@ -267,7 +264,7 @@ namespace Code.Server
                 case PacketType.C2S_BattleEnd:
                     OnBattleEndReceived(reader, peer);
                     break;
-                case PacketType.C2S_LackInput:
+                case PacketType.C2S_BattleInputs:
                     OnLackInputReceived(reader, peer);
                     break;
                 default:
@@ -501,38 +498,6 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
             */
             #endregion
-        }
-
-        private void OnBattleReconnectReceived(NetPacketReader reader, NetPeer peer)
-        {
-            if (peer.Tag == null) return;
-            var player = (ServerPlayer)peer.Tag;
-            int serverRoomID = player.RoomId;
-            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
-
-            var cmd = new C2S_BattleReconnectPacket();
-            cmd.Deserialize(reader);
-            UnityEngine.Debug.Log($"[S] {peer.Id} reconnect: {cmd.Select}");
-
-            if (cmd.Select == false)
-            {
-                // 认输结算
-                var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
-                var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
-                serverRoom.Send(writer);
-
-                m_RoomManager.RemoveServerRoom(serverRoomID);
-                player.ResetToLobby();
-                otherPlayer.ResetToLobby();
-            }
-            else
-            {
-                // 下发所有帧
-                var packet = serverRoom.ConvertInputs();
-                UnityEngine.Debug.Log($"{packet.frameNumber}/{packet.inputs.Length}");
-                peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet), DeliveryMethod.ReliableOrdered);
-            }
         }
 
         private void OnLogoutReceived(NetPacketReader reader, NetPeer peer)
@@ -893,7 +858,8 @@ namespace Code.Server
             // 下发缺失帧
             var packet4 = serverRoom.ConvertInputs();
             UnityEngine.Debug.Log($"S2C: {packet4.frameNumber}/{packet4.inputs.Length}");
-            peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
+            //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
+            peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
         }
         #endregion
 

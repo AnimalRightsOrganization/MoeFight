@@ -53,7 +53,7 @@ namespace Code.Client
 
         void Update()
         {
-            _netManager.PollEvents();
+            _netManager?.PollEvents();
         }
 
         void OnDestroy()
@@ -231,7 +231,6 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_LackInput:
                 case PacketType.S2C_BattleInputs:
                     {
                         Debug.Log($"[C] Battle Lack Inputs");
@@ -446,7 +445,7 @@ namespace Code.Client
         public void SendLackInput(uint start = 0, uint end = 0)
         {
             var cmd = new C2S_LackInputPacket { startTick = start, endTick = end };
-            SendPacketSerializable(PacketType.C2S_LackInput, cmd);
+            SendPacketSerializable(PacketType.C2S_BattleInputs, cmd);
         }
 
         // 统一处理用户状态变化，并派发出去

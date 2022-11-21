@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -93,6 +94,9 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
+                case PacketType.S2C_BattleInputs:
+                    OnBattleInputs(reader);
+                    break;
                 case PacketType.S2C_BattleEnd:
                     OnBattleEnd(reader);
                     break;
@@ -129,19 +133,37 @@ namespace HotFix
                 {
                     Debug.Log("回到比赛");
                     ClientNet.Get.SendLackInput(); //请求帧数据
-
-                    //进入Loading
-                    //System.Action action = () =>
-                    //{
-                    //    UIManager.Get().PopAll();
-                    //    UIManager.Get().Push<UI_GameMenu>();
-                    //    //ClientNet.Get.SendLackInput(); //请求帧数据
-                    //};
-                    //GameManager.Get.LoadBattleAsync(action); //重连
-
-                    //追帧，完成后发送恢复比赛
-
+                    //dialog.Pop(); //没用？？
                 }, "Yes");
+        }
+
+        private async void OnBattleInputs(INetSerializable reader)
+        {
+            var packet = (S2C_LackInputPacket)reader;
+
+            var size = (packet.inputs.Length * 12 + 4) / 1024;
+            Debug.Log($"跳转Loading页：{packet.frameNumber}条，{size}KB");
+
+            UIManager.Get().PopAll();
+            var ui = UIManager.Get().Push<UI_Versus>();
+            ui.FadeIn(0, 0);
+
+            //TODO: 组装帧数据
+
+            await Task.Delay(1000);
+            //ui.FadeOut();
+
+            // 跳转场景
+            System.Action action = () =>
+            {
+                UIManager.Get().PopAll();
+                UIManager.Get().Push<UI_GameMenu>();
+                //ClientNet.Get.SendBattleStart(0);
+
+                //TODO: 追帧模拟
+                Debug.Log("追帧模拟");
+            };
+            GameManager.Get.LoadBattleAsync(action);
         }
 
         private void OnBattleEnd(INetSerializable reader)

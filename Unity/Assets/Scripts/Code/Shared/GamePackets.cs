@@ -44,7 +44,6 @@ namespace Code.Shared
         C2S_TestPVE         ,   //独立启动加入
         C2S_TestPVP         ,   //双人启动加入
         C2S_Input           ,   //
-        C2S_LackInput       ,   //缺失帧
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
         C2S_LogoutReq       ,   //登出请求
@@ -56,16 +55,14 @@ namespace Code.Shared
         C2S_RoleSelect      ,   //匹配成功后选择角色
         C2S_GameReady       ,   //请求准备
         C2S_BattleStart     ,   //请求开始战斗
-        C2S_BattlePause     ,   //请求暂停战斗
-        C2S_BattleDrop      ,   //对方断线，服务器暂停
-        C2S_BattleReconnect ,   //选择是否重连
-        C2S_BattleQuit      ,   //离开比赛（认输） =>返回大厅
+        C2S_BattlePause     ,   //请求暂停（客户端主动）
+        C2S_BattleInputs    ,   //缺失帧（重连）
+        C2S_BattleQuit      ,   //比赛中、重连后（认输）
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
         // S2C /////////////
         S2C_TestPVE         ,   //独立启动加入
         S2C_TestPVP         ,   //双人启动加入
         S2C_Input           ,   //
-        S2C_LackInput       ,   //缺失帧
         S2C_LoginResult     ,   //登录结果
         S2C_LogoutResult    ,   //登出结果
         S2C_UserInfo        ,   //下发用户信息
@@ -76,10 +73,10 @@ namespace Code.Shared
         S2C_GameReady       ,   //准备结果
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         S2C_BattleStart     ,   //比赛开始（第一帧同步）
-        S2C_BattlePause     ,   //比赛暂停（客户端暂停，每人每局一次机会）
-        S2C_BattleDrop      ,   //比赛暂停（服务器暂停，一方断线）
+        S2C_BattlePause     ,   //比赛暂停（客户端主动，每人每局一次机会）
+        S2C_BattleDrop      ,   //断线暂停（服务器主动，一方断线）
         S2C_BattleReconnect ,   //比赛重连
-        S2C_BattleInputs    ,   //比赛所有帧
+        S2C_BattleInputs    ,   //比赛帧数据
         S2C_BattleEnd       ,   //比赛结束，结算
     }
 
