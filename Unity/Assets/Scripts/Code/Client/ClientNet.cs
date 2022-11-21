@@ -231,6 +231,7 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                case PacketType.S2C_LackInput:
                 case PacketType.S2C_BattleInputs:
                     {
                         Debug.Log($"[C] Battle Inputs");

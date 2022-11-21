@@ -874,7 +874,7 @@ namespace Code.Server
 
         private void OnLackInputReceived(NetPacketReader reader, NetPeer peer)
         {
-            UnityEngine.Debug.Log($"[S] LackInput received");
+            UnityEngine.Debug.Log($"[S] LackInput request received");
             if (peer.Tag == null)
             {
                 UnityEngine.Debug.LogError($"[S] peer.Tag is null");
