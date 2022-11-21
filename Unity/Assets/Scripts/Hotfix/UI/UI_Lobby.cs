@@ -93,6 +93,9 @@ namespace HotFix
                 case PacketType.S2C_BattleReconnect:
                     OnBattleReconnect(reader);
                     break;
+                case PacketType.S2C_BattleEnd:
+                    OnBattleEnd(reader);
+                    break;
             }
         }
 
@@ -107,7 +110,7 @@ namespace HotFix
 
         private void OnBattleReconnect(INetSerializable reader)
         {
-            Debug.Log($"[UI.Lobby] 重连");
+            Debug.Log($"[UI.Lobby] 提示重连");
 
             var packet = (S2C_LoadScenePacket)reader;
 
@@ -139,6 +142,13 @@ namespace HotFix
                     //追帧，完成后发送恢复比赛
 
                 }, "Yes");
+        }
+
+        private void OnBattleEnd(INetSerializable reader)
+        {
+            Debug.Log("大厅接收游戏结束消息，测试正常结束时，是否多余执行");
+            //ClientNet.Get.m_PlayerManager.LocalPlayer.ResetToLobby();
+            //Debug.Log("断线重连进入大厅时，放弃重连，在这里接收分数变化");
         }
         #endregion
 

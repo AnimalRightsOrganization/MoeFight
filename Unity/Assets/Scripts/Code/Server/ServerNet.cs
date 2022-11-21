@@ -803,21 +803,20 @@ namespace Code.Server
             serverRoom.Send(writer);
         }
 
+        // 主动认输（①比赛中，②重连后）
         private void OnBattleQuitReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
             UnityEngine.Debug.Log($"[S] {player} quit battle");
 
-            /*
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
 
             // 结算比赛，返回结算结果（主动退出者判负）
-            //TODO: 一方掉线后，另一方在超时时间内强退，一样判输。但是要出提示。
-            short winnerSeatId = (short)(player.SeatId == 0 ? 1 : 0);
-            var packet = new S2C_BattleEndPacket { WinnerSeatId = winnerSeatId };
+            // 一方掉线后，另一方在超时时间内强退，一样判输。
+            var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
             var writer = WriteSerializable(PacketType.S2C_BattleEnd, packet);
             serverRoom.Send(writer);
 
@@ -825,11 +824,8 @@ namespace Code.Server
             m_RoomManager.RemoveServerRoom(serverRoomID);
 
             // 用户状态变更
-            //TODO: 这里会是null。一方掉线（游戏中，非正常登出离开），在超时时间内不要立即清除用户，而是设置成Offline。
             player?.ResetToLobby();
             otherPlayer?.ResetToLobby();
-            UnityEngine.Debug.Log($"重置：{player?.UserName}和{otherPlayer?.UserName}");
-            */
         }
 
         private void OnBattleEndReceived(NetPacketReader reader, NetPeer peer)
