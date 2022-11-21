@@ -68,7 +68,7 @@ namespace Code.Server
 
         public void Print()
         {
-            string result = $"服务器用户数:{Count}";
+            string result = $"用户数: {Count}";
             foreach (ServerPlayer p in playerList)
             {
                 result += $"\n{p}";

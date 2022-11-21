@@ -120,5 +120,16 @@ namespace Code.Server
         {
             dic_battles.Remove(room.RoomID);
         }
+
+
+        public void Print()
+        {
+            string result = $"房间数: {Count}";
+            foreach (var room in dic_rooms)
+            {
+                result += $"\nRoom#{room.Value.ToString()}";
+            }
+            UnityEngine.Debug.Log(result);
+        }
     }
 }

@@ -7,6 +7,7 @@ using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using Code.Client;
 using Debug = UnityEngine.Debug;
+using Code.Server;
 
 public class TestWindow : EditorWindow
 {
@@ -74,6 +75,11 @@ public class TestWindow : EditorWindow
             ScreenCapture.CaptureScreenshot(fileName);
             Debug.Log(fileName);
             AssetDatabase.Refresh();
+        }
+        if (GUILayout.Button("Server Print"))
+        {
+            ServerNet.Get.m_PlayerManager.Print();
+            ServerNet.Get.m_RoomManager.Print();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string str = $"Room#{RoomID}，";
+            string str = $"Room#{RoomID}，Mode={BattleMode}";
             //str += $"[主位][{Players[0][PEER_ID_INDEX]}]({(PlayerStatus)Players[0][STATUS_INDEX]})，";
             //str += $"[客位][{Players[1][PEER_ID_INDEX]}]({(PlayerStatus)Players[1][STATUS_INDEX]})";
             return str;

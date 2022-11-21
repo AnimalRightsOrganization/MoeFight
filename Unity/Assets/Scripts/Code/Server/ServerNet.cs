@@ -129,7 +129,7 @@ namespace Code.Server
                 {
                     ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
 
-                    //if (otherPlayer.IsBot == false)
+                    // 有重连规则的比赛中
                     if (serverRoom.BattleMode == BattleMode.Matching)
                     {
                         // 方案①掉线暂停
@@ -166,6 +166,8 @@ namespace Code.Server
                     else
                     {
                         m_RoomManager.RemoveServerRoom(serverRoomID); //解散房间
+                        m_PlayerManager.RemovePlayer(peer.Id);
+                        UnityEngine.Debug.Log("没有重连的比赛，移除用户");
                     }
                 }
                 else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
@@ -188,7 +190,7 @@ namespace Code.Server
                     }
                     m_PlayerManager.RemovePlayer(peer.Id);
                 }
-                else
+                else //大厅等非比赛场景
                 {
                     m_PlayerManager.RemovePlayer(peer.Id);
                 }
@@ -439,7 +441,7 @@ namespace Code.Server
                 Language = _language,
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
-            UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
+            //UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
 #endif
 
             ///*
@@ -463,7 +465,11 @@ namespace Code.Server
                     Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
                 };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
-                UnityEngine.Debug.Log($"send reconnect packet");
+                UnityEngine.Debug.Log("<color=yellow>lostnet to reconnect</color>");
+            }
+            else
+            {
+                UnityEngine.Debug.Log("offline to login");
             }
             //*/
 
