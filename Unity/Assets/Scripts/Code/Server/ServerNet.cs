@@ -465,11 +465,11 @@ namespace Code.Server
                     Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
                 };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
-                UnityEngine.Debug.Log("<color=yellow>lostnet to reconnect</color>");
+                UnityEngine.Debug.Log($"<color=yellow>{player.UserName} is lostnet to reconnect</color>");
             }
             else
             {
-                UnityEngine.Debug.Log("offline to login");
+                UnityEngine.Debug.Log($"{player.UserName} is offline to login");
             }
             //*/
 

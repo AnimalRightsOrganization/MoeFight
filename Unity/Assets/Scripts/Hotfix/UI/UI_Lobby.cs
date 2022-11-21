@@ -90,9 +90,9 @@ namespace HotFix
                 case PacketType.S2C_Settings:
                     ApplyLanguage();
                     break;
-                //case PacketType.S2C_BattleReconnect:
-                //    OnBattleReconnect(reader);
-                //    break;
+                case PacketType.S2C_BattleReconnect:
+                    OnBattleReconnect(reader);
+                    break;
             }
         }
 
@@ -119,21 +119,22 @@ namespace HotFix
                 () =>
                 {
                     Debug.Log("放弃比赛");
-                    ClientNet.Get.SendBattleQuit();
+                    ClientNet.Get.SendBattleQuit(); //认输
                     dialog.Pop();
                 }, "No",
                 () =>
                 {
-                    Debug.Log("返回比赛");
+                    Debug.Log("回到比赛");
+                    ClientNet.Get.SendLackInput(); //请求帧数据
 
                     //进入Loading
-                    System.Action action = () =>
-                    {
-                        UIManager.Get().PopAll();
-                        UIManager.Get().Push<UI_GameMenu>();
-                        //ClientNet.Get.SendLackInput(); //请求帧数据
-                    };
-                    GameManager.Get.LoadBattleAsync(action); //重连
+                    //System.Action action = () =>
+                    //{
+                    //    UIManager.Get().PopAll();
+                    //    UIManager.Get().Push<UI_GameMenu>();
+                    //    //ClientNet.Get.SendLackInput(); //请求帧数据
+                    //};
+                    //GameManager.Get.LoadBattleAsync(action); //重连
 
                     //追帧，完成后发送恢复比赛
 

@@ -187,6 +187,9 @@ namespace HotFix
         private void OnBattleDrop(INetSerializable reader)
         {
             Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
+            
+            var ui = UIManager.Get().Push<UI_Toast>(); //临时测试用
+            ui.Show("对方掉线了，请耐心等待。");
         }
 
         private void OnBattleEnd(INetSerializable reader)

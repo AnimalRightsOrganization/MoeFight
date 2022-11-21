@@ -225,6 +225,7 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_BattleReconnect: //掉线方登录，提示返回比赛
                     {
+                        Debug.Log($"[C] 收到重连消息，弹窗是否返回比赛");
                         var packet = new S2C_LoadScenePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
