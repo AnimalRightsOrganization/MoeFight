@@ -230,6 +230,18 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
+                case PacketType.S2C_BattleInputs:
+                    {
+                        Debug.Log($"[C] Battle Inputs");
+                        var packet = new S2C_LackInputPacket();
+                        packet.Deserialize(reader);
+                        EventManager.Trigger(pt, packet, peer);
+
+                        //在大厅收到
+                        //var size = (packet.inputs.Length * 12 + 4) / 1024;
+                        //Debug.Log($"收到比赛数据：{packet.frameNumber}条，{size}KB");
+                    }
+                    break;
                 case PacketType.S2C_BattleEnd:
                     {
                         var packet = new S2C_BattleEndPacket();

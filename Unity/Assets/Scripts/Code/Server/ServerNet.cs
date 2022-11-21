@@ -377,13 +377,7 @@ namespace Code.Server
             }
 
             string columnName = "username,audio,sound,language";
-            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName);
-            //UnityEngine.Debug.Log($"results={results.Length}"); //固定是4
-            //for (int i = 0; i < results.Length; i++)
-            //{
-            //    List<string> tempList = results[i];
-            //    UnityEngine.Debug.Log($"{i} --- {tempList.Count}");
-            //}
+            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName); //固定长度4
             List<string> _audioList = results[1];
             List<string> _soundList = results[2];
             List<string> _languageList = results[3];
@@ -469,9 +463,38 @@ namespace Code.Server
                     Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
                 };
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
+                UnityEngine.Debug.Log($"send reconnect packet");
             }
             //*/
-#endregion
+
+            /*
+            //模拟超大消息包收发（最多60*100=6000个，72KB）
+            S2C_InputPacket[] array = new S2C_InputPacket[5001]; //多一个废帧[0]
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i == 0)
+                {
+                    array[0] = new S2C_InputPacket();
+                }
+                else
+                {
+                    uint tick = (uint)i;
+                    var input = new Dictionary<int, uint>();
+                    input[0] = 0;
+                    input[1] = 1;
+
+                    uint[] _inputs = new uint[2] { input[0], input[1] };
+                    array[i] = new S2C_InputPacket { frameNumber = tick, inputs = _inputs };
+                }
+            }
+            var packet4 = new S2C_LackInputPacket
+            {
+                frameNumber = 5000,
+                inputs = array,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
+            */
+            #endregion
         }
 
         private void OnBattleReconnectReceived(NetPacketReader reader, NetPeer peer)
