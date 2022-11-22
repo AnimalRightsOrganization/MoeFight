@@ -110,14 +110,14 @@ namespace Code.Client
                 if (ggpo_recieve.ContainsKey(rendTick))
                 {
                     //因为延迟表现，此时收到了，取出来表现
-                    //Debug.Log($"延迟足够，表现{rendTick}");
+                    //Debug.Log($"延迟足够，发送{sendTick}时，表现{rendTick}");
                     var _inputs = ggpo_recieve[rendTick];
                     Process(rendTick, _inputs);
                 }
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
-                    //Debug.Log($"延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
+                    Debug.Log($"[渲染] 延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
                     Predict(rendTick);
                     predicted.Add(rendTick);
                 }
@@ -152,14 +152,15 @@ namespace Code.Client
                         uint badTick = i;
 
                         // 一次性回滚到最早发生错误的地方。
-                        Debug.LogError($"{badTick}预测错({recieve1}:{recieve2})，回滚");
+                        Debug.LogError($"{badTick}预测错({recieve1}:{predict1})({recieve2}:{predict2})，回滚到{badTick - 1}");
                         Rollback(badTick - 1);
 
                         //追帧到当前渲染帧。
-                        Debug.Log($"<color=yellow>追帧，覆盖错误的预测: {badTick}~{rendTick}</color>");
+                        Debug.Log($"<color=yellow>追帧，覆盖错误的预测: {badTick}~{rendTick}({rendTick - badTick}个)</color>");
                         for (uint t = badTick; t <= rendTick; t++)
                         {
-                            if (rendTick <= ggpo_recieve.Count)
+                            //if (rendTick <= ggpo_recieve.Count)
+                            if (t <= ggpo_recieve.Count)
                             {
                                 uint[] _inputs = ggpo_recieve[t];
                                 ggpo_predict[t] = _inputs;
@@ -199,7 +200,7 @@ namespace Code.Client
             uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];
             var _inputs = ggpo_predict[tick];
             _inputs[remoteSeatId] = remoteInput;
-            //Debug.Log($"<color=blue>预测第{tick}帧，远程操作是{remoteInput}</color>");
+            Debug.Log($"<color=blue>[预测] 第{tick}帧: ({_inputs[0]})({_inputs[1]})</color>");
 
             //预测完成后，让角色跑预测帧。
             Process(tick, _inputs);
@@ -207,16 +208,16 @@ namespace Code.Client
         private void Rollback(uint tick)
         {
             GameState.FromByteArray(LocalSession.gs, cache_buffer[tick]);
-            Debug.Log($"回滚到第{tick}帧" +
+            Debug.Log($"[回滚] 到第{tick}帧" +
                 $"\nP1:{LocalSession.gs.characters[0].position}---hp:{LocalSession.gs.characters[0].health}" +
                 $"\nP2:{LocalSession.gs.characters[1].position}---hp:{LocalSession.gs.characters[1].health}");
         }
-        private void Process(uint tick, uint[] inputs) //双方操作
+        public void Process(uint tick, uint[] inputs) //双方操作
         {
             runner.SaveOldBuffer();
             LocalSession.RunFrame(inputs);
             runner.OnFixedUpdate(inputs);
-            //Debug.Log($"执行完第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            Debug.Log($"[执行] 第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }
@@ -309,7 +310,7 @@ namespace Code.Client
 
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            //Debug.Log($"<color=grey>---收到第{server_tick}帧</color>");
+            Debug.Log($"<color=grey>---收到第{server_tick}帧: ({packet.inputs[0]})({packet.inputs[1]})</color>");
         }
         private void OnBattleStart(INetSerializable reader)
         {
