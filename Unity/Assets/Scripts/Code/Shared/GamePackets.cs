@@ -28,7 +28,7 @@ namespace Code.Shared
         AtRoomWait  = 3,    //在房间
         AtRoomReady = 4,    //在房间
         AtBattle    = 5,    //在战场
-        Reconnect   = 6,    //异常掉线，等待重连
+        Reconnect   = 6,    //比赛中掉线，标记为重连
     }
 
     public enum SeatInfo : sbyte
@@ -74,7 +74,7 @@ namespace Code.Shared
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         S2C_BattleStart     ,   //比赛开始（第一帧同步）
         S2C_BattlePause     ,   //比赛暂停（客户端主动，每人每局一次机会）
-        S2C_BattleDrop      ,   //断线暂停（服务器主动，一方断线）
+        S2C_BattleLostNet   ,   //断线暂停（服务器主动，一方断线）
         S2C_BattleReconnect ,   //比赛重连
         S2C_BattleInputs    ,   //比赛帧数据
         S2C_BattleEnd       ,   //比赛结束，结算

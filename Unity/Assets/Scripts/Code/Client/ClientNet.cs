@@ -216,7 +216,7 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_BattleDrop: //对方掉线，等待30秒
+                case PacketType.S2C_BattleLostNet: //对方掉线，等待30秒
                     {
                         var packet = new EmptyPacket();
                         packet.Deserialize(reader);

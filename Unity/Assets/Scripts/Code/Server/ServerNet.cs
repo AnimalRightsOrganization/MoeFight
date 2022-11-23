@@ -140,7 +140,7 @@ namespace Code.Server
                             {
                                 case DisconnectReason.Timeout: //关闭网络，超时
                                 case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
-                                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleDrop, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
+                                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleLostNet, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
                                     player.SetStatus(PlayerStatus.Reconnect); //把离线者标记未断线重连
                                     //serverRoom.CutDown(); //掉线倒计时
                                     break;
@@ -225,14 +225,14 @@ namespace Code.Server
                 case PacketType.C2S_RegisterReq:
                     //OnRegisterReceived(reader, peer);
                     break;
+                case PacketType.C2S_UserInfo:
+                    //OnGetUserInfoReceived(reader, peer);
+                    break;
                 case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
                     break;
                 case PacketType.C2S_LogoutReq:
                     OnLogoutReceived(reader, peer);
-                    break;
-                case PacketType.C2S_UserInfo:
-                    //OnGetUserInfoReceived(reader, peer);
                     break;
                 case PacketType.C2S_Settings:
                     OnSettingsReceived(reader, peer);
@@ -745,6 +745,7 @@ namespace Code.Server
             }
         }
 
+        // 客户端请求暂停
         private void OnBattlePauseReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -837,6 +838,7 @@ namespace Code.Server
             }
         }
 
+        // 请求缺失帧
         private void OnLackInputReceived(NetPacketReader reader, NetPeer peer)
         {
             UnityEngine.Debug.Log($"[S] LackInput request received");

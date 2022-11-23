@@ -25,6 +25,8 @@ namespace HotFix
         public Text m_SettingsText;
         public Text m_ExitText;
 
+        private S2C_LoadScenePacket m_Packet;
+
         void Awake()
         {
             m_ArcadeBtn = transform.Find("Menu/Arcade").GetComponent<Button>();
@@ -117,6 +119,7 @@ namespace HotFix
             Debug.Log($"[UI.Lobby] 提示重连");
 
             var packet = (S2C_LoadScenePacket)reader;
+            //ClientNet.Get.m_ClientRoom.DoInit(packet); //还没有房间
 
             int seatId = packet.Host.UserName == localPlayer.UserName ? 0 : 1;
             localPlayer.SetRoomID(packet.RoomId).SetSeatID(seatId).SetStatus(PlayerStatus.AtBattle);
@@ -131,24 +134,37 @@ namespace HotFix
                 }, "No",
                 () =>
                 {
+                    this.m_Packet = packet;
                     Debug.Log("回到比赛");
                     ClientNet.Get.SendLackInput(); //请求帧数据
-                    //dialog.Pop(); //没用？？
+                    //dialog.Pop(); //这里无法执行
                 }, "Yes");
         }
 
         private async void OnBattleInputs(INetSerializable reader)
         {
             var packet = (S2C_LackInputPacket)reader;
-
             var size = (packet.inputs.Length * 12 + 4) / 1024;
             Debug.Log($"跳转Loading页：{packet.frameNumber}条，{size}KB");
 
+            // 跳转Loading页
             UIManager.Get().PopAll();
             var ui = UIManager.Get().Push<UI_Versus>();
             ui.FadeIn(0, 0);
 
-            //TODO: 组装帧数据
+
+            // 创建用户管理
+            bool localIsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.PeerId == m_Packet.Host.PeerId;
+            string rivalName = localIsHost ? m_Packet.Guest.UserName : m_Packet.Host.UserName;
+            short rivalPeer = localIsHost ? m_Packet.Guest.PeerId : m_Packet.Host.PeerId;
+            ClientPlayer rivalPlayer = new ClientPlayer(rivalName, rivalPeer);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(rivalPlayer, false);
+            // 创建房间管理
+            ClientPlayer host = localIsHost ? ClientNet.Get.m_PlayerManager.LocalPlayer : ClientNet.Get.m_PlayerManager.RivalPlayer;
+            ClientPlayer guest = localIsHost ? ClientNet.Get.m_PlayerManager.RivalPlayer : ClientNet.Get.m_PlayerManager.LocalPlayer;
+            ClientNet.Get.m_ClientRoom = new ClientRoom(m_Packet.RoomId, host, guest);
+            ClientNet.Get.m_ClientRoom.BattleMode = BattleMode.Matching;
+            ClientNet.Get.m_ClientRoom.DoInit(m_Packet);
 
             await Task.Delay(1000);
             //ui.FadeOut();
@@ -158,10 +174,16 @@ namespace HotFix
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
-                //ClientNet.Get.SendBattleStart(0);
 
-                //TODO: 追帧模拟
                 Debug.Log("追帧模拟");
+                ClientLogic.Get.IsStart = false;
+                for (int i = 1; i < packet.frameNumber; i++)
+                {
+                    S2C_InputPacket inputs = packet.inputs[i];
+                    ClientLogic.Get.Process(inputs.frameNumber, inputs.inputs);
+                }
+                //ClientNet.Get.SendBattleStart(0);
+                ClientNet.Get.SendBattleStart(2);
             };
             GameManager.Get.LoadBattleAsync(action);
         }

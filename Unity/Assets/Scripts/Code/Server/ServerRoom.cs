@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
@@ -69,16 +68,12 @@ namespace Code.Server
         // 结算消息计数，确认收到2条
         public int EndCount = 0;
 
-        // 独立的帧同步对象
-        private uint serverTick;
-        private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
-        // 20ms/帧
-        //private int bufferCount; //1帧。缓冲区，针对丢包。服务器没收到，就使用上一帧。
-        //private int halfRTT; //半程延迟，5帧，100ms
-        //private DateTime[] lastInputTime = { DateTime.Now, DateTime.Now };
+        // 独立的帧同步对象
         private int delay = 1; //Update时--，==0则执行，否则等待。
         private uint bufferTick;
+        private uint serverTick;
+        private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
 
         public void DoInit()
@@ -87,16 +82,13 @@ namespace Code.Server
             serverTick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
             PauseChance = new int[2] { 1, 1 };
-            //lastInputTime = new DateTime[2] { DateTime.Now, DateTime.Now };
 
             hostPlayer.SetStatus(PlayerStatus.AtBattle);
             guestPlayer.SetStatus(PlayerStatus.AtBattle);
         }
 
-        public void DoUpdate()
+        public void DoUpdate() //每秒执行60次
         {
-            //Debug.Log(System.DateTime.Now); //每秒60次
-
             delay--;
             if (delay <= 0)
             {
@@ -135,12 +127,6 @@ namespace Code.Server
         // 收到帧数据
         public void OnInputReceived(int seatId, C2S_InputPacket cmd)
         {
-            // 计算半程客户端延迟
-            //var current = DateTime.Now;
-            //var delta = current - lastInputTime[seatId];
-            //lastInputTime[seatId] = current;
-            //Debug.Log($"seat={seatId}，tick={cmd.frameNumber}，HalfRTT={delta.TotalMilliseconds}。Ping: {hostPlayer.Ping}, {guestPlayer.Ping}");
-
             switch (BattleMode)
             {
                 case BattleMode.Training: //单人，收到就下发

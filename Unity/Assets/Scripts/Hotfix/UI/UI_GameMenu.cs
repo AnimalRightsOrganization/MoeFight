@@ -148,8 +148,8 @@ namespace HotFix
                 case PacketType.S2C_BattlePause:
                     OnBattlePause(reader);
                     break;
-                case PacketType.S2C_BattleDrop:
-                    OnBattleDrop(reader);
+                case PacketType.S2C_BattleLostNet:
+                    OnBattleLostNet(reader);
                     break;
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
                     OnBattleEnd(reader);
@@ -184,7 +184,7 @@ namespace HotFix
             //GameManager.Instance.GamePause();
         }
 
-        private void OnBattleDrop(INetSerializable reader)
+        private void OnBattleLostNet(INetSerializable reader)
         {
             Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
             

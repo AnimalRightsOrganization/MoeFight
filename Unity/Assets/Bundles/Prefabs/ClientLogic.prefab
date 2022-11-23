@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsStart: 0
-  DELAY_FRAMES: 3
+  DELAY_FRAMES: 4
   sendTick: 0
   recvTick: 0
   rendTick: 0

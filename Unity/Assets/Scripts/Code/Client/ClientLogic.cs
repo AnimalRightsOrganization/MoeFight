@@ -159,7 +159,6 @@ namespace Code.Client
                         Debug.Log($"<color=yellow>追帧，覆盖错误的预测: {badTick}~{rendTick}({rendTick - badTick}个)</color>");
                         for (uint t = badTick; t <= rendTick; t++)
                         {
-                            //if (rendTick <= ggpo_recieve.Count)
                             if (t <= ggpo_recieve.Count)
                             {
                                 uint[] _inputs = ggpo_recieve[t];
