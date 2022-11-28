@@ -211,7 +211,7 @@ namespace Code.Client
                     break;
                 case PacketType.S2C_BattlePause:
                     {
-                        var packet = new EmptyPacket();
+                        var packet = new S2C_BattlePausePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }

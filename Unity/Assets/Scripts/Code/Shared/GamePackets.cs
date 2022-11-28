@@ -17,7 +17,7 @@ namespace Code.Shared
         USERNAME_USED,  //账号已经注册
         BE_KICKED,      //被踢了（顶号/GM）
         HAS_LOGIN,      //已登录
-        PAUSE_USED,     //暂停次数用尽
+        //PAUSE_USED,     //暂停次数用尽
     }
     
     public enum PlayerStatus : byte
@@ -82,14 +82,13 @@ namespace Code.Shared
 
     public enum BattleStage
     {
-        Ready       = 0, //准备
+        Paused      = 0, //暂停/准备
         Running     = 1, //游戏
-        Pause       = 2, //暂停
-        End         = 3, //结束
-        Process     = 4, //追帧
-        LostNet     = 5, //掉线
-        Replaying   = 6, //回放中
-        ReplayPause = 7, //回放暂停
+        End         = 2, //结束
+        Process     = 3, //追帧
+        LostNet     = 4, //掉线
+        Replaying   = 5, //回放中
+        ReplayPause = 6, //回放暂停
     }
     public enum BattleMode
     {
@@ -255,7 +254,7 @@ namespace Code.Shared
 
     public struct C2S_BattleStartPacket : INetSerializable
     {
-        public byte Stage; //阶段：[0]倒计时前；[1]倒计时后；[2]战斗中暂停后继续
+        public byte Stage; //阶段：〇倒计时前/~~①倒计时后~~~/②比赛暂停后恢复
 
         public void Serialize(NetDataWriter writer)
         {
@@ -639,6 +638,22 @@ namespace Code.Shared
         public void Deserialize(NetDataReader reader)
         {
             Stage = reader.GetByte();
+        }
+    }
+
+    // ①玩家请求暂停(30s)
+    // ②玩家掉线服务器通知暂停(60s)
+    public struct S2C_BattlePausePacket : INetSerializable
+    {
+        public byte Duration; //暂停时间(秒)
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Duration);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Duration = reader.GetByte();
         }
     }
 

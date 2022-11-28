@@ -331,7 +331,18 @@ namespace Code.Client
         }
         private void OnBattlePause(INetSerializable reader)
         {
-            IsStart = false;
+            var packet = (S2C_BattlePausePacket)reader;
+            Debug.Log($"暂停游戏逻辑: {packet.Duration}s");
+            if (packet.Duration > 0)
+            {
+                IsStart = false;
+                Time.timeScale = 0;
+            }
+            else
+            {
+                IsStart = true;
+                Time.timeScale = 1;
+            }
         }
         private void OnBattleEnd(INetSerializable reader)
         {

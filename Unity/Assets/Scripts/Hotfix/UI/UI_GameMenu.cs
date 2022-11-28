@@ -179,7 +179,10 @@ namespace HotFix
 
         private void OnBattlePause(INetSerializable reader)
         {
-            Debug.Log($"<color=red>[S] 收到暂停回应</color>");
+            var packet = (S2C_BattlePausePacket)reader;
+            Debug.Log($"<color=red>[S] 通知暂停: {packet.Duration}s</color>");
+
+            //UI只管自己的暂停时的表现，游戏逻辑暂停由ClientLogic自行处理
             m_MenuPanel.SetActive(true);
             //GameManager.Instance.GamePause();
         }
@@ -211,13 +214,90 @@ namespace HotFix
             {
                 m_ResultText.text = "Time Out";
             }
-
-            //GameManager.Instance.GameEnd(); //对方掉线
-            //GameManager.Instance.SaveReplay(packet.WinnerSeatId); //TODO:有卡顿，异步保存
         }
         #endregion
 
         #region 按钮事件
+        // 3，2，1，开始比赛
+        void OnCountDown()
+        {
+            // 第1秒
+            Tweener tw3 = m_StartText.DOText("Round1", 0); //duration是渐变，一个字一个字变过来
+            tw3.Pause();
+            tw3.SetDelay(1);
+            tw3.OnStart(() =>
+            {
+                m_Wallpaper.SetActive(false);
+                m_ReadyPanel.SetActive(true);
+
+                AudioManager.Get().PlaySound(AudioManager.Round_1);
+            });
+            tw3.Play();
+
+            // 第3秒
+            Tweener tw0 = m_StartText.DOText("Ready", 0);
+            tw0.Pause();
+            tw0.SetDelay(3);
+            tw0.Play();
+
+            // 第4秒
+            Tweener tw_start = m_StartText.DOText("Fight", 0);
+            tw_start.Pause();
+            tw_start.SetDelay(4f);
+            tw_start.Play();
+
+            // 第5秒，发送第一帧同步，消失
+            Tweener tw_end = m_StartText.DOText("Fight", 0);
+            tw_end.Pause();
+            tw_end.SetDelay(5f);
+            tw_end.OnComplete(() =>
+            {
+                //ClientNet.Get.SendBattleStart(1); //倒计时结束时发
+                m_ReadyPanel.SetActive(false);
+            });
+            tw_end.Play();
+        }
+
+        // 暂停比赛
+        void OpenMenu()
+        {
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Training: //TODO: 这是测试，记得删除
+                case BattleMode.Matching:
+                    Debug.Log($"[C] 请求暂停");
+                    ClientNet.Get.SendBattlePause();
+                    break;
+                default: //其他情况不会有UI
+                    m_MenuPanel.SetActive(true);
+                    //GameManager.Instance.PauseReplay();
+                    break;
+            }
+        }
+
+        // 恢复比赛
+        void CloseMenu()
+        {
+            switch (ClientNet.Get.m_ClientRoom.BattleMode)
+            {
+                case BattleMode.Training: //TODO: 这是测试，记得删除
+                case BattleMode.Matching:
+                    ClientNet.Get.SendBattleStart(2); //解除暂停，继续
+                    break;
+                default: //其他情况不会有UI
+                    m_MenuPanel.SetActive(false);
+                    //GameManager.Instance.PlayReplay();
+                    break;
+            }
+        }
+
+        // 设置键位
+        void OnSkillInfo()
+        {
+            Debug.Log("查看搓招信息");
+        }
+
+        // 退出比赛？（一级菜单）
         void OnQuitBtnClick()
         {
             string titleStr = string.Empty;
@@ -253,79 +333,7 @@ namespace HotFix
             dialog.Show(titleStr, noAction, noStr, yesAction, yesStr);
         }
 
-        void OnCountDown()
-        {
-            // 第1秒
-            Tweener tw3 = m_StartText.DOText("Round1", 0); //duration是渐变，一个字一个字变过来
-            tw3.Pause();
-            tw3.SetDelay(1);
-            tw3.OnStart(() =>
-            {
-                m_Wallpaper.SetActive(false);
-                m_ReadyPanel.SetActive(true);
-
-                AudioManager.Get().PlaySound(AudioManager.Round_1);
-            });
-            tw3.Play();
-
-            // 第3秒
-            Tweener tw0 = m_StartText.DOText("Ready", 0);
-            tw0.Pause();
-            tw0.SetDelay(3);
-            tw0.Play();
-
-            // 第4秒
-            Tweener tw_start = m_StartText.DOText("Fight", 0);
-            tw_start.Pause();
-            tw_start.SetDelay(4f);
-            tw_start.Play();
-
-            // 第5秒，发送第一帧同步，消失
-            Tweener tw_end = m_StartText.DOText("Fight", 0);
-            tw_end.Pause();
-            tw_end.SetDelay(5f);
-            tw_end.OnComplete(() =>
-            {
-                ClientNet.Get.SendBattleStart(1); //倒计时结束时发
-                m_ReadyPanel.SetActive(false);
-            });
-            tw_end.Play();
-        }
-
-        void OpenMenu()
-        {
-            switch (ClientNet.Get.m_ClientRoom.BattleMode)
-            {
-                case BattleMode.Matching:
-                    Debug.Log($"[C] 请求暂停");
-                    ClientNet.Get.SendBattlePause();
-                    break;
-                default: //其他情况不会有UI
-                    m_MenuPanel.SetActive(true);
-                    //GameManager.Instance.PauseReplay();
-                    break;
-            }
-        }
-
-        void CloseMenu()
-        {
-            switch (ClientNet.Get.m_ClientRoom.BattleMode)
-            {
-                case BattleMode.Matching:
-                    ClientNet.Get.SendBattleStart(2); //解除暂停，继续
-                    break;
-                default: //其他情况不会有UI
-                    m_MenuPanel.SetActive(false);
-                    //GameManager.Instance.PlayReplay();
-                    break;
-            }
-        }
-
-        void OnSkillInfo()
-        {
-            Debug.Log("查看搓招信息");
-        }
-
+        // 退出比赛：是（二级菜单）
         void OnBackBtnClick()
         {
             GameManager.Get.CleanBattle();
