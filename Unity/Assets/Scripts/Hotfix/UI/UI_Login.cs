@@ -158,6 +158,12 @@ namespace HotFix
                 m_LoginPanel.gameObject.SetActive(false);
                 m_OAuthBtn.gameObject.SetActive(true);
 
+                // 比赛中需要销毁“ClientLogic”
+                GameManager.Get.CleanBattle();
+                if (ClientNet.Get.m_ClientRoom != null)
+                    ClientNet.Get.m_ClientRoom.Dispose();
+                ClientNet.Get.m_ClientRoom = null;
+
                 string reason = string.Empty;
                 switch (DisconnectInfo.Reason)
                 {

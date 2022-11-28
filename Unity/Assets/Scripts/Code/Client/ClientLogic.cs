@@ -85,6 +85,21 @@ namespace Code.Client
                     break;
             }
         }
+        void OnApplicationPause(bool pause)
+        {
+            Debug.Log($"<color=green>OnApplicationPause: {pause}</color>");
+            if (pause)
+            {
+                //掉线处理
+                ClientNet.Get.SendBattlePause();
+            }
+            else
+            {
+                //断线重连
+                ClientNet.Get.SendBattleStart(2);
+            }
+        }
+
         void BattleLoop()
         {
             // 因暂停，切后台造成此客户端滞后
@@ -226,7 +241,7 @@ namespace Code.Client
             runner.SaveOldBuffer();
             LocalSession.RunFrame(inputs);
             runner.OnFixedUpdate(inputs);
-            Debug.Log($"[执行] 第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
+            //Debug.Log($"[执行] 第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
         }

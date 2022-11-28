@@ -436,9 +436,9 @@ namespace Code.Client
             SendPacketSerializable(PacketType.C2S_BattleQuit, new EmptyPacket());
         }
 
-        public void SendBattleEnd(sbyte winner)
+        public void SendBattleEnd(int winner)
         {
-            var cmd = new C2S_BattleEndPacket { Winner = winner };
+            var cmd = new C2S_BattleEndPacket { Winner = (sbyte)winner };
             SendPacketSerializable(PacketType.C2S_BattleEnd, cmd);
         }
 

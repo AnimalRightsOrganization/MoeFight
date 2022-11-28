@@ -274,7 +274,6 @@ namespace HotFix
                     break;
                 default: //其他情况不会有UI
                     m_MenuPanel.SetActive(true);
-                    //GameManager.Instance.PauseReplay();
                     break;
             }
         }
@@ -337,7 +336,7 @@ namespace HotFix
             dialog.Show(titleStr, noAction, noStr, yesAction, yesStr);
         }
 
-        // 退出比赛：是（二级菜单）
+        // 结算/退出比赛：是（二级菜单）
         void OnBackBtnClick()
         {
             GameManager.Get.CleanBattle();
@@ -391,7 +390,7 @@ namespace HotFix
                 case BattleMode.Training:
                 case BattleMode.Matching:
                     Debug.Log($"delegate gameEnd: {winner}");
-                    ClientNet.Get.SendBattleEnd((sbyte)winner);
+                    ClientNet.Get.SendBattleEnd(winner);
                     break;
             }
         }

@@ -71,7 +71,7 @@ namespace Code.Server
 
         // 独立的帧同步对象
         private int delay = 1; //Update时--，==0则执行，否则等待。
-        private int delayCount = 0; //超时次数阈值，超过插入空帧
+        //private int delayCount = 0; //超时次数阈值，超过插入空帧
         private float Delta = 16.67f; //60fps
         private uint bufferTick; //接收帧计数
         private uint serverTick; //下发帧计数
@@ -83,13 +83,13 @@ namespace Code.Server
             BattleStage = BattleStage.Ready;
             hostPlayer.SetStatus(PlayerStatus.AtBattle);
             guestPlayer.SetStatus(PlayerStatus.AtBattle);
-            PauseChance = new int[2] { 1, 1 };
+            PauseChance = new int[2] { 100, 100 };
             stage_0_list = new List<short>();
             stage_1_list = new List<short>();
             EndCount = 0;
 
             delay = 1;
-            delayCount = 0;
+            //delayCount = 0;
             Delta = Time.fixedDeltaTime * 1000;
             bufferTick = 0;
             serverTick = 0;
@@ -123,14 +123,15 @@ namespace Code.Server
 
                     delay = 1; //服务器已经适应客户端速度，之后保持为1
 
-                    delayCount = 0;
+                    //delayCount = 0;
                 }
                 else
                 {
                     // 重新计算计算延迟情况，过几帧后再来取
                     // 100ms / 16.67 = 6(帧)
                     delay = Mathf.CeilToInt(Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / Delta);
-
+                    
+                    /*
                     // 但是有时不是因为延迟，而是编辑器内暂停，或手机切后台造成的。
                     // 这时该客户端没有任何操作，为避免服务器不走，为其填充空帧及时下发。
                     delayCount++;
@@ -174,6 +175,7 @@ namespace Code.Server
                         var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
                     }
+                    */
                 }
             }
             else
@@ -219,7 +221,7 @@ namespace Code.Server
                         {
                             if (dic_recv[tick].ContainsKey(seatId))
                             {
-                                Debug.LogError($"P{seatId}发送了冗余帧{tick}，可能是超时过滤的，不接收");
+                                Debug.LogError($"P{seatId}发送了冗余帧{tick}:{cmd.input}vs{dic_recv[tick][seatId]}，可能是超时的，不接收");
                                 return;
                             }
 
