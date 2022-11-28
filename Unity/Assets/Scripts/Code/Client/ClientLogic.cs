@@ -19,6 +19,10 @@ namespace Code.Client
             }
         }
 
+        // 线程中，编辑器暂停时无法停下
+        // 为了保证切后台依然运行
+        public static LogicTimer LogicTimer { get; private set; }
+
         public bool IsStart;
         [SerializeField] uint DELAY_FRAMES = 0;
         [SerializeField] uint sendTick;
@@ -38,6 +42,8 @@ namespace Code.Client
         #region 内置函数
         void Awake()
         {
+            LogicTimer = new LogicTimer(OnLogicUpdate);
+
             IsStart = false;
             sendTick = 0;
             recvTick = 0;
@@ -65,13 +71,25 @@ namespace Code.Client
         void OnEnable()
         {
             EventManager.RegisterEvent(OnNetCallback);
+            LogicTimer.Start();
         }
         void OnDisable()
         {
             EventManager.UnRegisterEvent(OnNetCallback);
+            LogicTimer.Stop();
         }
-        void FixedUpdate()
+        //void FixedUpdate()
+        //{
+        //    //OnLogicUpdate();
+        //    Debug.Log($"<color=yellow>FixedUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
+        //}
+        void Update()
         {
+            LogicTimer.Update();
+        }
+        void OnLogicUpdate()
+        {
+            //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
             if (!IsStart) return;
 
             switch (myBattleMode)
@@ -334,7 +352,7 @@ namespace Code.Client
 
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            Debug.Log($"<color=grey>---收到第{server_tick}帧: ({packet.inputs[0]})({packet.inputs[1]})</color>");
+            //Debug.Log($"<color=grey>---收到第{server_tick}帧: ({packet.inputs[0]})({packet.inputs[1]})</color>");
         }
         private void OnBattleStart(INetSerializable reader)
         {

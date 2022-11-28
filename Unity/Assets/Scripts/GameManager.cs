@@ -34,13 +34,12 @@ public class GameManager : MonoBehaviour
 
             // 系统设置
             Time.timeScale = 1.0f;
-            Time.fixedDeltaTime = 0.02f;
+            Time.fixedDeltaTime = 1f / Constants.FPS;
+            Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
+            QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
             Screen.fullScreen = false;
             //Screen.SetResolution(540, 960);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
-            Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
-            Time.fixedDeltaTime = 1f / Constants.FPS;
-            QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
             //Debug.unityLogger.logEnabled = false; //release版关闭
             //Application.systemLanguage;
 

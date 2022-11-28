@@ -97,10 +97,11 @@ public class HitstunRunner : MonoBehaviour
 
     public void OnFixedUpdate(uint[] inputs)
     {
-        if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
-        {
-            Debug.Log("Unstable update tick!" + Time.deltaTime.ToString());
-        }
+        // Stopwatch中使用的是固定时间，无需检查
+        //if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
+        //{
+        //    Debug.LogError("Unstable update tick!" + Time.deltaTime.ToString());
+        //}
         // handles function key debugging inputs
         HandleDevKeys();
 
