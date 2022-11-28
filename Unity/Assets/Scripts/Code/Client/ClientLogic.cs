@@ -87,6 +87,16 @@ namespace Code.Client
         }
         void BattleLoop()
         {
+            // 因暂停，切后台造成此客户端滞后
+            if (recvTick > sendTick)
+            {
+                for (uint i = sendTick + 1; i <= recvTick; i++)
+                {
+                    ggpo_predict[i] = ggpo_recieve[i];
+                }
+                sendTick = recvTick;
+            }
+
             //①收集本地按键，发送。
             sendTick++;
             uint input = LocalSession.ReadInputs();

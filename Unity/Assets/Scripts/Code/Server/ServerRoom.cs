@@ -72,8 +72,10 @@ namespace Code.Server
 
         // 独立的帧同步对象
         private int delay = 1; //Update时--，==0则执行，否则等待。
-        private uint bufferTick;
-        private uint serverTick;
+        private int delayCount = 0; //超时次数阈值，超过插入空帧
+        private float Delta = Time.fixedDeltaTime * 1000; //16.7
+        private uint bufferTick; //接收帧计数
+        private uint serverTick; //下发帧计数
         private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
 
@@ -81,6 +83,11 @@ namespace Code.Server
         {
             BattleStage = BattleStage.Paused;
             EndCount = 0;
+
+            delay = 1;
+            delayCount = 0;
+            Delta = Time.fixedDeltaTime * 1000;
+            bufferTick = 0;
             serverTick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
             PauseChance = new int[2] { 1, 1 };
@@ -113,11 +120,58 @@ namespace Code.Server
                     }
 
                     delay = 1; //服务器已经适应客户端速度，之后保持为1
+
+                    delayCount = 0;
                 }
                 else
                 {
-                    float Delta = Time.fixedDeltaTime * 1000;
-                    delay = Mathf.CeilToInt(Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / Delta); //重新计算
+                    // 重新计算计算延迟情况，过几帧后再来取
+                    // 100ms / 16.7 = 6(帧)
+                    delay = Mathf.CeilToInt(Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / Delta);
+
+                    // 但是有时不是因为延迟，而是编辑器内暂停，或手机切后台造成的。
+                    // 这时该客户端没有任何操作，为避免服务器不走，为其填充空帧及时下发。
+                    delayCount++;
+                    if (delayCount > 1)
+                    {
+                        // 超过PING值造成的延迟，还未收到。则判断为其他BUG，填充空帧下发。
+
+                        bufferTick++;
+                        serverTick = bufferTick;
+
+                        Dictionary<int, uint> input = null;
+                        if (dic_recv.ContainsKey(serverTick) == false)
+                        {
+                            // 两边都出问题了
+                            dic_recv[serverTick] = new Dictionary<int, uint>();
+                            input = dic_recv[serverTick];
+                            input[0] = 0;
+                            input[1] = 0;
+                        }
+                        else
+                        {
+                            // 收到一帧，一边出问题了
+                            input = dic_recv[serverTick];
+
+                            // 少了哪个，插入哪个
+                            if (input.ContainsKey(0) == false)
+                            {
+                                input[0] = 0;
+                            }
+                            if (input.ContainsKey(1) == false)
+                            {
+                                input[1] = 0;
+                            }
+                        }
+
+                        var packet = new S2C_InputPacket
+                        {
+                            frameNumber = serverTick,
+                            inputs = new uint[] { input[0], input[1] },
+                        };
+                        var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
+                        Send(writer);
+                    }
                 }
             }
             else
@@ -151,43 +205,24 @@ namespace Code.Server
                     break;
                 case BattleMode.Matching:
                     {
-                        /*
-                        if (dic_recv.ContainsKey(cmd.frameNumber) == false)
+                        // 这里仅收集，Update中下发
+                        uint tick = cmd.frameNumber;
+
+                        if (dic_recv.ContainsKey(tick) == false)
                         {
-                            //Debug.Log($"[C2S.Input.111] {seatId}: {cmd.frameNumber}---{cmd.input}");
-                            dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
-                            dic_recv[cmd.frameNumber][seatId] = cmd.input;
+                            dic_recv[tick] = new Dictionary<int, uint>();
+                            dic_recv[tick][seatId] = cmd.input; //快的
                         }
                         else
                         {
-                            // 同一个帧号，集齐两人份就下发
-                            //Debug.Log($"[C2S.Input.222] {seatId}: {cmd.frameNumber}---{cmd.input}");
-                            dic_recv[cmd.frameNumber][seatId] = cmd.input;
-
-                            var packet = new S2C_InputPacket
+                            if (dic_recv[tick].ContainsKey(seatId))
                             {
-                                frameNumber = cmd.frameNumber,
-                                inputs = new uint[] { dic_recv[cmd.frameNumber][0], dic_recv[cmd.frameNumber][1] }
-                            };
-                            var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
-                            Send(writer);
+                                Debug.LogError($"{seatId}发送了冗余帧，可能是超时过滤的，不接收");
+                                return;
+                            }
 
-                            serverTick = cmd.frameNumber;
-                        }
-                        */
-
-                        //②这里仅收集，Update中下发
-                        //dic_recv.TryAdd(cmd.frameNumber, new Dictionary<int, uint>());
-                        if (dic_recv.ContainsKey(cmd.frameNumber) == false)
-                        {
-                            dic_recv[cmd.frameNumber] = new Dictionary<int, uint>();
-                            dic_recv[cmd.frameNumber][seatId] = cmd.input; //快的
-                        }
-                        else
-                        {
-                            dic_recv[cmd.frameNumber][seatId] = cmd.input; //慢的
-
-                            bufferTick = cmd.frameNumber; //缓存到第几帧
+                            dic_recv[tick][seatId] = cmd.input; //慢的
+                            bufferTick = tick; //缓存到第几帧
                         }
                     }
                     break;
