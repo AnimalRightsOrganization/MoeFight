@@ -702,14 +702,23 @@ namespace Code.Server
             serverRoom.StageCount(cmd.Stage, player);
 
             // 判断阶段
-            if (cmd.Stage == 1)
+            if (cmd.Stage == 0) //场景加载完（同步）
             {
-                // 等待双方倒计时结束，再广播。
+                // 让客户端开始倒计时
+                if (serverRoom.Stage_0_Count == 2)
+                {
+                    // 让客户端开始倒计时。
+                    var packet = new S2C_BattleStartPacket { Stage = 0 };
+                    var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
+                    serverRoom.Send(writer);
+
+                    serverRoom.DoInit();
+                }
+            }
+            else if (cmd.Stage == 1) //3,2,1,倒计时完（同步）
+            {
                 if (serverRoom.Stage_1_Count == 2)
                 {
-                    // 让客户端开始倒计时
-                    serverRoom.DoInit();
-
                     // 此时客户端倒计时结束。服务器完成第一帧同步，同时下发。
                     var packet = new S2C_BattleStartPacket { Stage = 1 };
                     var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
@@ -720,7 +729,7 @@ namespace Code.Server
                     serverRoom.BattleStage = BattleStage.Running;
                 }
             }
-            else if (cmd.Stage == 2) //比赛恢复，只需要收一条
+            else if (cmd.Stage == 2) //比赛恢复（只需收到一方）
             {
                 var packet = new S2C_BattleStartPacket { Stage = 2 };
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);

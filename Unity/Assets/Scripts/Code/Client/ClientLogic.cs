@@ -326,13 +326,14 @@ namespace Code.Client
             var packet = (S2C_BattleStartPacket)reader;
             Debug.Log($"[C] 战斗开始, 阶段: {packet.Stage}, 此时比赛: {IsStart}");
 
-            //if (packet.Stage == 0) //场景加载完成上报，服务器集齐后下发
-            //else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
-            if (packet.Stage == 1)
+            if (packet.Stage == 0) //场景加载完同步
             {
-                //IsStart = true; //开始发送帧数据
-                //UI：3、2、1
-                //IsStart = false;
+                //UI: 3,2,1,Start
+            }
+            else if (packet.Stage == 1) //倒计时完同步
+            {
+                IsStart = true; //开始发送帧数据
+                Time.timeScale = 1;
             }
             else if (packet.Stage == 2)
             {
@@ -343,16 +344,12 @@ namespace Code.Client
         private void OnBattlePause(INetSerializable reader)
         {
             var packet = (S2C_BattlePausePacket)reader;
-            Debug.Log($"暂停游戏逻辑: {packet.Duration}s");
+            Debug.Log($"游戏逻辑暂停: {packet.Duration}s");
             if (packet.Duration > 0)
             {
                 IsStart = false; //暂停
                 Time.timeScale = 0;
             }
-            //else
-            //{
-            //    //次数用尽，无法暂停
-            //}
         }
         private void OnBattleEnd(INetSerializable reader)
         {

@@ -162,39 +162,41 @@ namespace HotFix
             var packet = (S2C_BattleStartPacket)reader;
             Debug.Log($"[GameMenu] 战斗开始, 阶段: {packet.Stage}");
 
-            //if (packet.Stage == 0) //场景加载完同步
-            //{
-            //    OnCountDown();
-            //}
-            //else if (packet.Stage == 1) //倒计时完同步
-            if (packet.Stage == 1)
+            if (packet.Stage == 0) //场景加载完同步
             {
-                OnCountDown();
-                //GameManager.Instance.GameStart();
+                OnCountdown();
             }
-            else if (packet.Stage == 2) //暂停恢复同步
+            else if (packet.Stage == 1) //倒计时完同步
+            {
+                //ClientLogic开始
+            }
+            else if (packet.Stage == 2) //暂停恢复
             {
                 m_MenuPanel.SetActive(false);
-                //GameManager.Instance.GameResume();
             }
         }
 
         private void OnBattlePause(INetSerializable reader)
         {
             var packet = (S2C_BattlePausePacket)reader;
-            Debug.Log($"<color=red>[S] 通知暂停: {packet.Duration}s</color>");
-
-            //UI只管自己的暂停时的表现，游戏逻辑暂停由ClientLogic自行处理
-            m_MenuPanel.SetActive(true);
-            //GameManager.Instance.GamePause();
+            Debug.Log($"<color=red>[S] UI暂停: {packet.Duration}s</color>");
+            if (packet.Duration > 0)
+            {
+                m_MenuPanel.SetActive(true);
+            }
+            else
+            {
+                var toast = UIManager.Get().Push<UI_Toast>();
+                toast.Show("暂停次数用完");
+            }
         }
 
         private void OnBattleLostNet(INetSerializable reader)
         {
             Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
             
-            var ui = UIManager.Get().Push<UI_Toast>(); //临时测试用
-            ui.Show("对方掉线了，请耐心等待。");
+            var toast = UIManager.Get().Push<UI_Toast>(); //临时测试用
+            toast.Show("对方掉线了，请耐心等待。");
         }
 
         private void OnBattleEnd(INetSerializable reader)
@@ -220,8 +222,8 @@ namespace HotFix
         #endregion
 
         #region 按钮事件
-        // 3，2，1，开始比赛
-        void OnCountDown()
+        // 3,2,1,开始比赛
+        void OnCountdown()
         {
             // 第1秒
             Tweener tw3 = m_StartText.DOText("Round1", 0); //duration是渐变，一个字一个字变过来
@@ -254,9 +256,7 @@ namespace HotFix
             tw_end.SetDelay(5f);
             tw_end.OnComplete(() =>
             {
-                //ClientNet.Get.SendBattleStart(1); //倒计时结束时发
-                ClientLogic.Get.IsStart = true;
-                m_ReadyPanel.SetActive(false);
+                ClientNet.Get.SendBattleStart(1); //倒计时完发
             });
             tw_end.Play();
         }

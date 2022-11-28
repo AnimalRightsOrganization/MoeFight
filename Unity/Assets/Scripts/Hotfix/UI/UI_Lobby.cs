@@ -182,7 +182,6 @@ namespace HotFix
                     S2C_InputPacket inputs = packet.inputs[i];
                     ClientLogic.Get.Process(inputs.frameNumber, inputs.inputs);
                 }
-                //ClientNet.Get.SendBattleStart(0);
                 ClientNet.Get.SendBattleStart(2); //重连后恢复
             };
             GameManager.Get.LoadBattleAsync(action);

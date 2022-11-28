@@ -43,20 +43,19 @@ namespace Code.Server
 
         #region 帧同步
         // 跳转场景同步
-        //private List<short> stage_0_list = new List<short>();
-        //public int Stage_0_Count => stage_0_list.Count;
+        private List<short> stage_0_list = new List<short>();
+        public int Stage_0_Count => stage_0_list.Count;
         // 321倒计时同步
         private List<short> stage_1_list = new List<short>();
         public int Stage_1_Count => stage_1_list.Count;
         public void StageCount(int stage, ServerPlayer player)
         {
-            //if (stage == 0)
-            //{
-            //    if (stage_0_list.Contains(player.PeerId) == false)
-            //        stage_0_list.Add(player.PeerId);
-            //}
-            //else if (stage == 1)
-            if (stage == 1)
+            if (stage == 0)
+            {
+                if (stage_0_list.Contains(player.PeerId) == false)
+                    stage_0_list.Add(player.PeerId);
+            }
+            else if (stage == 1)
             {
                 if (stage_1_list.Contains(player.PeerId) == false)
                     stage_1_list.Add(player.PeerId);
@@ -81,7 +80,12 @@ namespace Code.Server
 
         public void DoInit()
         {
-            BattleStage = BattleStage.Paused;
+            BattleStage = BattleStage.Ready;
+            hostPlayer.SetStatus(PlayerStatus.AtBattle);
+            guestPlayer.SetStatus(PlayerStatus.AtBattle);
+            PauseChance = new int[2] { 1, 1 };
+            stage_0_list = new List<short>();
+            stage_1_list = new List<short>();
             EndCount = 0;
 
             delay = 1;
@@ -90,10 +94,6 @@ namespace Code.Server
             bufferTick = 0;
             serverTick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
-            PauseChance = new int[2] { 1, 1 };
-
-            hostPlayer.SetStatus(PlayerStatus.AtBattle);
-            guestPlayer.SetStatus(PlayerStatus.AtBattle);
         }
 
         public void DoUpdate() //每秒执行60次

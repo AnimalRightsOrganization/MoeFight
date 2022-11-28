@@ -82,9 +82,10 @@ namespace Code.Shared
 
     public enum BattleStage
     {
-        Paused      = 0, //暂停/准备
+        Ready       = 0, //准备
         Running     = 1, //游戏
-        End         = 2, //结束
+        Paused      = 2, //暂停
+        End         = 3, //结束
         //Process     = 3, //追帧
         //LostNet     = 4, //掉线
         //Replaying   = 5, //回放中
@@ -629,7 +630,7 @@ namespace Code.Shared
     // 第一帧同步，战斗开始
     public struct S2C_BattleStartPacket : INetSerializable
     {
-        public byte Stage; //阶段：①加载场景完成/②恢复战斗
+        public byte Stage; //阶段：〇加载场景完/①3,2,1,倒计时完/②恢复战斗
 
         public void Serialize(NetDataWriter writer)
         {
