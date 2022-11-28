@@ -95,7 +95,7 @@ namespace HotFix
         void Reset()
         {
             // 恢复到初始状态
-            m_Wallpaper.SetActive(false); //TODO: 临时关掉，好调试
+            m_Wallpaper.SetActive(false); //TODO: 临时关掉调试（记得删除）
             m_ReadyPanel.SetActive(false);
             m_MenuPanel.SetActive(false);
             //m_SkillPanel.SetActive(GameManager.Instance.IsShowUI);
@@ -162,12 +162,14 @@ namespace HotFix
             var packet = (S2C_BattleStartPacket)reader;
             Debug.Log($"[GameMenu] 战斗开始, 阶段: {packet.Stage}");
 
-            if (packet.Stage == 0) //场景加载完同步
+            //if (packet.Stage == 0) //场景加载完同步
+            //{
+            //    OnCountDown();
+            //}
+            //else if (packet.Stage == 1) //倒计时完同步
+            if (packet.Stage == 1)
             {
                 OnCountDown();
-            }
-            else if (packet.Stage == 1) //倒计时完同步
-            {
                 //GameManager.Instance.GameStart();
             }
             else if (packet.Stage == 2) //暂停恢复同步
@@ -253,6 +255,7 @@ namespace HotFix
             tw_end.OnComplete(() =>
             {
                 //ClientNet.Get.SendBattleStart(1); //倒计时结束时发
+                ClientLogic.Get.IsStart = true;
                 m_ReadyPanel.SetActive(false);
             });
             tw_end.Play();
@@ -263,7 +266,7 @@ namespace HotFix
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Training: //TODO: 这是测试，记得删除
+                case BattleMode.Training: //TODO: 这是测试（记得删除）
                 case BattleMode.Matching:
                     Debug.Log($"[C] 请求暂停");
                     ClientNet.Get.SendBattlePause();
@@ -280,7 +283,7 @@ namespace HotFix
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Training: //TODO: 这是测试，记得删除
+                case BattleMode.Training: //TODO: 这是测试（记得删除）
                 case BattleMode.Matching:
                     ClientNet.Get.SendBattleStart(2); //解除暂停，继续
                     break;

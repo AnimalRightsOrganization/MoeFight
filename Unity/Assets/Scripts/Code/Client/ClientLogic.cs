@@ -316,13 +316,14 @@ namespace Code.Client
             var packet = (S2C_BattleStartPacket)reader;
             Debug.Log($"[C] 战斗开始, 阶段: {packet.Stage}");
 
-            if (packet.Stage == 0) //场景加载完成上报，服务器集齐后下发
+            //if (packet.Stage == 0) //场景加载完成上报，服务器集齐后下发
+            //{
+            //    //UI：3、2、1
+            //}
+            //else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
+            if (packet.Stage == 1) 
             {
-                //UI：3、2、1
-            }
-            else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
-            {
-                IsStart = true; //开始发送帧数据
+                //IsStart = true; //开始发送帧数据
             }
             else if (packet.Stage == 2) //从暂停恢复
             {
