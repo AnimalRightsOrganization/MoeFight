@@ -219,7 +219,7 @@ namespace Code.Server
                         {
                             if (dic_recv[tick].ContainsKey(seatId))
                             {
-                                Debug.LogError($"{seatId}发送了冗余帧，可能是超时过滤的，不接收");
+                                Debug.LogError($"P{seatId}发送了冗余帧{tick}，可能是超时过滤的，不接收");
                                 return;
                             }
 

@@ -257,6 +257,7 @@ namespace HotFix
             tw_end.OnComplete(() =>
             {
                 ClientNet.Get.SendBattleStart(1); //倒计时完发
+                m_ReadyPanel.SetActive(false);
             });
             tw_end.Play();
         }

@@ -354,6 +354,7 @@ namespace Code.Client
         private void OnBattleEnd(INetSerializable reader)
         {
             var packet = (S2C_BattleEndPacket)reader;
+            IsStart = false;
 
             var clientRoom = ClientNet.Get.m_ClientRoom;
             if (clientRoom.BattleMode == BattleMode.Training)
