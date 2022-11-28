@@ -740,7 +740,7 @@ namespace Code.Server
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
                 serverRoom.Send(writer);
                 UnityEngine.Debug.Log($"server resume battle");
-                serverRoom.BattleStage = BattleStage.Paused;
+                serverRoom.BattleStage = BattleStage.Running;
             }
             else
             {
@@ -767,6 +767,7 @@ namespace Code.Server
                 return;
             }
             serverRoom.PauseChance[player.SeatId]--;
+            serverRoom.BattleStage = BattleStage.Paused;
 
             var writer = WriteSerializable(PacketType.S2C_BattlePause, new S2C_BattlePausePacket { Duration = 30 });
             serverRoom.Send(writer);
@@ -812,6 +813,7 @@ namespace Code.Server
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
             serverRoom.EndCount++;
+            serverRoom.BattleStage = BattleStage.End;
 
             // 给上报者回包
             var packet = new S2C_BattleEndPacket { WinnerSeatId = cmd.Winner };

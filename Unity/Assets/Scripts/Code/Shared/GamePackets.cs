@@ -85,10 +85,10 @@ namespace Code.Shared
         Paused      = 0, //暂停/准备
         Running     = 1, //游戏
         End         = 2, //结束
-        Process     = 3, //追帧
-        LostNet     = 4, //掉线
-        Replaying   = 5, //回放中
-        ReplayPause = 6, //回放暂停
+        //Process     = 3, //追帧
+        //LostNet     = 4, //掉线
+        //Replaying   = 5, //回放中
+        //ReplayPause = 6, //回放暂停
     }
     public enum BattleMode
     {

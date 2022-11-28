@@ -98,6 +98,8 @@ namespace Code.Server
 
         public void DoUpdate() //每秒执行60次
         {
+            if (BattleStage != BattleStage.Running) return;
+
             delay--;
             if (delay <= 0)
             {
