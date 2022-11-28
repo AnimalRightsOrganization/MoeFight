@@ -153,8 +153,26 @@ namespace HotFix
             };
             ClientNet.Get.Connect((DisconnectInfo) =>
             {
-                connect.Pop();
+                UIManager.Get().PopAll();
+                UIManager.Get().Push<UI_Login>();
+                m_LoginPanel.gameObject.SetActive(false);
                 m_OAuthBtn.gameObject.SetActive(true);
+
+                string reason = string.Empty;
+                switch (DisconnectInfo.Reason)
+                {
+                    case DisconnectReason.ConnectionFailed:
+                        reason = "连接失败";
+                        break;
+                    case DisconnectReason.RemoteConnectionClose:
+                        reason = "断开连接";
+                        break;
+                    default:
+                        reason = $"其他原因：{DisconnectInfo.Reason}";
+                        break;
+                }
+                var toast = UIManager.Get().Push<UI_Toast>();
+                toast.Show(reason);
             });
         }
         private void OnOAuthBtnClick()

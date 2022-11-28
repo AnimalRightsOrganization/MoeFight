@@ -11,12 +11,12 @@ namespace HotFix
             return _instance;
         }
 
-        public Transform Parent;
-        //public Transform Top;
+        private Transform Parent;
+        //private Transform Top;
 
         // UI存储栈
-        public Dictionary<string, UIBase> stack;
-        public Dictionary<string, UIBase> recyclePool;
+        private Dictionary<string, UIBase> stack; //显示的
+        private Dictionary<string, UIBase> recyclePool; //隐藏的
 
         void Awake()
         {
@@ -77,15 +77,16 @@ namespace HotFix
             UIBase ui = null;
             if (stack.TryGetValue(scriptName, out ui))
             {
+                ui.transform.SetAsLastSibling(); //提到最前面显示
                 return ui.GetComponent<T>();
             }
             if (recyclePool.TryGetValue(scriptName, out ui))
             {
                 recyclePool.Remove(scriptName);
                 stack.Add(scriptName, ui);
-                //Debug.Log($"<color=yellow>ReUse{stack.Count}/{recyclePool.Count}</color>");
+                //Debug.Log($"<color=yellow>[ReUse]{scriptName} stack:{stack.Count}/recycle:{recyclePool.Count}</color>");
                 ui.gameObject.SetActive(true);
-                ui.transform.SetAsLastSibling(); //排列在最下面，即渲染的最高层
+                ui.transform.SetAsLastSibling(); //提到最前面显示
                 return ui.GetComponent<T>();
             }
             else
@@ -99,7 +100,7 @@ namespace HotFix
                     obj.AddComponent<T>();
                 var script = obj.GetComponent<T>();
                 stack.Add(scriptName, script);
-                //Debug.Log($"<color=yellow>New{stack.Count}/{recyclePool.Count}</color>");
+                //Debug.Log($"<color=yellow>[New]{scriptName} stack:{stack.Count}/recycle:{recyclePool.Count}</color>");
                 return script;
             }
         }

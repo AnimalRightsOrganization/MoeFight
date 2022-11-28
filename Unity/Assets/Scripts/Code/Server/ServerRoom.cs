@@ -73,7 +73,7 @@ namespace Code.Server
         // 独立的帧同步对象
         private int delay = 1; //Update时--，==0则执行，否则等待。
         private int delayCount = 0; //超时次数阈值，超过插入空帧
-        private float Delta = Time.fixedDeltaTime * 1000; //16.7
+        private float Delta = 16.67f; //60fps
         private uint bufferTick; //接收帧计数
         private uint serverTick; //下发帧计数
         private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
@@ -126,7 +126,7 @@ namespace Code.Server
                 else
                 {
                     // 重新计算计算延迟情况，过几帧后再来取
-                    // 100ms / 16.7 = 6(帧)
+                    // 100ms / 16.67 = 6(帧)
                     delay = Mathf.CeilToInt(Mathf.Max(hostPlayer.Ping, guestPlayer.Ping) / Delta);
 
                     // 但是有时不是因为延迟，而是编辑器内暂停，或手机切后台造成的。
