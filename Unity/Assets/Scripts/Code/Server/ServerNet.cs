@@ -702,33 +702,19 @@ namespace Code.Server
             serverRoom.StageCount(cmd.Stage, player);
 
             // 判断阶段
-            //if (cmd.Stage == 0)
-            //{
-            //    // 等待双方场景切换完毕，再广播。
-            //    if (serverRoom.Stage_0_Count == 2)
-            //    {
-            //        // 让客户端开始倒计时。
-            //        var packet = new S2C_BattleStartPacket { Stage = 0 };
-            //        var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
-            //        serverRoom.Send(writer);
-
-            //        serverRoom.DoInit();
-            //        serverRoom.BattleStage = BattleStage.Paused;
-            //    }
-            //}
-            //else if (cmd.Stage == 1)
             if (cmd.Stage == 1)
             {
                 // 等待双方倒计时结束，再广播。
                 if (serverRoom.Stage_1_Count == 2)
                 {
-                    // 让客户端开始倒计时。
+                    // 让客户端开始倒计时
+                    serverRoom.DoInit();
+
                     // 此时客户端倒计时结束。服务器完成第一帧同步，同时下发。
                     var packet = new S2C_BattleStartPacket { Stage = 1 };
                     var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
                     serverRoom.Send(writer);
 
-                    serverRoom.DoInit();
                     // 标记为战场，方便主循环Update中取
                     m_RoomManager.SetBattle(serverRoom);
                     serverRoom.BattleStage = BattleStage.Running;

@@ -176,7 +176,7 @@ namespace HotFix
                 UIManager.Get().Push<UI_GameMenu>();
 
                 Debug.Log("追帧模拟");
-                ClientLogic.Get.IsStart = false;
+                ClientLogic.Get.IsStart = false; //重连
                 for (int i = 1; i < packet.frameNumber; i++)
                 {
                     S2C_InputPacket inputs = packet.inputs[i];

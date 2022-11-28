@@ -272,12 +272,12 @@ namespace Code.Client
         public void PlayReplay()
         {
             BattleEvent.doSetAnimeSpeed?.Invoke(1f);
-            IsStart = true;
+            IsStart = true; //回放播放
         }
         public void PauseReplay()
         {
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
-            IsStart = false;
+            IsStart = false; //回放暂停
         }
         public void RollbackReplay(uint tick)
         {
@@ -324,20 +324,20 @@ namespace Code.Client
         private void OnBattleStart(INetSerializable reader)
         {
             var packet = (S2C_BattleStartPacket)reader;
-            Debug.Log($"[C] 战斗开始, 阶段: {packet.Stage}");
+            Debug.Log($"[C] 战斗开始, 阶段: {packet.Stage}, 此时比赛: {IsStart}");
 
             //if (packet.Stage == 0) //场景加载完成上报，服务器集齐后下发
-            //{
-            //    //UI：3、2、1
-            //}
             //else if (packet.Stage == 1) //倒计时完成上报，服务器集齐后下发
-            if (packet.Stage == 1) 
+            if (packet.Stage == 1)
             {
                 //IsStart = true; //开始发送帧数据
+                //UI：3、2、1
+                //IsStart = false;
             }
-            else if (packet.Stage == 2) //从暂停恢复
+            else if (packet.Stage == 2)
             {
-                IsStart = true;
+                IsStart = true; //从暂停恢复
+                Time.timeScale = 1;
             }
         }
         private void OnBattlePause(INetSerializable reader)
@@ -346,14 +346,13 @@ namespace Code.Client
             Debug.Log($"暂停游戏逻辑: {packet.Duration}s");
             if (packet.Duration > 0)
             {
-                IsStart = false;
+                IsStart = false; //暂停
                 Time.timeScale = 0;
             }
-            else
-            {
-                IsStart = true;
-                Time.timeScale = 1;
-            }
+            //else
+            //{
+            //    //次数用尽，无法暂停
+            //}
         }
         private void OnBattleEnd(INetSerializable reader)
         {

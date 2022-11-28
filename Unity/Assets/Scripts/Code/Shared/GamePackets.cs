@@ -629,7 +629,7 @@ namespace Code.Shared
     // 第一帧同步，战斗开始
     public struct S2C_BattleStartPacket : INetSerializable
     {
-        public byte Stage; //阶段：[0]加载场景完成；[1]倒计时后；[2]恢复战斗；
+        public byte Stage; //阶段：①加载场景完成/②恢复战斗
 
         public void Serialize(NetDataWriter writer)
         {
