@@ -24,11 +24,11 @@ namespace Code.Server
             hostPlayer.SetRoomID(id).SetSeatID(0).SetStatus(PlayerStatus.AtRoomWait);
             guestPlayer.SetRoomID(id).SetSeatID(1).SetStatus(PlayerStatus.AtRoomWait);
         }
-        public ServerPlayer GetOtherPlayer(short peerId)
+        public ServerPlayer GetOtherPlayer(sbyte seatId)
         {
-            if (hostPlayer.PeerId == peerId)
+            if (hostPlayer.SeatId == seatId)
                 return guestPlayer;
-            else if (guestPlayer.PeerId == peerId)
+            else if (guestPlayer.SeatId == seatId)
                 return hostPlayer;
             return null;
         }
@@ -52,13 +52,13 @@ namespace Code.Server
         {
             if (stage == 0)
             {
-                if (stage_0_list.Contains(player.PeerId) == false)
-                    stage_0_list.Add(player.PeerId);
+                if (stage_0_list.Contains(player.SeatId) == false)
+                    stage_0_list.Add(player.SeatId);
             }
             else if (stage == 1)
             {
-                if (stage_1_list.Contains(player.PeerId) == false)
-                    stage_1_list.Add(player.PeerId);
+                if (stage_1_list.Contains(player.SeatId) == false)
+                    stage_1_list.Add(player.SeatId);
             }
             else
             {

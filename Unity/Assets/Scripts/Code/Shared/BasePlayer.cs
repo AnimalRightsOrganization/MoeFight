@@ -54,7 +54,7 @@
 
         public override string ToString()
         {
-            string str = $"[{PeerId}]{UserName} @Room#{RoomId} @Seat={SeatId} @Status={Status}";
+            string str = $"[peer:{PeerId}]{UserName} @Room#{RoomId} @Seat={SeatId} @Status={Status}";
             return str;
         }
     }

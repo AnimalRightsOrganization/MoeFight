@@ -138,7 +138,7 @@ namespace Code.Server
                 case PlayerStatus.AtRoomWait: //房间里
                 case PlayerStatus.AtRoomReady:
                     {
-                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId); //BOT is null
                         if (otherPlayer != null)
                         {
                             var packet = new S2C_MatchResultPacket { Code = 2 }; //解散房间，另一人退至大厅
@@ -151,7 +151,7 @@ namespace Code.Server
                     break;
                 case PlayerStatus.AtBattle: //战斗中
                     {
-                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId); //BOT is null
 
                         // 有重连规则的比赛中
                         if (serverRoom.BattleMode == BattleMode.Matching)
@@ -400,7 +400,7 @@ namespace Code.Server
             {
                 if (lastPlayer.Status == PlayerStatus.Reconnect)
                 {
-                    UnityEngine.Debug.Log($"重连登录: {lastPlayer.UserName},{lastPlayer.RoomId},{lastPlayer.SeatId}");
+                    UnityEngine.Debug.Log($"重连登录: Peer:{lastPlayer.PeerId},UserName:{lastPlayer.UserName}");
                     isReconnect = true;
                     m_PlayerManager.RemovePlayer(lastPlayer.PeerId);
                     //player = lastPlayer;
@@ -452,6 +452,18 @@ namespace Code.Server
             {
                 int serverRoomID = player.RoomId;
                 ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                if (serverRoom == null)
+                {
+                    UnityEngine.Debug.LogError($"room not exist: {serverRoomID}");
+                    return;
+                }
+
+                // 之前的Peer连接失效，更新房间内保存的用户对象
+                if (player.SeatId == 0)
+                    serverRoom.hostPlayer = player;
+                else
+                    serverRoom.guestPlayer = player;
+
                 ServerPlayer p1 = serverRoom.hostPlayer;
                 ServerPlayer p2 = serverRoom.guestPlayer;
 
@@ -469,7 +481,6 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
                 UnityEngine.Debug.Log($"<color=yellow>{player.UserName} is lostnet to reconnect</color>");
             }
-
             /*
             //模拟超大消息包收发（最多60*100=6000个，72KB）
             S2C_InputPacket[] array = new S2C_InputPacket[5001]; //多一个废帧[0]
@@ -590,7 +601,7 @@ namespace Code.Server
                 return;
             }
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
 
             var packet = new S2C_MatchResultPacket { Code = 2, RoomId = (short)serverRoomID };
             var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
@@ -645,7 +656,7 @@ namespace Code.Server
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
 
             bool playerIsHost = player.SeatId == 0;
             ServerPlayer host = playerIsHost ? player : otherPlayer;
@@ -783,8 +794,11 @@ namespace Code.Server
             UnityEngine.Debug.Log($"[S] {player.UserName},{player.RoomId},{player.SeatId} quit battle");
 
             int serverRoomID = player.RoomId;
+            UnityEngine.Debug.Log($"AAA: {serverRoomID}"); //1
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
+            UnityEngine.Debug.Log($"BBB: {serverRoom != null}"); //true
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
+            UnityEngine.Debug.Log($"CCC: {otherPlayer != null}"); //false
 
             // 结算比赛，返回结算结果（主动退出者判负）
             // 一方掉线后，另一方在超时时间内强退，一样判输。
@@ -813,7 +827,7 @@ namespace Code.Server
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId);
+            ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
             serverRoom.EndCount++;
             serverRoom.BattleStage = BattleStage.End;
 

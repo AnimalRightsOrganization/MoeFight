@@ -127,7 +127,7 @@ namespace Code.Server
             string result = $"房间数: {Count}";
             foreach (var room in dic_rooms)
             {
-                result += $"\nRoom#{room.Value.ToString()}";
+                result += $"\n{room.Value.ToString()}";
             }
             UnityEngine.Debug.Log(result);
         }
