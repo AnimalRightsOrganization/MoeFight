@@ -347,7 +347,11 @@ namespace HotFix
                     break;
                 case BattleMode.Matching:
                     titleStr = "退出游戏将判定失败，是否继续？";
-                    yesAction = ClientNet.Get.SendBattleQuit;
+                    yesAction = () =>
+                    {
+                        ClientNet.Get.SendBattleQuit();
+                        dialog.Hide();
+                    };
                     break;
                 default:
                     yesAction = () =>

@@ -794,17 +794,31 @@ namespace Code.Server
             UnityEngine.Debug.Log($"[S] {player.UserName},{player.RoomId},{player.SeatId} quit battle");
 
             int serverRoomID = player.RoomId;
-            UnityEngine.Debug.Log($"AAA: {serverRoomID}"); //1
+            //UnityEngine.Debug.Log($"AAA: {serverRoomID}"); //1
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-            UnityEngine.Debug.Log($"BBB: {serverRoom != null}"); //true
+            //UnityEngine.Debug.Log($"BBB: {serverRoom != null}"); //true
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
-            UnityEngine.Debug.Log($"CCC: {otherPlayer != null}"); //false
+            //UnityEngine.Debug.Log($"CCC: {otherPlayer != null}"); //false
 
             // 结算比赛，返回结算结果（主动退出者判负）
             // 一方掉线后，另一方在超时时间内强退，一样判输。
             var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
             var writer = WriteSerializable(PacketType.S2C_BattleEnd, packet);
             serverRoom.Send(writer);
+
+            UnityEngine.Debug.Log($"Other: {otherPlayer.Status}, {otherPlayer.AssociatedPeer.ConnectionState}"); //false
+            if (otherPlayer.Status == PlayerStatus.Reconnect)
+            {
+                if (otherPlayer.AssociatedPeer.ConnectionState != ConnectionState.Connected)
+                {
+                    otherPlayer.SetStatus(PlayerStatus.Offline);
+                    m_PlayerManager.RemovePlayer(otherPlayer.PeerId);
+                }
+                else
+                {
+                    otherPlayer.SetStatus(PlayerStatus.AtLobby);
+                }
+            }
 
             // 解散房间（因一方认输解散）
             m_RoomManager.RemoveServerRoom(serverRoomID);
