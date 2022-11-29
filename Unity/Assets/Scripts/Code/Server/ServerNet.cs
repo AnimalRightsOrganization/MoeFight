@@ -400,11 +400,14 @@ namespace Code.Server
             {
                 if (lastPlayer.Status == PlayerStatus.Reconnect)
                 {
-                    UnityEngine.Debug.Log($"重连登录: {lastPlayer.UserName}");
+                    UnityEngine.Debug.Log($"重连登录: {lastPlayer.UserName},{lastPlayer.RoomId},{lastPlayer.SeatId}");
                     isReconnect = true;
                     m_PlayerManager.RemovePlayer(lastPlayer.PeerId);
                     //player = lastPlayer;
                     //peer.Tag = lastPlayer;
+                    player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
+                    m_PlayerManager.AddPlayer(player);
+                    player.SetRoomID(lastPlayer.RoomId).SetSeatID(lastPlayer.SeatId);
                 }
                 else
                 {
@@ -414,11 +417,11 @@ namespace Code.Server
                     return;
                 }
             }
-
-            // 新建玩家对象
-            player = new ServerPlayer(cmd.UserName, peer);
-            m_PlayerManager.AddPlayer(player);
-            //player.ResetToLobby();
+            else
+            {
+                player = new ServerPlayer(cmd.UserName, peer);
+                m_PlayerManager.AddPlayer(player);
+            }
 
             // 第一个包，登录许可
             var packet1 = new S2C_LoginResultPacket

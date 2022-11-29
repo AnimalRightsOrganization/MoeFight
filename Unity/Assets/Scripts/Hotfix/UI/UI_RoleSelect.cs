@@ -144,6 +144,8 @@ namespace HotFix
             if (packet.Code == 2) //匹配后退出
             {
                 this.Pop();
+                UIManager.Get().Push<UI_Lobby>();
+                Debug.Log("匹配结果.2.匹配后退出");
             }
         }
 
