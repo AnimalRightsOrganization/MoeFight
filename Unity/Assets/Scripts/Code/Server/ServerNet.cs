@@ -780,7 +780,7 @@ namespace Code.Server
         {
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] {player} quit battle");
+            UnityEngine.Debug.Log($"[S] {player.UserName},{player.RoomId},{player.SeatId} quit battle");
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
