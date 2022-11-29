@@ -83,6 +83,11 @@ public class TestWindow : EditorWindow
             ServerNet.Get.m_PlayerManager.Print();
             ServerNet.Get.m_RoomManager.Print();
         }
+        if (GUILayout.Button("Client Print"))
+        {
+            var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
+            Debug.Log(str);
+        }
     }
 }
 [InitializeOnLoad]

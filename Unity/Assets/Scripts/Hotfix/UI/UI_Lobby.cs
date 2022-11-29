@@ -189,9 +189,11 @@ namespace HotFix
 
         private void OnBattleEnd(INetSerializable reader)
         {
-            Debug.Log("大厅接收游戏结束消息，测试正常结束时，是否多余执行");
+            Debug.Log("<color=green>大厅接收游戏结束消息。</color>");
+            //测试正常结束时，是否多余执行？？收不到，gameObject关闭时，脚本不执行。
+
             //ClientNet.Get.m_PlayerManager.LocalPlayer.ResetToLobby();
-            //Debug.Log("断线重连进入大厅时，放弃重连，在这里接收分数变化");
+            //TODO: 静默扣分
         }
         #endregion
 

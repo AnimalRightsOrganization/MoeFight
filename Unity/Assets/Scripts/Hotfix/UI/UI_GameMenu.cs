@@ -226,6 +226,7 @@ namespace HotFix
             var packet = (S2C_BattleEndPacket)reader;
             Debug.Log($"[UI] 收到游戏结束，获胜者是座位#{packet.WinnerSeatId}");
 
+            m_MenuPanel.SetActive(false);
             m_ResultPanel.gameObject.SetActive(true);
 
             if (packet.WinnerSeatId == ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
