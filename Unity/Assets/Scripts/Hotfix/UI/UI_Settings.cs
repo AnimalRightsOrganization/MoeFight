@@ -187,6 +187,7 @@ namespace HotFix
                 ClientNet.Get.SendSettins(cmd); //提交后退出
             }
         }
+        // 切到常规
         void SwitchToCommon()
         {
             m_ToCommonBtn.interactable = false;
@@ -194,15 +195,16 @@ namespace HotFix
 
             Tweener tw1 = m_CommonPanel.DOLocalMoveX(0, 0.5f);
             tw1.Play();
-            Tweener tw2 = m_InputPanel.DOLocalMoveX(Screen.width, 0.5f);
+            Tweener tw2 = m_InputPanel.DOLocalMoveX(960, 0.5f);
             tw2.Play();
         }
+        // 切到输入
         void SwitchToInput()
         {
             m_ToCommonBtn.interactable = true;
             m_ToInputBtn.interactable = false;
 
-            Tweener tw1 = m_CommonPanel.DOLocalMoveX(-Screen.width, 0.5f);
+            Tweener tw1 = m_CommonPanel.DOLocalMoveX(-960, 0.5f);
             tw1.Play();
             Tweener tw2 = m_InputPanel.DOLocalMoveX(0, 0.5f);
             tw2.Play();

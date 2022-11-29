@@ -23,8 +23,9 @@ namespace HotFix
         public Text[] m_ConfirmText;
         public Text[] m_ReadyText;
 
-        ClientPlayer localPlayer;
-        ClientPlayer rivalPlayer;
+        private ClientPlayer localPlayer;
+        private ClientPlayer rivalPlayer;
+        private bool is_ready = false;
 
         #region 内置方法
         void Awake()
@@ -246,6 +247,8 @@ namespace HotFix
 
         void InitUI()
         {
+            is_ready = false;
+
             //①通过匹配进入
             //②通过训练进入
             localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
@@ -293,6 +296,8 @@ namespace HotFix
 
         void OnSendSelection(int id)
         {
+            if (is_ready) return;
+
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
                 case BattleMode.Editor:
@@ -312,6 +317,8 @@ namespace HotFix
 
         void OnSendReady()
         {
+            is_ready = true;
+
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
                 case BattleMode.Editor:

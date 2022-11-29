@@ -366,12 +366,14 @@ namespace Code.Client
             else if (packet.Stage == 1) //倒计时完同步
             {
                 IsStart = true; //开始发送帧数据
-                Time.timeScale = 1;
+                //Time.timeScale = 1;
+                BattleEvent.doSetAnimeSpeed?.Invoke(1);
             }
             else if (packet.Stage == 2)
             {
                 IsStart = true; //从暂停恢复
-                Time.timeScale = 1;
+                //Time.timeScale = 1;
+                BattleEvent.doSetAnimeSpeed?.Invoke(1);
             }
         }
         private void OnBattlePause(INetSerializable reader)
@@ -381,7 +383,8 @@ namespace Code.Client
             if (packet.Duration > 0)
             {
                 IsStart = false; //暂停
-                Time.timeScale = 0;
+                //Time.timeScale = 0; //不能用TimeScale，会导致Dotween等失效
+                BattleEvent.doSetAnimeSpeed?.Invoke(0);
             }
         }
         private void OnBattleEnd(INetSerializable reader)

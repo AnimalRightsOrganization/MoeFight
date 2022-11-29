@@ -83,18 +83,6 @@ public class TestWindow : EditorWindow
             ServerNet.Get.m_PlayerManager.Print();
             ServerNet.Get.m_RoomManager.Print();
         }
-        if (GUILayout.Button("Show Dialog"))
-        {
-            string titleStr = string.Empty;
-            string noStr = "取消";
-            string yesStr = "确定";
-            var dialog = UIManager.Get().Push<UI_Dialog>();
-            System.Action noAction = dialog.Hide;
-            System.Action yesAction = null;
-            titleStr = "退出游戏将判定失败，是否继续？";
-            yesAction = ClientNet.Get.SendBattleQuit;
-            dialog.Show(titleStr, noAction, noStr, yesAction, yesStr);
-        }
     }
 }
 [InitializeOnLoad]
