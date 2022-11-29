@@ -148,8 +148,8 @@ namespace HotFix
                 case PacketType.S2C_BattlePause:
                     OnBattlePause(reader);
                     break;
-                case PacketType.S2C_BattleLostNet:
-                    OnBattleLostNet(reader);
+                case PacketType.S2C_BattleLostNet: //对方掉线，[UI]显示倒计时
+                    OnRivalLostNet(reader);
                     break;
                 case PacketType.S2C_BattleEnd: //断线/主动认输/游戏结果上报
                     OnBattleEnd(reader);
@@ -179,24 +179,34 @@ namespace HotFix
         private void OnBattlePause(INetSerializable reader)
         {
             var packet = (S2C_BattlePausePacket)reader;
-            Debug.Log($"<color=red>[S] UI暂停: {packet.Duration}s</color>");
+            Debug.Log($"<color=red>[S] {packet.SeatID}提出暂停: {packet.Duration}s</color>");
             if (packet.Duration > 0)
             {
                 m_MenuPanel.SetActive(true);
+                //TODO: 显示倒计时
+
+                if (packet.SeatID != ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
+                {
+                    //TODO: 不是你申请的暂停，不允许点恢复
+                }
             }
             else
             {
-                var toast = UIManager.Get().Push<UI_Toast>();
-                toast.Show("暂停次数用完");
+                if (packet.SeatID == ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
+                {
+                    var toast = UIManager.Get().Push<UI_Toast>();
+                    toast.Show("暂停次数用完");
+                }
             }
         }
 
-        private void OnBattleLostNet(INetSerializable reader)
+        private void OnRivalLostNet(INetSerializable reader)
         {
             Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
-            
-            var toast = UIManager.Get().Push<UI_Toast>(); //临时测试用
-            toast.Show("对方掉线了，请耐心等待。");
+
+            m_MenuPanel.SetActive(true);
+            //TODO: 显示倒计时
+            //TODO: 不允许点恢复
         }
 
         private void OnBattleEnd(INetSerializable reader)

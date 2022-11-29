@@ -121,14 +121,14 @@ namespace Code.Client
         void BattleLoop()
         {
             // 因暂停，切后台造成此客户端滞后
-            if (recvTick > sendTick)
-            {
-                for (uint i = sendTick + 1; i <= recvTick; i++)
-                {
-                    ggpo_predict[i] = ggpo_recieve[i];
-                }
-                sendTick = recvTick;
-            }
+            //if (recvTick > sendTick)
+            //{
+            //    for (uint i = sendTick + 1; i <= recvTick; i++)
+            //    {
+            //        ggpo_predict[i] = ggpo_recieve[i];
+            //    }
+            //    sendTick = recvTick;
+            //}
 
             //①收集本地按键，发送。
             sendTick++;
@@ -377,7 +377,7 @@ namespace Code.Client
         private void OnBattlePause(INetSerializable reader)
         {
             var packet = (S2C_BattlePausePacket)reader;
-            Debug.Log($"游戏逻辑暂停: {packet.Duration}s");
+            Debug.Log($"{packet.SeatID}提出暂停: {packet.Duration}s");
             if (packet.Duration > 0)
             {
                 IsStart = false; //暂停

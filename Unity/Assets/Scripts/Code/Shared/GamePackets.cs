@@ -40,7 +40,7 @@ namespace Code.Shared
 
     public enum PacketType : byte
     {
-        // C2S /////////////
+        //  C2S  //
         C2S_TestPVE         ,   //独立启动加入
         C2S_TestPVP         ,   //双人启动加入
         C2S_Input           ,   //
@@ -59,7 +59,7 @@ namespace Code.Shared
         C2S_BattleInputs    ,   //缺失帧（重连）
         C2S_BattleQuit      ,   //比赛中、重连后（认输）
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
-        // S2C /////////////
+        //  S2C  //
         S2C_TestPVE         ,   //独立启动加入
         S2C_TestPVP         ,   //双人启动加入
         S2C_Input           ,   //
@@ -74,9 +74,9 @@ namespace Code.Shared
         S2C_LoadScene       ,   //跳转场景（双方都准备后，服务器主动下发）
         S2C_BattleStart     ,   //比赛开始（第一帧同步）
         S2C_BattlePause     ,   //比赛暂停（客户端主动，每人每局一次机会）
-        S2C_BattleLostNet   ,   //断线暂停（服务器主动，一方断线）
-        S2C_BattleReconnect ,   //比赛重连
-        S2C_BattleInputs    ,   //比赛帧数据
+        S2C_BattleLostNet   ,   //断线暂停（服务器主动，发给等待的玩家）
+        S2C_BattleReconnect ,   //比赛重连（重新登录后，发给掉线的玩家）
+        S2C_BattleInputs    ,   //比赛帧数据（掉线玩家确定返回，下发比赛帧数据）
         S2C_BattleEnd       ,   //比赛结束，结算
     }
 
@@ -642,18 +642,23 @@ namespace Code.Shared
         }
     }
 
-    // ①玩家请求暂停(30s)
-    // ②玩家掉线服务器通知暂停(60s)
+    // ①暂停次数用完(0)
+    // ②玩家请求暂停(30s)
+    // ③玩家掉线服务器通知暂停(60s)
+    // 非申请者，无法点击恢复
     public struct S2C_BattlePausePacket : INetSerializable
     {
+        public byte SeatID; //申请人座位号
         public byte Duration; //暂停时间(秒)
 
         public void Serialize(NetDataWriter writer)
         {
+            writer.Put(SeatID);
             writer.Put(Duration);
         }
         public void Deserialize(NetDataReader reader)
         {
+            SeatID = reader.GetByte();
             Duration = reader.GetByte();
         }
     }

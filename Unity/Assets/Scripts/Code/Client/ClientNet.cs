@@ -209,16 +209,16 @@ namespace Code.Client
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_BattlePause:
+                case PacketType.S2C_BattlePause: //请求暂停比赛，等待30秒
                     {
                         var packet = new S2C_BattlePausePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }
                     break;
-                case PacketType.S2C_BattleLostNet: //对方掉线，等待30秒
+                case PacketType.S2C_BattleLostNet: //对方掉线，等待60秒
                     {
-                        var packet = new EmptyPacket();
+                        var packet = new S2C_BattlePausePacket();
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
                     }
@@ -238,9 +238,9 @@ namespace Code.Client
                         packet.Deserialize(reader);
                         EventManager.Trigger(pt, packet, peer);
 
-                        //在大厅收到
-                        var size = (packet.inputs.Length * 12 + 4) / 1024;
-                        Debug.Log($"收到比赛数据：{packet.frameNumber}条，{size}KB");
+                        //在大厅收到（测试，记得删除）
+                        //var size = (packet.inputs.Length * 12 + 4) / 1024;
+                        //Debug.Log($"收到比赛数据：{packet.frameNumber}条，{size}KB");
                     }
                     break;
                 case PacketType.S2C_BattleEnd:

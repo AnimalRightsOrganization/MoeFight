@@ -105,7 +105,6 @@ namespace HotFix
         }
 
         #region 网络消息
-
         public override void OnNetCallback(PacketType eventID, INetSerializable reader, NetPeer peer)
         {
             switch (eventID)
@@ -138,9 +137,9 @@ namespace HotFix
             var connect = UIManager.Get().GetUI<UI_Connect>();
             connect.Pop();
         }
-
         #endregion
 
+        #region 按钮事件
         void ConnectToServer()
         {
             var connect = UIManager.Get().Push<UI_Connect>();
@@ -246,5 +245,6 @@ namespace HotFix
             m_LoginPanel.gameObject.SetActive(false);
             m_RegisterPanel.gameObject.SetActive(true);
         }
+        #endregion
     }
 }

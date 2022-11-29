@@ -118,83 +118,88 @@ namespace Code.Server
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
         {
             ServerPlayer player = (ServerPlayer)peer.Tag;
+            if (player == null) return;
             UnityEngine.Debug.Log($"[S] {player} disconnected: {disconnectInfo.Reason}");
 
-            if (player != null)
+            int serverRoomID = player.RoomId;
+            ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+
+            switch (player.Status)
             {
-                int serverRoomID = player.RoomId;
-                ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
-
-                if (player.Status == PlayerStatus.AtBattle)
-                {
-                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
-
-                    // 有重连规则的比赛中
-                    if (serverRoom.BattleMode == BattleMode.Matching)
+                case PlayerStatus.Matching: //匹配中
                     {
-                        // 方案①掉线暂停
-                        if (otherPlayer.Status == PlayerStatus.AtBattle)
+                        lock (m_WaitingPeers)
                         {
-                            // 一方断线，保留房间，给另一方发等待。
-                            switch (disconnectInfo.Reason)
+                            m_WaitingPeers.Remove(player);
+                        }
+                        m_PlayerManager.RemovePlayer(peer.Id);
+                    }
+                    break;
+                case PlayerStatus.AtRoomWait: //房间里
+                case PlayerStatus.AtRoomReady:
+                    {
+                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+                        if (otherPlayer != null)
+                        {
+                            var packet = new S2C_MatchResultPacket { Code = 2 }; //解散房间，另一人退至大厅
+                            otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
+                        }
+                        m_RoomManager.RemoveServerRoom(serverRoomID);
+                        m_PlayerManager.RemovePlayer(peer.Id);
+                        otherPlayer.ResetToLobby();
+                    }
+                    break;
+                case PlayerStatus.AtBattle: //战斗中
+                    {
+                        ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
+
+                        // 有重连规则的比赛中
+                        if (serverRoom.BattleMode == BattleMode.Matching)
+                        {
+                            // 方案①掉线暂停
+                            if (otherPlayer.Status == PlayerStatus.AtBattle)
                             {
-                                case DisconnectReason.Timeout: //关闭网络，超时
-                                case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
-                                    otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleLostNet, new EmptyPacket()), DeliveryMethod.ReliableOrdered);
-                                    player.SetStatus(PlayerStatus.Reconnect); //把离线者标记未断线重连
-                                    //serverRoom.CutDown(); //掉线倒计时
-                                    break;
-                                default:
-                                    UnityEngine.Debug.Log($"disconnect by: {disconnectInfo.Reason}");
-                                    break;
+                                // 一方断线，保留房间，通知另一方等待。
+                                switch (disconnectInfo.Reason)
+                                {
+                                    case DisconnectReason.Timeout: //关闭网络，超时
+                                    case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
+                                        var packet = new S2C_BattlePausePacket { Duration = 60 };
+                                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleLostNet, packet), DeliveryMethod.ReliableOrdered);
+                                        player.SetStatus(PlayerStatus.Reconnect); //把离线者标记未断线重连
+                                        //serverRoom.CutDown(); //掉线倒计时
+                                        break;
+                                    default:
+                                        UnityEngine.Debug.Log($"disconnect by: {disconnectInfo.Reason}");
+                                        break;
+                                }
                             }
+                            else
+                            {
+                                // 双方都断线
+                                m_RoomManager.RemoveServerRoom(serverRoomID); //解散房间
+                                m_PlayerManager.RemovePlayer(peer.Id); //移除用户
+                                m_PlayerManager.RemovePlayer(otherPlayer.AssociatedPeer.Id);
+                            }
+
+                            // 方案②掉线直接结算
+                            //var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
+                            //otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
+                            //otherPlayer.ResetToLobby();
                         }
                         else
                         {
-                            // 双方都断线，销毁房间，移除用户。
-                            m_RoomManager.RemoveServerRoom(serverRoomID);
-
+                            m_RoomManager.RemoveServerRoom(serverRoomID); //解散房间
                             m_PlayerManager.RemovePlayer(peer.Id);
-                            m_PlayerManager.RemovePlayer(otherPlayer.AssociatedPeer.Id);
+                            UnityEngine.Debug.Log("没有重连的比赛，移除用户");
                         }
-
-                        // 方案②掉线直接结算
-                        //var packet = new S2C_BattleEndPacket { WinnerSeatId = otherPlayer.SeatId };
-                        //otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleEnd, packet), DeliveryMethod.ReliableOrdered);
-                        //otherPlayer.ResetToLobby();
                     }
-                    else
-                    {
-                        m_RoomManager.RemoveServerRoom(serverRoomID); //解散房间
-                        m_PlayerManager.RemovePlayer(peer.Id);
-                        UnityEngine.Debug.Log("没有重连的比赛，移除用户");
-                    }
-                }
-                else if (player.Status == PlayerStatus.AtRoomWait || player.Status == PlayerStatus.AtRoomReady)
-                {
-                    ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.PeerId); //BOT is null
-                    if (otherPlayer != null)
-                    {
-                        var packet = new S2C_MatchResultPacket { Code = 2 }; //解散房间，另一人退至大厅
-                        otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
-                    }
-                    m_RoomManager.RemoveServerRoom(serverRoomID);
+                    break;
+                default: //大厅等
                     m_PlayerManager.RemovePlayer(peer.Id);
-                    otherPlayer.ResetToLobby();
-                }
-                else if (player.Status == PlayerStatus.Matching)
-                {
-                    lock (m_WaitingPeers)
-                    {
-                        m_WaitingPeers.Remove(player);
-                    }
-                    m_PlayerManager.RemovePlayer(peer.Id);
-                }
-                else //大厅等非比赛场景
-                {
-                    m_PlayerManager.RemovePlayer(peer.Id);
-                }
+                    break;
             }
+
             UnityEngine.Debug.Log($"Player count:{m_PlayerManager.Count}, Room count:{m_RoomManager.Count}");
         }
 
@@ -361,6 +366,7 @@ namespace Code.Server
             byte _audio = 0;
             byte _sound = 0;
             byte _language = 1;
+            bool isReconnect = false;
 
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
@@ -388,34 +394,31 @@ namespace Code.Server
 
             #region 登录逻辑
             ServerPlayer player = null;
-            ///*
+            // 校验重复登录或重连，m_PlayerManager中已有该玩家
             ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(cmd.UserName);
-            // 校验是否已登录，是否重连
-            bool isReconnect = false;
             if (lastPlayer != null)
             {
-                if (lastPlayer.Status == PlayerStatus.AtBattle || lastPlayer.Status == PlayerStatus.Reconnect)
+                if (lastPlayer.Status == PlayerStatus.Reconnect)
                 {
-                    UnityEngine.Debug.Log($"is reconnect: {lastPlayer}");
-                    player = lastPlayer;
-                    peer.Tag = lastPlayer;
-
+                    UnityEngine.Debug.Log($"重连登录: {lastPlayer}");
                     isReconnect = true;
+                    m_PlayerManager.RemovePlayer(lastPlayer.PeerId);
+                    //player = lastPlayer;
+                    //peer.Tag = lastPlayer;
                 }
                 else
                 {
-                    UnityEngine.Debug.Log("is multipe login");
+                    UnityEngine.Debug.Log("重复登录");
                     var packet = new S2C_ErrorPacket { ErrorCode = (byte)ErrorCode.HAS_LOGIN };
                     peer.Send(WriteSerializable(PacketType.S2C_ErrorOperate, packet), DeliveryMethod.ReliableOrdered);
                     return;
                 }
             }
-            else
-            //*/
-            {
-                player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
-                m_PlayerManager.AddPlayer(player);
-            }
+
+            // 新建玩家对象
+            player = new ServerPlayer(cmd.UserName, peer);
+            m_PlayerManager.AddPlayer(player);
+            //player.ResetToLobby();
 
             // 第一个包，登录许可
             var packet1 = new S2C_LoginResultPacket
@@ -441,7 +444,6 @@ namespace Code.Server
             //UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
 #endif
 
-            ///*
             // 第三个包，重连数据
             if (isReconnect)
             {
@@ -464,11 +466,6 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
                 UnityEngine.Debug.Log($"<color=yellow>{player.UserName} is lostnet to reconnect</color>");
             }
-            else
-            {
-                UnityEngine.Debug.Log($"{player.UserName} is offline to login");
-            }
-            //*/
 
             /*
             //模拟超大消息包收发（最多60*100=6000个，72KB）
@@ -541,6 +538,7 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_Settings, cmd), DeliveryMethod.ReliableOrdered);
         }
 
+        // 请求匹配
         private void OnMatchRequestReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -555,6 +553,7 @@ namespace Code.Server
             player.SetStatus(PlayerStatus.Matching);
         }
 
+        // 取消匹配
         private void OnMatchCancelReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -573,6 +572,7 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_MatchResult, packet), DeliveryMethod.ReliableOrdered);
         }
 
+        // 匹配成功后离开
         private void OnMatchQuitReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -603,6 +603,7 @@ namespace Code.Server
             m_RoomManager.RemoveServerRoom(serverRoomID); //一方取消匹配解散房间
         }
 
+        // 选择角色
         private void OnRoleSelectReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -630,6 +631,7 @@ namespace Code.Server
             serverRoom.Send(writer);
         }
 
+        // 准备开局
         private void OnGameReadyReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -756,15 +758,16 @@ namespace Code.Server
             int chanceLeft = serverRoom.PauseChance[player.SeatId]; //剩余次数
             if (chanceLeft <= 0)
             {
-                // 暂停次数用尽
-                var err = WriteSerializable(PacketType.S2C_BattlePause, new S2C_BattlePausePacket { Duration = 0 });
+                var packet0 = new S2C_BattlePausePacket { Duration = 0 }; //暂停次数用尽
+                var err = WriteSerializable(PacketType.S2C_BattlePause, packet0);
                 peer.Send(err, DeliveryMethod.ReliableOrdered);
                 return;
             }
             serverRoom.PauseChance[player.SeatId]--;
             serverRoom.BattleStage = BattleStage.Paused;
 
-            var writer = WriteSerializable(PacketType.S2C_BattlePause, new S2C_BattlePausePacket { Duration = 30 });
+            var packet1 = new S2C_BattlePausePacket { Duration = 30 };
+            var writer = WriteSerializable(PacketType.S2C_BattlePause, packet1);
             serverRoom.Send(writer);
         }
 
@@ -861,7 +864,6 @@ namespace Code.Server
             // 下发缺失帧
             var packet4 = serverRoom.ConvertInputs();
             UnityEngine.Debug.Log($"S2C: {packet4.frameNumber}/{packet4.inputs.Length}");
-            //peer.Send(WriteSerializable(PacketType.S2C_LackInput, packet4), DeliveryMethod.ReliableOrdered);
             peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
         }
         #endregion
@@ -934,14 +936,6 @@ namespace Code.Server
                 serverRoom.MapId = 0; //来自客户端
                 serverRoom.BattleMode = BattleMode.Matching;
             }
-        }
-
-        // 房间内广播
-        public void BroadcastToRoom(int roomId, NetDataWriter writer)
-        {
-            ServerRoom serverRoom = m_RoomManager.GetServerRoom(roomId);
-            _netManager.GetPeerById(serverRoom.hostPlayer.PeerId).Send(writer, DeliveryMethod.ReliableOrdered);
-            _netManager.GetPeerById(serverRoom.guestPlayer.PeerId).Send(writer, DeliveryMethod.ReliableOrdered);
         }
         #endregion
     }

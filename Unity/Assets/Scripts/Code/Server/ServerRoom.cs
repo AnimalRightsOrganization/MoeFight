@@ -45,7 +45,7 @@ namespace Code.Server
         // 跳转场景同步
         private List<short> stage_0_list = new List<short>();
         public int Stage_0_Count => stage_0_list.Count;
-        // 321倒计时同步
+        // 3,2,1,倒计时同步
         private List<short> stage_1_list = new List<short>();
         public int Stage_1_Count => stage_1_list.Count;
         public void StageCount(int stage, ServerPlayer player)
