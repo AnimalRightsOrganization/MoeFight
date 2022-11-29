@@ -34,6 +34,7 @@ public class TestWindow : EditorWindow
             login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
         }
+        /*
         if (GUILayout.Button("PVE"))
         {
             if (ClientNet.Get.m_PlayerManager.LocalPlayer == null)
@@ -68,7 +69,7 @@ public class TestWindow : EditorWindow
                 ClientNet.Get.SendTestPVP();
             };
             GameManager.Get.LoadBattleAsync(action); //测试PVP
-        }
+        }*/
         if (GUILayout.Button("SnapShot"))
         {
             string fileName = $"{Application.streamingAssetsPath}/Actor_{DateTime.Now.ToString("yyyyMMddhhmmss")}.png";

@@ -112,7 +112,7 @@ namespace Code.Server
 
         void INetEventListener.OnPeerConnected(NetPeer peer)
         {
-            UnityEngine.Debug.Log("[S] Player connected: " + peer.EndPoint);
+            //UnityEngine.Debug.Log("[S] Player connected: " + peer.EndPoint);
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -164,7 +164,7 @@ namespace Code.Server
                                 {
                                     case DisconnectReason.Timeout: //关闭网络，超时
                                     case DisconnectReason.RemoteConnectionClose: //杀进程，远程主动关闭
-                                        var packet = new S2C_BattlePausePacket { Duration = 60 };
+                                        var packet = new S2C_BattlePausePacket { SeatID = (byte)player.SeatId, Duration = 60 };
                                         otherPlayer.AssociatedPeer.Send(WriteSerializable(PacketType.S2C_BattleLostNet, packet), DeliveryMethod.ReliableOrdered);
                                         player.SetStatus(PlayerStatus.Reconnect); //把离线者标记未断线重连
                                         //serverRoom.CutDown(); //掉线倒计时
@@ -400,7 +400,7 @@ namespace Code.Server
             {
                 if (lastPlayer.Status == PlayerStatus.Reconnect)
                 {
-                    UnityEngine.Debug.Log($"重连登录: {lastPlayer}");
+                    UnityEngine.Debug.Log($"重连登录: {lastPlayer.UserName}");
                     isReconnect = true;
                     m_PlayerManager.RemovePlayer(lastPlayer.PeerId);
                     //player = lastPlayer;
@@ -593,14 +593,15 @@ namespace Code.Server
             var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
             serverRoom.Send(writer);
 
-            lock (m_WaitingPeers)
-            {
-                m_WaitingPeers.Remove(player);
-                m_WaitingPeers.Remove(otherPlayer);
-            }
+            //lock (m_WaitingPeers)
+            //{
+            //    m_WaitingPeers.Remove(player);
+            //    m_WaitingPeers.Remove(otherPlayer);
+            //}
             player.ResetToLobby();
             otherPlayer.ResetToLobby();
             m_RoomManager.RemoveServerRoom(serverRoomID); //一方取消匹配解散房间
+            UnityEngine.Debug.Log($"room#{serverRoomID} is dissoluted");
         }
 
         // 选择角色
@@ -758,7 +759,7 @@ namespace Code.Server
             int chanceLeft = serverRoom.PauseChance[player.SeatId]; //剩余次数
             if (chanceLeft <= 0)
             {
-                var packet0 = new S2C_BattlePausePacket { Duration = 0 }; //暂停次数用尽
+                var packet0 = new S2C_BattlePausePacket { SeatID = (byte)player.SeatId, Duration = 0 }; //暂停次数用尽
                 var err = WriteSerializable(PacketType.S2C_BattlePause, packet0);
                 peer.Send(err, DeliveryMethod.ReliableOrdered);
                 return;
@@ -766,7 +767,7 @@ namespace Code.Server
             serverRoom.PauseChance[player.SeatId]--;
             serverRoom.BattleStage = BattleStage.Paused;
 
-            var packet1 = new S2C_BattlePausePacket { Duration = 30 };
+            var packet1 = new S2C_BattlePausePacket { SeatID = (byte)player.SeatId, Duration = 30 };
             var writer = WriteSerializable(PacketType.S2C_BattlePause, packet1);
             serverRoom.Send(writer);
         }
@@ -924,12 +925,12 @@ namespace Code.Server
                 var writer = WriteSerializable(PacketType.S2C_MatchResult, packet);
                 serverRoom.Send(writer);
 
-                lock (m_WaitingPeers)
-                {
-                    m_WaitingPeers.Remove(p1);
-                    m_WaitingPeers.Remove(p2);
-                    UnityEngine.Debug.Log($"send ok, waiting count={m_WaitingPeers.Count}");
-                }
+                //lock (m_WaitingPeers)
+                //{
+                m_WaitingPeers.Remove(p1);
+                m_WaitingPeers.Remove(p2);
+                UnityEngine.Debug.Log($"send ok, waiting count={m_WaitingPeers.Count}");
+                //}
 
                 string timeStr = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 serverRoom.BattleID = $"{timeStr}_{hostPlayer.PeerId}_{guestPlayer.PeerId}";

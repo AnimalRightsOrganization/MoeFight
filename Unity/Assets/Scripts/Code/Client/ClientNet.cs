@@ -104,6 +104,7 @@ namespace Code.Client
             if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
+            Debug.Log($"OnNetworkReceive: {pt.ToString()}");
             switch (pt)
             {
                 case PacketType.S2C_TestPVE:

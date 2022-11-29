@@ -189,13 +189,13 @@ namespace HotFix
                 if (packet.SeatID == ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
                 {
                     m_DescText.text = "我方暂停中";
-                    m_ContinueBtn.enabled = true;
+                    m_ContinueBtn.interactable = true;
                 }
                 else
                 {
                     // 不是你申请的暂停，不允许点恢复
                     m_DescText.text = "对方申请暂停，请耐心等待";
-                    m_ContinueBtn.enabled = false;
+                    m_ContinueBtn.interactable = false;
                 }
             }
             else
@@ -210,14 +210,14 @@ namespace HotFix
 
         private void OnRivalLostNet(INetSerializable reader)
         {
-            Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
+           //对方掉线。超过时间没有返回，将判对方落败。
 
             ClientLogic.Get.IsStart = false;
             Time.timeScale = 0;
 
             m_MenuPanel.SetActive(true);
             m_DescText.text = "对方重连中，请耐心等待";
-            m_ContinueBtn.enabled = false;
+            m_ContinueBtn.interactable = false;
         }
 
         private void OnBattleEnd(INetSerializable reader)
