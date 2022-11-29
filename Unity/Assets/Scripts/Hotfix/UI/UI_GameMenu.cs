@@ -21,10 +21,11 @@ namespace HotFix
         [SerializeField] RectTransform[] CurrentHp;
         [SerializeField] Image[] HeadImages;
         [Header("比赛菜单")]
-        [SerializeField] GameObject m_MenuPanel;
         [SerializeField] Button m_MenuBtn;
+        [SerializeField] GameObject m_MenuPanel;
+        [SerializeField] Text m_DescText;
         [SerializeField] Button m_ContinueBtn;
-        [SerializeField] Button m_SkillInfoBtn;
+        [SerializeField] Button m_SkillInfoBtn; //技能信息
         [SerializeField] Button m_QuitBtn;
         [Header("技能显示")]
         [SerializeField] GameObject m_SkillPanel;
@@ -62,8 +63,9 @@ namespace HotFix
                 m_HpPanel.transform.Find("Head_2/Image").GetComponent<Image>(),
             };
 
-            m_MenuPanel = transform.Find("MenuPanel").gameObject;
             m_MenuBtn = transform.Find("MenuBtn").GetComponent<Button>();
+            m_MenuPanel = transform.Find("MenuPanel").gameObject;
+            m_DescText = transform.Find("MenuPanel/Panel/DescText").GetComponent<Text>();
             m_ContinueBtn = transform.Find("MenuPanel/Panel/ContinueBtn").GetComponent<Button>();
             m_SkillInfoBtn = transform.Find("MenuPanel/Panel/SkillInfoBtn").GetComponent<Button>();
             m_QuitBtn = transform.Find("MenuPanel/Panel/QuitBtn").GetComponent<Button>();
@@ -183,11 +185,17 @@ namespace HotFix
             if (packet.Duration > 0)
             {
                 m_MenuPanel.SetActive(true);
-                //TODO: 显示倒计时
 
-                if (packet.SeatID != ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
+                if (packet.SeatID == ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId)
                 {
-                    //TODO: 不是你申请的暂停，不允许点恢复
+                    m_DescText.text = "我方暂停中";
+                    m_ContinueBtn.enabled = true;
+                }
+                else
+                {
+                    // 不是你申请的暂停，不允许点恢复
+                    m_DescText.text = "对方申请暂停，请耐心等待";
+                    m_ContinueBtn.enabled = false;
                 }
             }
             else
@@ -204,9 +212,12 @@ namespace HotFix
         {
             Debug.Log($"<color=red>[S] 对方掉线了，请耐心等待。\n超过时间没有返回，将判对方落败。</color>");
 
+            ClientLogic.Get.IsStart = false;
+            Time.timeScale = 0;
+
             m_MenuPanel.SetActive(true);
-            //TODO: 显示倒计时
-            //TODO: 不允许点恢复
+            m_DescText.text = "对方重连中，请耐心等待";
+            m_ContinueBtn.enabled = false;
         }
 
         private void OnBattleEnd(INetSerializable reader)
