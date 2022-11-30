@@ -90,6 +90,17 @@ namespace Code.Client
         void OnLogicUpdate()
         {
             //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
+
+            if (ClientNet.Get.m_ClientRoom.BattleStage == BattleStage.End)
+            {
+                // 保证动画播放完
+                var inputs = new uint[] { 0, 0 };
+                runner.SaveOldBuffer();
+                LocalSession.RunFrame(inputs);
+                runner.OnFixedUpdate(inputs);
+                return;
+            }
+
             if (!IsStart) return;
 
             switch (myBattleMode)
@@ -389,12 +400,14 @@ namespace Code.Client
                 IsStart = true; //开始发送帧数据
                 //Time.timeScale = 1;
                 BattleEvent.doSetAnimeSpeed?.Invoke(1);
+                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
             }
             else if (packet.Stage == 2)
             {
                 IsStart = true; //从暂停恢复
                 //Time.timeScale = 1;
                 BattleEvent.doSetAnimeSpeed?.Invoke(1);
+                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
             }
         }
         private void OnBattlePause(INetSerializable reader)
@@ -406,6 +419,7 @@ namespace Code.Client
                 IsStart = false; //暂停
                 //Time.timeScale = 0; //不能用TimeScale，会导致Dotween等失效
                 BattleEvent.doSetAnimeSpeed?.Invoke(0);
+                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Paused;
             }
         }
         private void OnBattleEnd(INetSerializable reader)
@@ -414,6 +428,7 @@ namespace Code.Client
             IsStart = false;
 
             var clientRoom = ClientNet.Get.m_ClientRoom;
+            clientRoom.BattleStage = BattleStage.End;
             if (clientRoom.BattleMode == BattleMode.Training)
             {
                 Debug.LogError("训练不保存录像");

@@ -240,17 +240,6 @@ public class HitstunRunner : MonoBehaviour
             Debug.Log("Manual step");
             nextStep = true;
         }
-        // save and load
-        if (Input.GetKeyDown(KeyCode.F5))
-        {
-            Debug.Log("SAVE");
-            TestSave();
-        }
-        if (Input.GetKeyDown(KeyCode.F6))
-        {
-            Debug.Log("LOAD");
-            TestLoad();
-        }
     }
 
     void LoadCharacterNode()
@@ -270,19 +259,5 @@ public class HitstunRunner : MonoBehaviour
         characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(ta2.text);
         LocalSession.characterDatas = characterDatas;
         LocalSession.gs.characterDatas = characterDatas;
-    }
-
-    public void TestSave()
-    {
-        if (buffer.IsCreated)
-        {
-            buffer.Dispose();
-        }
-        buffer = GameState.ToBytes(LocalSession.gs);
-    }
-
-    public void TestLoad()
-    {
-        GameState.FromBytes(LocalSession.gs, buffer);
     }
 }

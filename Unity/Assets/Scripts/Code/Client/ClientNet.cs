@@ -307,6 +307,8 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
+            if (m_ClientRoom.BattleStage != BattleStage.Running) return;
+
 #if UNITY_EDITOR
             // 模拟丢包
             int rd = UnityEngine.Random.Range(0, 100);

@@ -248,7 +248,7 @@ namespace HotFix
         public void ShowMenu()
         {
             ClientLogic.Get.IsStart = false;
-            BattleEvent.doSetAnimeSpeed?.Invoke(0);
+            BattleEvent.doSetAnimeSpeed?.Invoke(0); //重连回来先暂停
             m_MenuPanel.SetActive(true);
             m_DescText.text = "我方暂停中";
             m_ContinueBtn.interactable = true;
@@ -305,6 +305,10 @@ namespace HotFix
                     break;
                 default: //其他情况不会有UI
                     m_MenuPanel.SetActive(true);
+                    m_DescText.text = "暂停";
+                    m_ContinueBtn.interactable = true;
+                    ClientLogic.Get.IsStart = false;
+                    BattleEvent.doSetAnimeSpeed?.Invoke(0);
                     break;
             }
         }
@@ -319,7 +323,8 @@ namespace HotFix
                     break;
                 default: //其他情况不会有UI
                     m_MenuPanel.SetActive(false);
-                    //GameManager.Instance.PlayReplay();
+                    ClientLogic.Get.IsStart = true;
+                    BattleEvent.doSetAnimeSpeed?.Invoke(1);
                     break;
             }
         }
@@ -333,6 +338,8 @@ namespace HotFix
         // 退出比赛？（一级菜单）
         void OnQuitBtnClick()
         {
+            m_MenuPanel.SetActive(false);
+
             string titleStr = string.Empty;
             string noStr = "取消";
             string yesStr = "确定";
@@ -341,17 +348,6 @@ namespace HotFix
             System.Action yesAction = null;
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Editor:
-                case BattleMode.Replay:
-                case BattleMode.Training:
-                    titleStr = "确定退出？";
-                    yesAction = () =>
-                    {
-                        ClientNet.Get.m_PlayerManager.LocalPlayer.ResetToLobby();
-                        ClientNet.Get.m_PlayerManager.RemoveRival();
-                        OnBackBtnClick();
-                    };
-                    break;
                 case BattleMode.Matching:
                     titleStr = "退出游戏将判定失败，是否继续？";
                     yesAction = () =>
@@ -361,9 +357,17 @@ namespace HotFix
                     };
                     break;
                 default:
+                    titleStr = "确定退出？";
+                    noAction = () =>
+                    {
+                        dialog.Hide();
+                        m_MenuPanel.SetActive(true);
+                    };
                     yesAction = () =>
                     {
-                        //Debug.Log($"{GameManager.Instance.m_BattleMode}模式没有委托");
+                        ClientNet.Get.m_PlayerManager.LocalPlayer.ResetToLobby();
+                        ClientNet.Get.m_PlayerManager.RemoveRival();
+                        OnBackBtnClick();
                     };
                     break;
             }
