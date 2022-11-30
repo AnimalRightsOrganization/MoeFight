@@ -302,6 +302,7 @@ namespace Code.Server
 
 
         #region Handler
+        // TODO: 训练走本地，记得删除
         private void OnTestPVE(NetPacketReader reader, NetPeer peer)
         {
             ServerPlayer player = (ServerPlayer)peer.Tag;

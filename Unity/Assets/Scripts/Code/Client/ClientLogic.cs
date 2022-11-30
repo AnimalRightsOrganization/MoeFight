@@ -169,14 +169,14 @@ namespace Code.Client
                 else
                 {
                     //延迟不够，还未收到，预测。标记为是预测的。
-                    Debug.Log($"[渲染] 延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
+                    //Debug.Log($"[渲染] 延迟不够，发送{sendTick}时，表现{rendTick}，收到{recvTick}");
                     Predict(rendTick);
                     predicted.Add(rendTick);
                 }
             }
 
 
-            //③处理所有新收到的帧
+            //③处理所有新收到的帧，校验回滚
             for (int x = (int)recvTick + 1; x < ggpo_recieve.Count; x++)
             {
                 uint i = (uint)x;
@@ -251,7 +251,7 @@ namespace Code.Client
             uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];
             var _inputs = ggpo_predict[tick];
             _inputs[remoteSeatId] = remoteInput;
-            Debug.Log($"<color=blue>[预测] 第{tick}帧: ({_inputs[0]})({_inputs[1]})</color>");
+            //Debug.Log($"<color=blue>[预测] 第{tick}帧: ({_inputs[0]})({_inputs[1]})</color>");
 
             //预测完成后，让角色跑预测帧。
             Process(tick, _inputs);
@@ -280,6 +280,7 @@ namespace Code.Client
         private void CheckGameEnd()
         {
             if (BattleEvent.doSetGameEnd == null) return;
+            if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Training) return;
 
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);

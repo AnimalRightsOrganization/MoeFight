@@ -307,7 +307,11 @@ namespace Code.Client
 
         public void SendInput(C2S_InputPacket cmd)
         {
-            if (m_ClientRoom.BattleStage != BattleStage.Running) return;
+            if (m_ClientRoom.BattleStage != BattleStage.Running)
+            {
+                //Debug.Log($"{m_ClientRoom.BattleStage} return");
+                return; 
+            }
 
 #if UNITY_EDITOR
             // 模拟丢包
@@ -319,8 +323,23 @@ namespace Code.Client
             }
 #endif
 
-            SendPacketSerializable(PacketType.C2S_Input, cmd);
-            //Debug.Log($" >> 发送: {cmd.frameNumber}---({cmd.input}) >>");
+            if (m_ClientRoom.BattleMode == BattleMode.Matching)
+            {
+                SendPacketSerializable(PacketType.C2S_Input, cmd);
+                Debug.Log($" >> 发送: {cmd.frameNumber}---({cmd.input}) >>");
+            }
+            else
+            {
+                // 不需要发
+
+                //Debug.Log($" >> 本地: {cmd.frameNumber}---({cmd.input}) >>");
+                //var packet = new S2C_InputPacket
+                //{
+                //    frameNumber = cmd.frameNumber,
+                //    inputs = new uint[] { cmd.input, 0 },
+                //};
+                //ClientLogic.Get.OnRecvInput(packet);
+            }
         }
         //以上是测试，保留
 

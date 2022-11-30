@@ -116,9 +116,9 @@ namespace HotFix
                 case PacketType.S2C_LoadScene:
                     OnLoadScene(reader);
                     break;
-                case PacketType.S2C_TestPVE:
-                    OnTestPVE(reader);
-                    break;
+                //case PacketType.S2C_TestPVE:
+                //    OnTestPVE(reader);
+                //    break;
             }
         }
 
@@ -202,13 +202,11 @@ namespace HotFix
             GameManager.Get.LoadBattleAsync(action); //匹配赛
         }
 
-        private async void OnTestPVE(INetSerializable reader)
+        //private async void OnTestPVE(INetSerializable reader)
+        private async void OnTraining()
         {
-            var packet = (S2C_JoinResultPacket)reader;
-            Debug.Log($"[S2C] 单人测试: code={packet.Code}, peerid={packet.HostId}, {packet.HostName}");
-
             var room = ClientNet.Get.m_ClientRoom;
-            var pt = new S2C_LoadScenePacket
+            var scene = new S2C_LoadScenePacket
             {
                 RoomId = (short)room.RoomID,
                 BattleId = room.BattleID,
@@ -216,7 +214,8 @@ namespace HotFix
                 Host = new PlayerLoadPacket { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId, RoleIndex = localPlayer.RoleIndex },
                 Guest = new PlayerLoadPacket { UserName = rivalPlayer.UserName, PeerId = rivalPlayer.PeerId, RoleIndex = rivalPlayer.RoleIndex },
             };
-            room.DoInit(pt);
+            Debug.Log($"[S2C] 训练模式: UserName={rivalPlayer.UserName}, PeerId:{rivalPlayer.PeerId}, RoleIndex:{rivalPlayer.RoleIndex}");
+            room.DoInit(scene);
 
             // 给足动画时间
             m_ConfirmBtn[0].gameObject.SetActive(false);
@@ -226,8 +225,8 @@ namespace HotFix
             await Task.Delay(1000);
 
             var ui_versus = UIManager.Get().Push<UI_Versus>();
-            int left = pt.Host.RoleIndex;
-            int right = pt.Guest.RoleIndex;
+            int left = scene.Host.RoleIndex;
+            int right = scene.Guest.RoleIndex;
             ui_versus.FadeIn(left, right);
             await Task.Delay(2000);
 
@@ -279,6 +278,7 @@ namespace HotFix
             m_Rolename[1].text = roleArray[index2].Name;
         }
 
+        // 返回
         void OnBackButtonClick()
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
@@ -294,42 +294,39 @@ namespace HotFix
             UIManager.Get().Push<UI_Lobby>();
         }
 
+        // 选人
         void OnSendSelection(int id)
         {
             if (is_ready) return;
 
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Editor:
-                case BattleMode.Training:
-                    var packet = new S2C_RoleSelectPacket { SeatId = (byte)0, RoleIndex = (byte)id };
-                    localPlayer.RoleIndex = packet.RoleIndex;
-                    OnRoleSelect(packet);
-                    break;
                 case BattleMode.Matching:
                     ClientNet.Get.SendSelection(id);
                     break;
                 default:
-                    Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    var packet = new S2C_RoleSelectPacket { SeatId = 0, RoleIndex = (byte)id };
+                    localPlayer.RoleIndex = packet.RoleIndex;
+                    OnRoleSelect(packet);
                     break;
             }
         }
 
+        // 准备
         void OnSendReady()
         {
             is_ready = true;
 
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Editor:
-                case BattleMode.Training:
-                    ClientNet.Get.SendTestPVE();
-                    break;
                 case BattleMode.Matching:
                     ClientNet.Get.SendGameReady();
                     break;
                 default:
-                    Debug.Log($"未实现的模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    //ClientNet.Get.SendTestPVE();
+                    OnTraining();
                     break;
             }
         }
