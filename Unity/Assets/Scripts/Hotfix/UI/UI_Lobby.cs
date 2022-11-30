@@ -119,7 +119,8 @@ namespace HotFix
         private void OnBattleReconnect(INetSerializable reader)
         {
             var packet = (S2C_LoadScenePacket)reader;
-            Debug.Log($"[UI.Lobby] 提示重连 {(CharacterName)packet.Host.RoleIndex} vs {(CharacterName)packet.Guest.RoleIndex}");
+            Debug.Log($"[UI.Lobby] 提示重连 [{packet.Host.RoleIndex}]{(CharacterName)packet.Host.RoleIndex}" +
+                $" vs [{packet.Guest.RoleIndex}]{(CharacterName)packet.Guest.RoleIndex}");
 
             int roomId = packet.RoomId;
             int seatId = packet.Host.UserName == localPlayer.UserName ? 0 : 1;

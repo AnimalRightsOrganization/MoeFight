@@ -52,6 +52,15 @@
             return this;
         }
 
+        public void CopyFrom(BasePlayer lastPlayer)
+        {
+            SetRoomID(lastPlayer.RoomId);
+            SetSeatID(lastPlayer.SeatId);
+            RoleIndex = lastPlayer.RoleIndex;
+            RoleColor = lastPlayer.RoleColor;
+            RoleCloth = lastPlayer.RoleCloth;
+        }
+
         public override string ToString()
         {
             string str = $"[peer:{PeerId}]{UserName} @Room#{RoomId} @Seat={SeatId} @Status={Status}";

@@ -406,8 +406,8 @@ namespace Code.Server
                     //player = lastPlayer;
                     //peer.Tag = lastPlayer;
                     player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
+                    player.CopyFrom(lastPlayer); //拷贝玩家信息
                     m_PlayerManager.AddPlayer(player);
-                    player.SetRoomID(lastPlayer.RoomId).SetSeatID(lastPlayer.SeatId);
                 }
                 else
                 {
@@ -665,7 +665,7 @@ namespace Code.Server
             if (host.Status == PlayerStatus.AtRoomReady && guest.Status == PlayerStatus.AtRoomWait ||
                 host.Status == PlayerStatus.AtRoomWait && guest.Status == PlayerStatus.AtRoomReady)
             {
-                UnityEngine.Debug.Log("111---one player is ready");
+                UnityEngine.Debug.Log("[1]one player is ready");
 
                 // 一个人准备好了
                 var packet = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };
@@ -674,7 +674,7 @@ namespace Code.Server
             }
             else if (player.Status == PlayerStatus.AtRoomReady && otherPlayer.Status == player.Status)
             {
-                UnityEngine.Debug.Log("222---all players are ready, wait server start command");
+                UnityEngine.Debug.Log($"[2]all players are ready, {host.RoleIndex} vs {guest.RoleIndex}, wait server start command");
                 
                 // 双方都准备好了
                 var packet1 = new S2C_GameReadyPacket { HostStatus = (byte)host.Status, GuestStatus = (byte)guest.Status };

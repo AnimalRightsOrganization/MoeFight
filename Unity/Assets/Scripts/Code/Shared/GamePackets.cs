@@ -622,7 +622,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string stringBuild = $"RoomId={RoomId}, P1=[{Host.ToString()}], P2=[{Guest.ToString()}]";
+            string stringBuild = $"RoomId={RoomId}, P1={Host.ToString()}, P2={Guest.ToString()}";
             return stringBuild;
         }
     }
