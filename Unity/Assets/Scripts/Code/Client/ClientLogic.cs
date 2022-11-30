@@ -108,13 +108,11 @@ namespace Code.Client
             Debug.Log($"<color=green>OnApplicationPause: {pause}</color>");
             if (pause)
             {
-                //掉线处理
-                ClientNet.Get.SendBattlePause();
+                ClientNet.Get.SendBattlePause(); //掉线处理
             }
             else
             {
-                //断线重连
-                ClientNet.Get.SendBattleStart(2);
+                ClientNet.Get.SendBattleStart(2); //断线重连
             }
         }
 
@@ -281,6 +279,19 @@ namespace Code.Client
                 BattleEvent.doSetGameEnd.Invoke(2);
             }
         }
+        // 重连恢复数据
+        public void Reconnect(S2C_LackInputPacket packet)
+        {
+            var speed = runner.characterViews[0].animator.speed;
+            Debug.Log($"追帧模拟: IsStart:{IsStart}, speed:{speed}");
+
+            IsStart = false;
+            //for (int i = 1; i < packet.frameNumber; i++)
+            //{
+            //    S2C_InputPacket inputs = packet.inputs[i];
+            //    Process(inputs.frameNumber, inputs.inputs);
+            //}
+        }
         #endregion
 
         #region 回放系统
@@ -304,7 +315,7 @@ namespace Code.Client
         }
         public void PlayReplay()
         {
-            BattleEvent.doSetAnimeSpeed?.Invoke(1f);
+            BattleEvent.doSetAnimeSpeed?.Invoke(1);
             IsStart = true; //回放播放
         }
         public void PauseReplay()

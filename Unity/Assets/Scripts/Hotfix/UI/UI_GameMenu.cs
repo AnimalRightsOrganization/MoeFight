@@ -245,6 +245,15 @@ namespace HotFix
         #endregion
 
         #region 按钮事件
+        public void ShowMenu()
+        {
+            ClientLogic.Get.IsStart = false;
+            BattleEvent.doSetAnimeSpeed?.Invoke(0);
+            m_MenuPanel.SetActive(true);
+            m_DescText.text = "我方暂停中";
+            m_ContinueBtn.interactable = true;
+        }
+
         // 3,2,1,开始比赛
         void OnCountdown()
         {

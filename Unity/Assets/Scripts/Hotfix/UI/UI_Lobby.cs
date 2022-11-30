@@ -5,6 +5,7 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using Code.Shared;
 using Code.Client;
+using HitstunConstants;
 
 namespace HotFix
 {
@@ -114,11 +115,12 @@ namespace HotFix
             UIManager.Get().Push<UI_Login>();
         }
 
+        // 重连收到场景数据
         private void OnBattleReconnect(INetSerializable reader)
         {
-            Debug.Log($"[UI.Lobby] 提示重连");
-
             var packet = (S2C_LoadScenePacket)reader;
+            Debug.Log($"[UI.Lobby] 提示重连 {(CharacterName)packet.Host.RoleIndex} vs {(CharacterName)packet.Guest.RoleIndex}");
+
             int roomId = packet.RoomId;
             int seatId = packet.Host.UserName == localPlayer.UserName ? 0 : 1;
             localPlayer.SetRoomID(roomId).SetSeatID(seatId).SetStatus(PlayerStatus.AtBattle);
@@ -134,24 +136,26 @@ namespace HotFix
                 }, "No",
                 () =>
                 {
-                    this.m_Packet = packet;
                     Debug.Log("回到比赛");
+                    this.m_Packet = packet;
                     ClientNet.Get.SendLackInput(); //请求帧数据
                     //dialog.Pop(); //这里无法执行
                 }, "Yes");
         }
 
+        // 重连收到帧数据
         private async void OnBattleInputs(INetSerializable reader)
         {
             var packet = (S2C_LackInputPacket)reader;
             var size = (packet.inputs.Length * 12 + 4) / 1024;
             Debug.Log($"跳转Loading页：{packet.frameNumber}条，{size}KB");
 
-            // 跳转Loading页
+            // 显示Loading页
             UIManager.Get().PopAll();
-            var ui = UIManager.Get().Push<UI_Versus>();
-            ui.FadeIn(0, 0);
-
+            var ui_versus = UIManager.Get().Push<UI_Versus>();
+            int left = m_Packet.Host.RoleIndex;
+            int right = m_Packet.Guest.RoleIndex;
+            ui_versus.FadeIn(left, right);
 
             // 创建用户管理
             bool localIsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.PeerId == m_Packet.Host.PeerId;
@@ -169,20 +173,16 @@ namespace HotFix
             await Task.Delay(1000);
             //ui.FadeOut();
 
-            // 跳转场景
+
+            // 加载场景
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
+                var menu = UIManager.Get().Push<UI_GameMenu>();
+                menu.ShowMenu();
 
-                Debug.Log("追帧模拟");
-                ClientLogic.Get.IsStart = false; //重连
-                for (int i = 1; i < packet.frameNumber; i++)
-                {
-                    S2C_InputPacket inputs = packet.inputs[i];
-                    ClientLogic.Get.Process(inputs.frameNumber, inputs.inputs);
-                }
-                ClientNet.Get.SendBattleStart(2); //重连后恢复
+                //ClientNet.Get.SendBattleStart(2); //重连后恢复
+                ClientLogic.Get.Reconnect(packet);
             };
             GameManager.Get.LoadBattleAsync(action);
         }
@@ -204,7 +204,7 @@ namespace HotFix
             ui.Show("敬请期待");
         }
 
-        void RequestMatch()
+        public void RequestMatch()
         {
             if (localPlayer.Status != PlayerStatus.AtLobby)
             {

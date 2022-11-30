@@ -589,7 +589,7 @@ namespace Code.Shared
 
         public override string ToString()
         {
-            string stringBuild = $"{PeerId} select {RoleIndex}";
+            string stringBuild = $"peer[{PeerId}] select role[{RoleIndex}]";
             return stringBuild;
         }
     }

@@ -1,14 +1,15 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
-using Code.Client;
 using Debug = UnityEngine.Debug;
+using Code.Client;
 using Code.Server;
-using HotFix;
 
 public class TestWindow : EditorWindow
 {
@@ -23,18 +24,6 @@ public class TestWindow : EditorWindow
 
     void OnGUI()
     {
-        if (GUILayout.Button("登录.自动填写.test1"))
-        {
-            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
-            login.m_UserNameField.text = "test1";
-            login.m_PasswordField.text = "123456";
-        }
-        if (GUILayout.Button("登录.自动填写.test2"))
-        {
-            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
-            login.m_UserNameField.text = "test2";
-            login.m_PasswordField.text = "123456";
-        }
         /*
         if (GUILayout.Button("PVE"))
         {
@@ -71,22 +60,72 @@ public class TestWindow : EditorWindow
             };
             GameManager.Get.LoadBattleAsync(action); //测试PVP
         }*/
+        switch (SceneManager.GetActiveScene().name)
+        {
+            case "Client": ClientGUI(); break;
+            case "Server": ServerGUI(); break;
+            case "Photo": PhotoGUI(); break;
+            default: break;
+        }
+    }
+
+    HotFix.UI_Login FillLogin(string uesr)
+    {
+        var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
+        login.m_UserNameField.text = uesr;
+        login.m_PasswordField.text = "123456";
+        return login;
+    }
+    async void ClientGUI()
+    {
+        if (GUILayout.Button("登录.自动填写.test1"))
+        {
+            FillLogin("test1");
+        }
+        if (GUILayout.Button("登录.自动填写.test2"))
+        {
+            FillLogin("test2");
+        }
+        if (GUILayout.Button("登录.test1.匹配"))
+        {
+            FillLogin("test1").SendLogin();
+            await Task.Delay(1000);
+
+            var lobby = HotFix.UIManager.Get().GetUI<HotFix.UI_Lobby>();
+            lobby.RequestMatch();
+        }
+        if (GUILayout.Button("Client Print"))
+        {
+            var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
+            Debug.Log(str);
+        }
+        if (GUILayout.Button("Battle Print"))
+        {
+            var str = $"IsStart:{ClientLogic.Get.IsStart}, ";
+            Debug.Log(str);
+        }
+    }
+    void ServerGUI()
+    {
+        if (GUILayout.Button("Server Print"))
+        {
+            ServerNet.Get.m_PlayerManager.Print();
+            ServerNet.Get.m_RoomManager.Print();
+        }
+        if (GUILayout.Button("Room Print"))
+        {
+            var room = ServerNet.Get.m_RoomManager.GetAll()[0];
+            Debug.Log($"{room.hostPlayer.RoleIndex} vs {room.guestPlayer.RoleIndex}");
+        }
+    }
+    void PhotoGUI()
+    {
         if (GUILayout.Button("SnapShot"))
         {
             string fileName = $"{Application.streamingAssetsPath}/Actor_{DateTime.Now.ToString("yyyyMMddhhmmss")}.png";
             ScreenCapture.CaptureScreenshot(fileName);
             Debug.Log(fileName);
             AssetDatabase.Refresh();
-        }
-        if (GUILayout.Button("Server Print"))
-        {
-            ServerNet.Get.m_PlayerManager.Print();
-            ServerNet.Get.m_RoomManager.Print();
-        }
-        if (GUILayout.Button("Client Print"))
-        {
-            var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
-            Debug.Log(str);
         }
     }
 }

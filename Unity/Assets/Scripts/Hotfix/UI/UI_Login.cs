@@ -4,7 +4,6 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using Code.Shared;
 using Code.Client;
-using DG.Tweening;
 
 namespace HotFix
 {
@@ -140,6 +139,7 @@ namespace HotFix
         #endregion
 
         #region 按钮事件
+        // 连接服务器
         void ConnectToServer()
         {
             var connect = UIManager.Get().Push<UI_Connect>();
@@ -194,7 +194,8 @@ namespace HotFix
             m_RegisterPanel.gameObject.SetActive(false);
         }
 
-        private void SendLogin()
+        // 发送登录
+        public void SendLogin()
         {
             UIManager.Get().Push<UI_Connect>();
 
@@ -202,7 +203,7 @@ namespace HotFix
             string Password = m_PasswordField.text;
             ClientNet.Get.SendLogin(UserName, Password);
         }
-        private void SendRegister()
+        public void SendRegister()
         {
             if (string.IsNullOrEmpty(m_RegUserNameField.text))
             {
@@ -235,6 +236,7 @@ namespace HotFix
             }
         }
 
+        // 切换登录注册
         private void ToLogin()
         {
             m_LoginPanel.gameObject.SetActive(true);

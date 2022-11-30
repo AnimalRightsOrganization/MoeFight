@@ -807,11 +807,12 @@ namespace Code.Server
             serverRoom.Send(writer);
 
             UnityEngine.Debug.Log($"Other: {otherPlayer.Status}, {otherPlayer.AssociatedPeer.ConnectionState}"); //false
+            //Reconnect, Disconnected
             if (otherPlayer.Status == PlayerStatus.Reconnect)
             {
                 if (otherPlayer.AssociatedPeer.ConnectionState != ConnectionState.Connected)
                 {
-                    otherPlayer.SetStatus(PlayerStatus.Offline);
+                    //therPlayer.SetStatus(PlayerStatus.Offline);
                     m_PlayerManager.RemovePlayer(otherPlayer.PeerId);
                 }
                 else
@@ -877,12 +878,6 @@ namespace Code.Server
         // 请求缺失帧
         private void OnLackInputReceived(NetPacketReader reader, NetPeer peer)
         {
-            UnityEngine.Debug.Log($"[S] LackInput request received");
-            if (peer.Tag == null)
-            {
-                UnityEngine.Debug.LogError($"[S] peer.Tag is null");
-                return;
-            }
             if (peer.Tag == null) return;
             var player = (ServerPlayer)peer.Tag;
 
@@ -894,9 +889,9 @@ namespace Code.Server
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
 
             // 下发缺失帧
-            var packet4 = serverRoom.ConvertInputs();
-            UnityEngine.Debug.Log($"S2C: {packet4.frameNumber}/{packet4.inputs.Length}");
-            peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
+            var packet = serverRoom.ConvertInputs();
+            peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet), DeliveryMethod.ReliableOrdered);
+            UnityEngine.Debug.Log($"S2C: {packet.frameNumber}/{packet.inputs.Length}");
         }
         #endregion
 

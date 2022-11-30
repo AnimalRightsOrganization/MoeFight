@@ -174,7 +174,7 @@ namespace HotFix
         {
             var packet = (S2C_LoadScenePacket)reader;
             ClientNet.Get.m_ClientRoom.DoInit(packet);
-            Debug.Log($"[C] 比赛开始，跳转到比赛场景\n{packet}");
+            Debug.Log($"[C] 跳转到比赛场景\n{packet}");
 
             // 给足动画时间
             m_ConfirmBtn[0].gameObject.SetActive(false);
