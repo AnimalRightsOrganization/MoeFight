@@ -20,7 +20,6 @@ namespace Code.Server
             if (p == null)
             {
                 playerList.Add(player);
-                player.ResetToLobby();
             }
         }
         // 登出/断线/踢人

@@ -299,7 +299,6 @@ namespace HotFix
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Training: //TODO: 这是测试（记得删除）
                 case BattleMode.Matching:
                     Debug.Log($"[C] 请求暂停");
                     ClientNet.Get.SendBattlePause();
@@ -315,7 +314,6 @@ namespace HotFix
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
-                case BattleMode.Training: //TODO: 这是测试（记得删除）
                 case BattleMode.Matching:
                     ClientNet.Get.SendBattleStart(2); //解除暂停，继续
                     break;

@@ -56,6 +56,7 @@
         {
             SetRoomID(lastPlayer.RoomId);
             SetSeatID(lastPlayer.SeatId);
+            SetStatus(lastPlayer.Status);
             RoleIndex = lastPlayer.RoleIndex;
             RoleColor = lastPlayer.RoleColor;
             RoleCloth = lastPlayer.RoleCloth;

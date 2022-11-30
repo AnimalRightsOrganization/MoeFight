@@ -411,8 +411,8 @@ namespace Code.Server
                     //player = lastPlayer;
                     //peer.Tag = lastPlayer;
                     player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
-                    m_PlayerManager.AddPlayer(player); //这里重置了ResetLobby
-                    player.CopyFrom(lastPlayer); //拷贝玩家信息，放后面
+                    m_PlayerManager.AddPlayer(player);
+                    player.CopyFrom(lastPlayer); //拷贝玩家信息
                 }
                 else
                 {
@@ -426,6 +426,7 @@ namespace Code.Server
             {
                 player = new ServerPlayer(cmd.UserName, peer);
                 m_PlayerManager.AddPlayer(player);
+                player.ResetToLobby();
             }
 
             // 第一个包，登录许可
