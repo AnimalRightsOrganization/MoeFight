@@ -322,7 +322,7 @@ namespace Code.Client
 #endif
 
             SendPacketSerializable(PacketType.C2S_Input, cmd);
-            Debug.Log($" >> 发送: {cmd.frameNumber}---({cmd.input}) >>");
+            //Debug.Log($" >> 发送: {cmd.frameNumber}---({cmd.input}) >>");
         }
         //以上是测试，保留
 

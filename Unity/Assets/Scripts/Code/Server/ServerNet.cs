@@ -33,6 +33,10 @@ namespace Code.Server
         public ServerPlayerManager m_PlayerManager;
 
         #region Inner Method
+        //void Start()
+        //{
+        //    StartServer();
+        //}
         public async Task StartProgram()
         {
             bool result = StartServer();
@@ -56,8 +60,9 @@ namespace Code.Server
                 UnityEngine.Debug.LogError("server has been running");
                 return false;
             }
+            UnityEngine.Debug.Log($"StartServer, listen on {Port}");
 
-            //UnityEngine.Application.targetFrameRate = 60; //0.02, 默认1E-05
+            //UnityEngine.Application.targetFrameRate = 64; //0.02, 默认1E-05
 
             m_RoomManager = new ServerRoomManager();
             m_PlayerManager = new ServerPlayerManager();
@@ -748,7 +753,7 @@ namespace Code.Server
             }
             else if (cmd.Stage == 2) //比赛恢复（只需收到一方）
             {
-                var packet = new S2C_BattleStartPacket { Stage = 2 };
+                var packet = new S2C_BattleStartPacket { Stage = 2 }; //从暂停恢复
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
                 serverRoom.Send(writer);
                 UnityEngine.Debug.Log($"server resume battle");
@@ -889,9 +894,11 @@ namespace Code.Server
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
 
             // 下发缺失帧
+            //UnityEngine.Debug.Log($"Before: bufferTick:{serverRoom.bufferTick}, serverTick:{serverRoom.serverTick}");
             var packet = serverRoom.ConvertInputs();
+            //UnityEngine.Debug.Log($"After: bufferTick:{serverRoom.bufferTick}, serverTick:{serverRoom.serverTick}");
             peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet), DeliveryMethod.ReliableOrdered);
-            UnityEngine.Debug.Log($"S2C: {packet.frameNumber}/{packet.inputs.Length}");
+            UnityEngine.Debug.Log($"pack ticks: 1-{packet.frameNumber}");
         }
         #endregion
 

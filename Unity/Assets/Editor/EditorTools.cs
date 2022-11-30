@@ -115,7 +115,7 @@ public class TestWindow : EditorWindow
         if (GUILayout.Button("Room Print"))
         {
             ServerRoom room = ServerNet.Get.m_RoomManager.GetAll()[0];
-            Debug.Log($"room#{room.RoomID}:{room.hostPlayer.RoleIndex} vs {room.guestPlayer.RoleIndex}" +
+            Debug.Log($"room#{room.RoomID}:{room.BattleStage}:{room.hostPlayer.RoleIndex} vs {room.guestPlayer.RoleIndex}" +
                 $"\nbufferTick:{room.bufferTick}, serverTick:{room.serverTick}, dic_recv:{room.dic_recv.Count}");
         }
     }

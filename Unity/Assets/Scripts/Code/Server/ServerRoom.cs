@@ -120,7 +120,7 @@ namespace Code.Server
                         };
                         var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
-                        Debug.Log($" >> 发送: {serverTick}---({input}) >>");
+                        //Debug.Log($" >> 发送: {serverTick}---({input[0]})({input[1]}) >>");
                     }
 
                     delay = 1; //服务器已经适应客户端速度，之后保持为1
@@ -218,7 +218,7 @@ namespace Code.Server
                         {
                             dic_recv[tick] = new Dictionary<int, uint>();
                             dic_recv[tick][seatId] = cmd.input; //快的
-                            Debug.Log($"<color=grey> << 收到[1][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
+                            //Debug.Log($"<color=grey> << 收到[1][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
                         }
                         else
                         {
@@ -227,7 +227,7 @@ namespace Code.Server
                                 Debug.LogError($"P{seatId}发送了冗余帧{tick}:{cmd.input}vs{dic_recv[tick][seatId]}，可能是超时的，不接收");
                                 return;
                             }
-                            Debug.Log($"<color=grey> << 收到[2][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
+                            //Debug.Log($"<color=grey> << 收到[2][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
 
                             dic_recv[tick][seatId] = cmd.input; //慢的
                             bufferTick = tick; //缓存到第几帧
@@ -244,8 +244,8 @@ namespace Code.Server
 
             try
             {
-                S2C_InputPacket[] array = new S2C_InputPacket[serverTick + 1]; //多一个废帧[0]
-
+                /*
+                S2C_InputPacket[] array = new S2C_InputPacket[serverTick + 1]; //多一个空帧[0]
                 for (int i = 0; i < array.Length; i++)
                 {
                     if (i == 0)
@@ -260,8 +260,41 @@ namespace Code.Server
                         array[i] = new S2C_InputPacket { frameNumber = tick, inputs = _inputs };
                     }
                 }
+                */
 
-                packet.frameNumber = serverTick;
+                S2C_InputPacket[] array = new S2C_InputPacket[dic_recv.Count + 1]; //多一个空帧[0]
+                for (int i = 0; i < array.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        array[0] = new S2C_InputPacket();
+                    }
+                    else
+                    {
+                        uint tick = (uint)i;
+                        //Dictionary<int, uint> item = dic_recv[tick];
+                        Dictionary<int, uint> item = null;
+                        if (dic_recv.TryGetValue(tick, out item))
+                        {
+                            uint input0 = 0;
+                            uint input1 = 0;
+                            if (item.TryGetValue(0, out input0) == false)
+                            {
+                                dic_recv[tick][0] = 0; //打包时，把慢的一方填入0
+                            }
+                            if (item.TryGetValue(1, out input1) == false)
+                            {
+                                dic_recv[tick][1] = 0;
+                            }
+                            uint[] _inputs = new uint[2] { input0, input1 };
+                            array[i] = new S2C_InputPacket { frameNumber = tick, inputs = _inputs };
+                        }
+                    }
+                }
+                bufferTick = (uint)dic_recv.Count; //缓存到第几帧
+
+                //packet.frameNumber = serverTick;
+                packet.frameNumber = bufferTick;
                 packet.inputs = array;
             }
             catch (System.Exception e)

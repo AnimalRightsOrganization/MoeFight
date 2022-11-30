@@ -284,7 +284,8 @@ namespace Code.Client
         {
             var speed = runner.characterViews[0].animator.speed;
             Debug.Log($"追帧模拟: IsStart:{IsStart}, speed:{speed}" +
-                $"\n服务器收到: {packet.frameNumber}");
+                $"\n服务器收到: {packet.frameNumber}" +
+                $"\nggpo_predict:{ggpo_predict.Count}, ggpo_recieve:{ggpo_recieve.Count}, cache_buffer:{cache_buffer.Count}");
 
             IsStart = false;
             // 客户端发的一定＞服务器收的，所以
@@ -292,10 +293,13 @@ namespace Code.Client
             // ②通过请求对方，得知对方当前sendTick
             for (int i = 1; i < packet.frameNumber; i++)
             {
-                S2C_InputPacket inputs = packet.inputs[i];
-                Process(inputs.frameNumber, inputs.inputs);
+                S2C_InputPacket resp = packet.inputs[i];
+                Process(resp.frameNumber, resp.inputs);
+
+                ggpo_predict[resp.frameNumber] = resp.inputs;
+                ggpo_recieve[resp.frameNumber] = resp.inputs;
             }
-            sendTick = packet.frameNumber + DELAY_FRAMES; //+1
+            sendTick = packet.frameNumber; //+ DELAY_FRAMES;
             recvTick = packet.frameNumber;
             rendTick = packet.frameNumber; //客户端追帧表现到这帧
         }
@@ -369,7 +373,7 @@ namespace Code.Client
             var packet = (S2C_InputPacket)reader;
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            Debug.Log($"<color=grey> << 收到: {server_tick}---({packet.inputs[0]})({packet.inputs[1]}) << </color>");
+            //Debug.Log($"<color=grey> << 收到: {server_tick}---({packet.inputs[0]})({packet.inputs[1]}) << </color>");
         }
         private void OnBattleStart(INetSerializable reader)
         {
