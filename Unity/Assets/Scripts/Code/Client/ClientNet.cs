@@ -322,6 +322,7 @@ namespace Code.Client
 #endif
 
             SendPacketSerializable(PacketType.C2S_Input, cmd);
+            Debug.Log($" >> 发送: {cmd.frameNumber}---({cmd.input}) >>");
         }
         //以上是测试，保留
 
@@ -535,6 +536,7 @@ namespace Code.Client
             m_PlayerManager.RemoveAll();
         }
 
+        // 错误码
         void OnErrorOperate(INetSerializable reader)
         {
             var packet = (S2C_ErrorPacket)reader;

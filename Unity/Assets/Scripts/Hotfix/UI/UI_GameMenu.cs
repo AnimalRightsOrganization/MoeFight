@@ -70,7 +70,7 @@ namespace HotFix
             m_SkillInfoBtn = transform.Find("MenuPanel/Panel/SkillInfoBtn").GetComponent<Button>();
             m_QuitBtn = transform.Find("MenuPanel/Panel/QuitBtn").GetComponent<Button>();
             m_MenuBtn.onClick.AddListener(OpenMenu);
-            m_ContinueBtn.onClick.AddListener(CloseMenu);
+            m_ContinueBtn.onClick.AddListener(OnResume);
             m_SkillInfoBtn.onClick.AddListener(OnSkillInfo);
             m_QuitBtn.onClick.AddListener(OnQuitBtnClick);
 
@@ -311,7 +311,7 @@ namespace HotFix
         }
 
         // 恢复比赛
-        void CloseMenu()
+        void OnResume()
         {
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {

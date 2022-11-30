@@ -95,8 +95,9 @@ namespace Code.Server
             serverTick = 0;
             dic_recv = new Dictionary<uint, Dictionary<int, uint>>();
         }
-
-        public void DoUpdate() //每秒执行60次
+ 
+        // 每秒执行60次
+        public void DoUpdate()
         {
             if (BattleStage != BattleStage.Running) return;
 
@@ -119,6 +120,7 @@ namespace Code.Server
                         };
                         var writer = ServerNet.Get.WriteSerializable(PacketType.S2C_Input, packet);
                         Send(writer);
+                        Debug.Log($" >> 发送: {serverTick}---({input}) >>");
                     }
 
                     delay = 1; //服务器已经适应客户端速度，之后保持为1
@@ -216,6 +218,7 @@ namespace Code.Server
                         {
                             dic_recv[tick] = new Dictionary<int, uint>();
                             dic_recv[tick][seatId] = cmd.input; //快的
+                            Debug.Log($"<color=grey> << 收到[1][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
                         }
                         else
                         {
@@ -224,6 +227,7 @@ namespace Code.Server
                                 Debug.LogError($"P{seatId}发送了冗余帧{tick}:{cmd.input}vs{dic_recv[tick][seatId]}，可能是超时的，不接收");
                                 return;
                             }
+                            Debug.Log($"<color=grey> << 收到[2][{seatId}]: {cmd.frameNumber}---({cmd.input}) << </color>");
 
                             dic_recv[tick][seatId] = cmd.input; //慢的
                             bufferTick = tick; //缓存到第几帧

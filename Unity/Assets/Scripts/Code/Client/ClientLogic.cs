@@ -367,10 +367,9 @@ namespace Code.Client
         private void OnRecvInput(INetSerializable reader)
         {
             var packet = (S2C_InputPacket)reader;
-
             uint server_tick = packet.frameNumber;
             ggpo_recieve[server_tick] = packet.inputs;
-            //Debug.Log($"<color=grey>---收到第{server_tick}帧: ({packet.inputs[0]})({packet.inputs[1]})</color>");
+            Debug.Log($"<color=grey> << 收到: {server_tick}---({packet.inputs[0]})({packet.inputs[1]}) << </color>");
         }
         private void OnBattleStart(INetSerializable reader)
         {
