@@ -125,7 +125,6 @@ namespace HotFix
             int roomId = packet.RoomId;
             int seatId = packet.Host.UserName == localPlayer.UserName ? 0 : 1;
             localPlayer.SetRoomID(roomId).SetSeatID(seatId).SetStatus(PlayerStatus.AtBattle);
-            //ClientNet.Get.m_ClientRoom.DoInit(packet); //还没有房间
 
             var dialog = UIManager.Get().Push<UI_Dialog>();
             dialog.Show("你有一个正在进行的比赛，是否立即返回？",

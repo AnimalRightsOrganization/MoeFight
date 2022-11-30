@@ -73,9 +73,9 @@ namespace Code.Server
         private int delay = 1; //Update时--，==0则执行，否则等待。
         //private int delayCount = 0; //超时次数阈值，超过插入空帧
         private float Delta = 16.67f; //60fps
-        private uint bufferTick; //接收帧计数
-        private uint serverTick; //下发帧计数
-        private Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
+        public uint bufferTick; //接收帧计数
+        public uint serverTick; //下发帧计数
+        public Dictionary<uint, Dictionary<int, uint>> dic_recv; //从1开始, <座位号, 操作码>
 
 
         public void DoInit()

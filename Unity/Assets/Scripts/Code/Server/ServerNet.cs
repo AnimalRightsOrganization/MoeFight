@@ -406,8 +406,8 @@ namespace Code.Server
                     //player = lastPlayer;
                     //peer.Tag = lastPlayer;
                     player = new ServerPlayer(cmd.UserName, peer); //新建玩家对象
-                    player.CopyFrom(lastPlayer); //拷贝玩家信息
-                    m_PlayerManager.AddPlayer(player);
+                    m_PlayerManager.AddPlayer(player); //这里重置了ResetLobby
+                    player.CopyFrom(lastPlayer); //拷贝玩家信息，放后面
                 }
                 else
                 {

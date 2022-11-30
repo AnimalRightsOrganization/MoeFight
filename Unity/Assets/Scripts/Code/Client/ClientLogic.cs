@@ -283,14 +283,21 @@ namespace Code.Client
         public void Reconnect(S2C_LackInputPacket packet)
         {
             var speed = runner.characterViews[0].animator.speed;
-            Debug.Log($"追帧模拟: IsStart:{IsStart}, speed:{speed}");
+            Debug.Log($"追帧模拟: IsStart:{IsStart}, speed:{speed}" +
+                $"\n服务器收到: {packet.frameNumber}");
 
             IsStart = false;
-            //for (int i = 1; i < packet.frameNumber; i++)
-            //{
-            //    S2C_InputPacket inputs = packet.inputs[i];
-            //    Process(inputs.frameNumber, inputs.inputs);
-            //}
+            // 客户端发的一定＞服务器收的，所以
+            // ①预测客户端发的帧数
+            // ②通过请求对方，得知对方当前sendTick
+            for (int i = 1; i < packet.frameNumber; i++)
+            {
+                S2C_InputPacket inputs = packet.inputs[i];
+                Process(inputs.frameNumber, inputs.inputs);
+            }
+            sendTick = packet.frameNumber + DELAY_FRAMES; //+1
+            recvTick = packet.frameNumber;
+            rendTick = packet.frameNumber; //客户端追帧表现到这帧
         }
         #endregion
 
