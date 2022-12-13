@@ -65,7 +65,7 @@ public class TestWindow : EditorWindow
             case "Client": ClientGUI(); break;
             case "Server": ServerGUI(); break;
             case "Photo": PhotoGUI(); break;
-            default: break;
+            default: GUILayout.Label("空"); break;
         }
     }
 
