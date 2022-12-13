@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using LitJson;
+using Newtonsoft.Json;
 
 public class UI_CheckUpdate : MonoBehaviour
 {
@@ -47,7 +47,8 @@ public class UI_CheckUpdate : MonoBehaviour
         }
         if (www.isDone)
         {
-            var r_assets_bytes = JsonMapper.ToObject<AssetsBytes>(www.text);
+            //var r_assets_bytes = JsonMapper.ToObject<AssetsBytes>(www.text);
+            var r_assets_bytes = JsonConvert.DeserializeObject<AssetsBytes>(www.text);
             cloudInfos = r_assets_bytes.ABInfoList;
             www.Dispose();
             for (int i = 0; i < cloudInfos.Length; i++)

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using LitJson;
+using Newtonsoft.Json;
 
 public class ConfigManager : MonoBehaviour
 {
@@ -37,9 +37,11 @@ public class ConfigManager : MonoBehaviour
         globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
 
         var langConfig = ResManager.LoadBytes("Configs/Language");
-        m_Languages = JsonMapper.ToObject<LanguageNode[]>(langConfig);
+        //m_Languages = JsonMapper.ToObject<LanguageNode[]>(langConfig);
+        m_Languages = JsonConvert.DeserializeObject<LanguageNode[]>(langConfig);
 
         var charConfig = ResManager.LoadBytes("Configs/Character");
-        m_CharacterList = JsonMapper.ToObject<CharacterNode[]>(charConfig);
+        //m_CharacterList = JsonMapper.ToObject<CharacterNode[]>(charConfig);
+        m_CharacterList = JsonConvert.DeserializeObject<CharacterNode[]>(charConfig);
     }
 }

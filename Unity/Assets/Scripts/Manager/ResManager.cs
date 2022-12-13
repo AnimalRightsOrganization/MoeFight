@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using LitJson;
+using Newtonsoft.Json;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -23,7 +23,8 @@ public class ResManager
     {
         string assetsPath = $"{Application.persistentDataPath}/{ConstValue.PLATFORM_NAME}/assets.bytes"; //解析文件
         string assetsJson = File.ReadAllText(assetsPath);
-        _assetsBytes = JsonMapper.ToObject<AssetsBytes>(assetsJson);
+        //_assetsBytes = JsonMapper.ToObject<AssetsBytes>(assetsJson);
+        _assetsBytes = JsonConvert.DeserializeObject<AssetsBytes>(assetsJson);
     }
 
     public const string BUNDLES_FOLDER = "Assets/Bundles";
@@ -51,7 +52,7 @@ public class ResManager
 
         //Debug.Log($"111.filePath: {filePath}");
         //Debug.Log($"222.filePath.ToLower(): {filePath.ToLower()}");
-        var asset = AssetBundle.LoadFromFile(filePath); //这里不能小写，会导致iOS读不出。s
+        var asset = AssetBundle.LoadFromFile(filePath); //这里不能小写，会导致iOS读不出。
         //Debug.Log($"333.资源数={asset.GetAllAssetNames().Length}---[0]{asset.GetAllAssetNames()[0]}");
         GameObject prefab = asset.LoadAllAssets()[0] as GameObject;
         asset.Unload(false);
@@ -173,23 +174,6 @@ public class ResManager
             }
         }
         //Debug.Log($"字典：{sp.Count}个");
-        return sp;
-    }
-    public static Sprite LoadSprite(string fileName)
-    {
-        var array = fileName.Split('.');
-        var configName = array[0];
-        var configType = array[1];
-
-#if UNITY_EDITOR && !USE_ASSETBUNDLE
-        string filePath = $"{BUNDLES_FOLDER}/{configName}.{configType}";
-        var sp = AssetDatabase.LoadAssetAtPath<Sprite>(filePath);
-#else
-        string filePath = GetFilePath($"{configName}.unity3d");
-        AssetBundle asset = AssetBundle.LoadFromFile(filePath);
-        var sp = asset.LoadAllAssets()[0] as Sprite;
-        asset.Unload(false);
-#endif
         return sp;
     }
 

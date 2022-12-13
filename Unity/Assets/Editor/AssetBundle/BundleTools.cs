@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using LitJson;
+using Newtonsoft.Json;
 
 public partial class BundleTools : Editor
 {
@@ -202,7 +201,8 @@ public partial class BundleTools : Editor
             ABInfoList.Add(fs);
         }
         AssetsBytes data = new AssetsBytes(res_version, ABInfoList);
-        string jsonStr = JsonMapper.ToJson(data);
+        //string jsonStr = JsonMapper.ToJson(data);
+        string jsonStr = JsonConvert.SerializeObject(data);
         //Debug.Log(jsonStr);
 
         // 压缩包释放掉

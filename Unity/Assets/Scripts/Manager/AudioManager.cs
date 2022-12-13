@@ -39,7 +39,7 @@ public class AudioManager : MonoBehaviour
         foreach (var item in dic_sounds)
         {
             var sound = item.Value;
-            //Debug.Log($"音乐：{sound.audioName}，{sound.isMusic}，音量：{sound.source.volume}");
+            Debug.Log($"音乐：{sound.audioName}，{sound.isMusic}，音量：{sound.source.volume}");
             sound.source.volume = sound.isMusic ? musicVolume : soundVolume;
         }
     }
@@ -82,6 +82,7 @@ public class AudioManager : MonoBehaviour
         sound.loop = loop;
         sound.isMusic = true;
         sound.TweenPlay();
+        Debug.Log($"播放BGM：{sound.source.volume}");
     }
     // 播放音效
     public void PlaySound(string soundName, bool loop = false)

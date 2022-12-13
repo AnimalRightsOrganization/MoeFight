@@ -234,7 +234,7 @@ namespace HotFix
 
         void OnMusicChanged(float value)
         {
-            //Debug.LogError($"音乐变了：{value}");
+            Debug.Log($"音乐变了：{value}");
             AudioManager.musicVolume = value;
             m_MusicValue.text = $"{value}";
         }

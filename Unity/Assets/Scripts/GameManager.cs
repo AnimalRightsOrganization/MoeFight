@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Code.Client;
 using HotFix;
-using LitJson;
 using HitstunConstants;
+using Newtonsoft.Json;
 
 public class GameManager : MonoBehaviour
 {
@@ -68,8 +68,10 @@ public class GameManager : MonoBehaviour
             return;
         }
         Debug.Log($"config: {text}");
-        var obj = JsonMapper.ToObject<ServerResponse>(text);
-        present = JsonMapper.ToObject<Present>(obj.data);
+        //var obj = JsonMapper.ToObject<ServerResponse>(text);
+        //present = JsonMapper.ToObject<Present>(obj.data);
+        var obj = JsonConvert.DeserializeObject<ServerResponse>(text);
+        present = JsonConvert.DeserializeObject<Present>(obj.data);
 
         StartCoroutine(CheckUpdateAsync(OnInited));
     }

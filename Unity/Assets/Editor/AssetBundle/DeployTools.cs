@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
-using LitJson;
+using Newtonsoft.Json;
 
 public class DeployTools : EditorWindow
 {
@@ -262,8 +262,10 @@ public class DeployTools : EditorWindow
             Debug.LogError("获取远程资源版本失败");
             return null;
         }
-        var obj = JsonMapper.ToObject<ServerResponse>(responseBody);
-        var model = JsonMapper.ToObject<DBApp>(obj.data);
+        //var obj = JsonMapper.ToObject<ServerResponse>(responseBody);
+        //var model = JsonMapper.ToObject<DBApp>(obj.data);
+        var obj = JsonConvert.DeserializeObject<ServerResponse>(responseBody);
+        var model = JsonConvert.DeserializeObject<DBApp>(obj.data);
         Debug.Log(obj.data);
         r_app_version = model.app_version;
         r_res_version = model.res_version;
@@ -293,10 +295,12 @@ public class DeployTools : EditorWindow
             return null;
         }
         C2S_Deploy data = new C2S_Deploy { app_version = l_app_version, res_version = l_res_version };
-        string postJson = JsonMapper.ToJson(data);
+        //string postJson = JsonMapper.ToJson(data);
+        string postJson = JsonConvert.SerializeObject(data);
         string responseBody = await HttpHelper.TryPostAsync(ConstValue.PRESENT_DEPLOY, postJson);
         Debug.Log(responseBody);
-        var obj = JsonMapper.ToObject<ServerResponse>(responseBody);
+        //var obj = JsonMapper.ToObject<ServerResponse>(responseBody);
+        var obj = JsonConvert.DeserializeObject<ServerResponse>(responseBody);
         Debug.Log($"部署完成: {obj.msg}");
         return obj.msg;
     }
