@@ -41,7 +41,7 @@ namespace HitstunConstants
         public const int PUSHBACK_CORNER_THRESH = 100;
 
         // projectile properties
-        public const int PROJECTILE_HEIGHT = 720;
+        public const int PROJECTILE_HEIGHT = 920; //气弹高度
         public const int PROJECTILE_DISPLACE = 600;
     }
 

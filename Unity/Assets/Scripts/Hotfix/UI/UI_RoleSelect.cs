@@ -305,7 +305,7 @@ namespace HotFix
                     ClientNet.Get.SendSelection(id);
                     break;
                 default:
-                    Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    //Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
                     var packet = new S2C_RoleSelectPacket { SeatId = 0, RoleIndex = (byte)id };
                     localPlayer.RoleIndex = packet.RoleIndex;
                     OnRoleSelect(packet);
@@ -324,7 +324,7 @@ namespace HotFix
                     ClientNet.Get.SendGameReady();
                     break;
                 default:
-                    Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
+                    //Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
                     //ClientNet.Get.SendTestPVE();
                     OnTraining();
                     break;
