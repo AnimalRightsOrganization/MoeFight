@@ -7,7 +7,6 @@ public class HitstunRunner : MonoBehaviour
 {
     // Settings
     public bool showHitboxes = true;
-    public bool manualStep = false;
     public CharacterName player1Character;
     public CharacterName player2Character;
 
@@ -24,7 +23,6 @@ public class HitstunRunner : MonoBehaviour
     NativeArray<byte> buffer;
     NativeArray<byte> oldBuffer;
     private bool running;
-    private bool nextStep;
 
     // Fletcher32校验算法
     static int CalcFletcher32(NativeArray<byte> data)
@@ -68,8 +66,7 @@ public class HitstunRunner : MonoBehaviour
         LoadCharacterData();
         // Init View
         InitView();
-        running = !manualStep;
-        nextStep = false;
+        running = true;
     }
 
     void OnDestroy()
@@ -106,11 +103,8 @@ public class HitstunRunner : MonoBehaviour
         HandleDevKeys();
 
         // 推进游戏
-        if (running || nextStep)
+        if (running)
         {
-            nextStep = false;
-
-
             // save new gamestate
             if (buffer.IsCreated)
             {
@@ -143,21 +137,19 @@ public class HitstunRunner : MonoBehaviour
             }
 
             // 运算结束，驱动角色、子弹、相机
-            UpdateGameView(LocalSession.gs);
+            UpdateGameView(LocalSession.gs); //游戏
         }
     }
 
     public void OnReplayUpdate(uint[] inputs)
     {
-        if (running || nextStep)
+        if (running)
         {
-            nextStep = false;
-
             //GameState.FromBytes(LocalSession.gs, oldBuffer);
             LocalSession.gs.Update(inputs, 0);
 
             // 运算结束，驱动角色、子弹、相机
-            UpdateGameView(LocalSession.gs);
+            UpdateGameView(LocalSession.gs); //回放
         }
     }
 
@@ -173,7 +165,7 @@ public class HitstunRunner : MonoBehaviour
             characterViews[i].showHitboxes = showHitboxes;
         }
         // setup position
-        UpdateGameView(LocalSession.gs);
+        UpdateGameView(LocalSession.gs); //初始化执行一次
     }
 
     void UpdateGameView(GameState gs)
@@ -222,23 +214,7 @@ public class HitstunRunner : MonoBehaviour
         // manual stepping
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            manualStep = !manualStep;
-            if (manualStep)
-            {
-                Debug.Log("Manual mode on: Press F3 to advance a single frame");
-                running = false;
-                nextStep = false;
-            }
-            else
-            {
-                Debug.Log("Manual mode off");
-                running = true;
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.F3))
-        {
-            Debug.Log("Manual step");
-            nextStep = true;
+            running = !running;
         }
     }
 

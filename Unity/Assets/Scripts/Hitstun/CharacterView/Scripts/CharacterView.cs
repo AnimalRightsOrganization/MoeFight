@@ -20,7 +20,7 @@ public class CharacterView : MonoBehaviour
     private List<HitboxView> hurtboxViews;
 
     private Transform model;
-    public Animator animator;
+    private Animator animator;
 
     void Awake()
     {
@@ -252,10 +252,11 @@ public class CharacterView : MonoBehaviour
         }
     }
 
-    public void SetAnimeSpeed(float value)
+    // 这个没有意义：
+    // IsStart = true时，播放动画是逐帧式的，每个逻辑帧调用 animator.Play("clipName", 0, "franeNum");
+    // IsStart = false时，才受 speed 控制
+    private void SetAnimeSpeed(float value)
     {
-        Debug.Log($"{animator.name} speed={animator.speed}");
         animator.speed = value;
-        Debug.Log($"{animator.name} speed={animator.speed}");
     }
 }

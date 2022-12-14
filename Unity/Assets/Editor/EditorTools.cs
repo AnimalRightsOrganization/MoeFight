@@ -36,10 +36,12 @@ public class TestWindow : EditorWindow
 
         if (GUILayout.Button("定住"))
         {
+            //ClientLogic.Get.IsStart = false;
             BattleEvent.doSetAnimeSpeed.Invoke(0);
         }
         if (GUILayout.Button("播放"))
         {
+            //ClientLogic.Get.IsStart = false;
             BattleEvent.doSetAnimeSpeed.Invoke(1);
         }
     }

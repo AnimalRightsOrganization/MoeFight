@@ -211,9 +211,7 @@ namespace HotFix
         private void OnRivalLostNet(INetSerializable reader)
         {
            //对方掉线。超过时间没有返回，将判对方落败。
-
-            ClientLogic.Get.IsStart = false;
-            BattleEvent.doSetAnimeSpeed?.Invoke(0);
+            ClientLogic.Get.PauseLoop();
 
             m_MenuPanel.SetActive(true);
             m_DescText.text = "对方重连中，请耐心等待";
@@ -246,8 +244,8 @@ namespace HotFix
         #region 按钮事件
         public void ShowMenu()
         {
-            ClientLogic.Get.IsStart = false;
-            BattleEvent.doSetAnimeSpeed?.Invoke(0); //重连回来先暂停
+            ClientLogic.Get.PauseLoop(); //重连回来先暂停
+
             m_MenuPanel.SetActive(true);
             m_DescText.text = "我方暂停中";
             m_ContinueBtn.interactable = true;
@@ -306,8 +304,7 @@ namespace HotFix
                     m_MenuPanel.SetActive(true);
                     m_DescText.text = "暂停";
                     m_ContinueBtn.interactable = true;
-                    ClientLogic.Get.IsStart = false;
-                    BattleEvent.doSetAnimeSpeed?.Invoke(0);
+                    ClientLogic.Get.PauseLoop();
                     break;
             }
         }
@@ -322,8 +319,7 @@ namespace HotFix
                     break;
                 default: //其他情况不会有UI
                     m_MenuPanel.SetActive(false);
-                    ClientLogic.Get.IsStart = true;
-                    BattleEvent.doSetAnimeSpeed?.Invoke(1);
+                    ClientLogic.Get.PlayLoop();
                     break;
             }
         }

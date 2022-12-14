@@ -47,7 +47,7 @@ namespace HotFix
         {
             if (value)
             {
-                ClientLogic.Get.PlayReplay();
+                ClientLogic.Get.PlayLoop();
                 uint frameID = (uint)m_ProgressBar.value;
                 if (frameID >= m_ProgressBar.maxValue)
                 {
@@ -57,7 +57,7 @@ namespace HotFix
             }
             else
             {
-                ClientLogic.Get.PauseReplay();
+                ClientLogic.Get.PauseLoop();
             }
         }
         async void OnSliderChanged(float value)
@@ -81,7 +81,7 @@ namespace HotFix
 
             //OnSliderChanged()执行完，才能得到鼠标指定的帧
             m_PlayTog.isOn = false; //会触发执行OnPlay()
-            ClientLogic.Get.PauseReplay();
+            ClientLogic.Get.PauseLoop();
             ClientLogic.Get.RollbackReplay(frameID);
 
             // 血条

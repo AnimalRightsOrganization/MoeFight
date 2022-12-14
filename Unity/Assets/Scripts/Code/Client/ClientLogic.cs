@@ -78,15 +78,23 @@ namespace Code.Client
             EventManager.UnRegisterEvent(OnNetCallback);
             LogicTimer.Stop();
         }
-        //void FixedUpdate()
-        //{
-        //    //OnLogicUpdate();
-        //    Debug.Log($"<color=yellow>FixedUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
-        //}
         void Update()
         {
             LogicTimer.Update();
         }
+        void OnApplicationPause(bool pause)
+        {
+            Debug.Log($"<color=green>OnApplicationPause: {pause}</color>");
+            if (pause)
+            {
+                ClientNet.Get.SendBattlePause(); //掉线处理
+            }
+            else
+            {
+                ClientNet.Get.SendBattleStart(2); //断线重连
+            }
+        }
+
         void OnLogicUpdate()
         {
             //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
@@ -97,7 +105,7 @@ namespace Code.Client
                 var inputs = new uint[] { 0, 0 };
                 runner.SaveOldBuffer();
                 LocalSession.RunFrame(inputs);
-                runner.OnFixedUpdate(inputs);
+                runner.OnFixedUpdate(inputs); //继续动画
                 return;
             }
 
@@ -114,19 +122,6 @@ namespace Code.Client
                     break;
             }
         }
-        void OnApplicationPause(bool pause)
-        {
-            Debug.Log($"<color=green>OnApplicationPause: {pause}</color>");
-            if (pause)
-            {
-                ClientNet.Get.SendBattlePause(); //掉线处理
-            }
-            else
-            {
-                ClientNet.Get.SendBattleStart(2); //断线重连
-            }
-        }
-
         void BattleLoop()
         {
             // 因暂停，切后台造成此客户端滞后
@@ -243,6 +238,18 @@ namespace Code.Client
 
             BattleEvent.doReplayUpdate?.Invoke(recvTick);
         }
+        public void PlayLoop()
+        {
+            IsStart = true; //播放
+            BattleEvent.doSetAnimeSpeed?.Invoke(1); //不能用TimeScale，会导致Dotween等失效
+            ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
+        }
+        public void PauseLoop()
+        {
+            IsStart = false; //暂停
+            BattleEvent.doSetAnimeSpeed?.Invoke(0);
+            ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Paused;
+        }
         #endregion
 
         #region 战斗系统
@@ -267,7 +274,7 @@ namespace Code.Client
         {
             runner.SaveOldBuffer();
             LocalSession.RunFrame(inputs);
-            runner.OnFixedUpdate(inputs);
+            runner.OnFixedUpdate(inputs);//推进逻辑
             //Debug.Log($"[执行] 第{tick}帧执行后, P1:{LocalSession.gs.characters[0].position}, P2:{LocalSession.gs.characters[1].position}");
 
             Snapshot(tick);
@@ -294,8 +301,9 @@ namespace Code.Client
         // 重连恢复数据
         public void Reconnect(S2C_LackInputPacket packet)
         {
-            var speed = runner.characterViews[0].animator.speed;
-            Debug.Log($"追帧模拟: IsStart:{IsStart}, speed:{speed}" +
+            //var speed = runner.characterViews[0].animator.speed;
+            Debug.Log($"追帧模拟: IsStart:{IsStart}, " +
+                //$"speed:{speed}" +
                 $"\n服务器收到: {packet.frameNumber}" +
                 $"\nggpo_predict:{ggpo_predict.Count}, ggpo_recieve:{ggpo_recieve.Count}, cache_buffer:{cache_buffer.Count}");
 
@@ -335,16 +343,6 @@ namespace Code.Client
             int hp2 = LocalSession.gs.characters[1].health;
             BattleEvent.doSetCurrentHp?.Invoke(1, hp1);
             BattleEvent.doSetCurrentHp?.Invoke(2, hp2);
-        }
-        public void PlayReplay()
-        {
-            BattleEvent.doSetAnimeSpeed?.Invoke(1);
-            IsStart = true; //回放播放
-        }
-        public void PauseReplay()
-        {
-            BattleEvent.doSetAnimeSpeed?.Invoke(0);
-            IsStart = false; //回放暂停
         }
         public void RollbackReplay(uint tick)
         {
@@ -398,15 +396,11 @@ namespace Code.Client
             }
             else if (packet.Stage == 1) //倒计时完同步
             {
-                IsStart = true; //开始发送帧数据
-                BattleEvent.doSetAnimeSpeed?.Invoke(1);
-                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
+                PlayLoop(); //开始发送帧数据
             }
             else if (packet.Stage == 2)
             {
-                IsStart = true; //从暂停恢复
-                BattleEvent.doSetAnimeSpeed?.Invoke(1);
-                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
+                PlayLoop(); //从暂停恢复
             }
         }
         private void OnBattlePause(INetSerializable reader)
@@ -415,10 +409,7 @@ namespace Code.Client
             Debug.Log($"{packet.SeatID}提出暂停: {packet.Duration}s");
             if (packet.Duration > 0)
             {
-                IsStart = false; //暂停
-                //Time.timeScale = 0; //不能用TimeScale，会导致Dotween等失效
-                BattleEvent.doSetAnimeSpeed?.Invoke(0);
-                ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Paused;
+                PauseLoop();
             }
         }
         private void OnBattleEnd(INetSerializable reader)

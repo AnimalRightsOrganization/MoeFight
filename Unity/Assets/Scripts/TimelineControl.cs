@@ -24,7 +24,7 @@ public class TimelineControl : MonoBehaviour
 
     void LoadTimeline(string clip)
     {
-        PlayableAsset asset = ResManager.LoadTimeline($"Timeline/{clip}") as PlayableAsset;
+        PlayableAsset asset = ResManager.LoadTimeline($"Timeline/{clip}");
         GameObject vcam = ResManager.LoadPrefab($"Timeline/vcam_{clip}");
         GameObject obj = Instantiate(vcam);
         obj.name = $"vcam_{clip}";
@@ -45,8 +45,16 @@ public class TimelineControl : MonoBehaviour
         }
     }
 
+    public bool IsStart;
+    float frameNumber;
     void Update()
     {
+        if (IsStart)
+        {
+            frameNumber++;
+            honoka.Play("STAND_LP", 0, (frameNumber % 44f) / 44f);
+        }
+
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             PlayableDirector current = timelines[0];

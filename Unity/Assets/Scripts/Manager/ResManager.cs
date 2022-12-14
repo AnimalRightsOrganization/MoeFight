@@ -87,15 +87,15 @@ public class ResManager
         return clip;
     }
 
-    public static Object LoadTimeline(string configName)
+    public static PlayableAsset LoadTimeline(string configName)
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
         string filePath = $"{BUNDLES_FOLDER}/{configName}.playable";
-        Object config = AssetDatabase.LoadAssetAtPath<Object>(filePath);
+        var config = AssetDatabase.LoadAssetAtPath<PlayableAsset>(filePath);
 #else
         string filePath = GetFilePath($"{configName}.unity3d");
         AssetBundle asset = AssetBundle.LoadFromFile(filePath);
-        object config = asset.LoadAllAssets()[0];
+        var config = (PlayableAsset)asset.LoadAllAssets().FirstOrDefault();
         asset.Unload(false);
 #endif
         return config;
