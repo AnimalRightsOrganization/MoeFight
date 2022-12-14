@@ -79,8 +79,9 @@ namespace HotFix
             ApplyLanguage();
 
             EventManager.RegisterEvent(OnNetCallback);
-
+#if !UNITY_EDITOR
             ConnectToServer();
+#endif
         }
 
         void OnDisable()

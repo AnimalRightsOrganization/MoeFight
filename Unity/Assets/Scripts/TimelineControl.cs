@@ -15,6 +15,7 @@ public class TimelineControl : MonoBehaviour
     void Awake()
     {
         honoka = GetComponent<Animator>();
+        BattleEvent.doSetAnimeSpeed += (value) => { honoka.speed = value; };
 
         LoadTimeline("Opening");
         LoadTimeline("HADOUKEN");

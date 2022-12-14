@@ -254,6 +254,8 @@ public class CharacterView : MonoBehaviour
 
     public void SetAnimeSpeed(float value)
     {
+        Debug.Log($"{animator.name} speed={animator.speed}");
         animator.speed = value;
+        Debug.Log($"{animator.name} speed={animator.speed}");
     }
 }

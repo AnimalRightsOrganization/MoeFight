@@ -293,7 +293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1254858611688404277}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TrainingStage_Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 1258058142742064915}
   - component: {fileID: 1228513987763705895}
   - component: {fileID: 1238272216196456549}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PolygonGrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -411,7 +411,7 @@ GameObject:
   - component: {fileID: 1255131649646923273}
   - component: {fileID: 1229172908481505515}
   - component: {fileID: 1238009538377940939}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PolygonGrid_Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

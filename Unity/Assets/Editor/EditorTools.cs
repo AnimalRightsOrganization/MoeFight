@@ -33,6 +33,15 @@ public class TestWindow : EditorWindow
             case "Photo": PhotoGUI(); break;
             default: GUILayout.Label("空"); break;
         }
+
+        if (GUILayout.Button("定住"))
+        {
+            BattleEvent.doSetAnimeSpeed.Invoke(0);
+        }
+        if (GUILayout.Button("播放"))
+        {
+            BattleEvent.doSetAnimeSpeed.Invoke(1);
+        }
     }
 
     HotFix.UI_Login FillLogin(string uesr)
@@ -42,7 +51,7 @@ public class TestWindow : EditorWindow
         login.m_PasswordField.text = "123456";
         return login;
     }
-    async void ClientGUI()
+    void ClientGUI()
     {
         if (GUILayout.Button("登录.自动填写.test1"))
         {
@@ -52,14 +61,6 @@ public class TestWindow : EditorWindow
         {
             FillLogin("test2");
         }
-        if (GUILayout.Button("登录.test1.匹配"))
-        {
-            FillLogin("test1").SendLogin();
-            await Task.Delay(1000);
-
-            var lobby = HotFix.UIManager.Get().GetUI<HotFix.UI_Lobby>();
-            lobby.RequestMatch();
-        }
         if (GUILayout.Button("Client Print"))
         {
             var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
@@ -68,7 +69,7 @@ public class TestWindow : EditorWindow
         if (GUILayout.Button("Training"))
         {
             ClientNet.Get.Disconnect();
-            await Task.Delay(1);
+            //await Task.Delay(1);
 
             ClientPlayer host = new ClientPlayer("test1", 0);
             ClientPlayer guest = new ClientPlayer("bot", 1);
@@ -96,11 +97,6 @@ public class TestWindow : EditorWindow
                 ClientLogic.Get.IsStart = true;
             };
             GameManager.Get.LoadBattleAsync(action); //训练
-        }
-        if (GUILayout.Button("定住"))
-        {
-            CharacterView honoka = new CharacterView();
-            honoka.SetAnimeSpeed(0);
         }
     }
     void ServerGUI()

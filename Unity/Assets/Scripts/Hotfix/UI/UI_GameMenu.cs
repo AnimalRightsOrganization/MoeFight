@@ -213,7 +213,6 @@ namespace HotFix
            //对方掉线。超过时间没有返回，将判对方落败。
 
             ClientLogic.Get.IsStart = false;
-            //Time.timeScale = 0;
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
 
             m_MenuPanel.SetActive(true);

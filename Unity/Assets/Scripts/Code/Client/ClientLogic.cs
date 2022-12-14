@@ -399,14 +399,12 @@ namespace Code.Client
             else if (packet.Stage == 1) //倒计时完同步
             {
                 IsStart = true; //开始发送帧数据
-                //Time.timeScale = 1;
                 BattleEvent.doSetAnimeSpeed?.Invoke(1);
                 ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
             }
             else if (packet.Stage == 2)
             {
                 IsStart = true; //从暂停恢复
-                //Time.timeScale = 1;
                 BattleEvent.doSetAnimeSpeed?.Invoke(1);
                 ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
             }
