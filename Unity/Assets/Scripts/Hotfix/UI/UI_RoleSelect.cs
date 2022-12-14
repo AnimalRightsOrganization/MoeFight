@@ -202,7 +202,6 @@ namespace HotFix
             GameManager.Get.LoadBattleAsync(action); //匹配赛
         }
 
-        //private async void OnTestPVE(INetSerializable reader)
         private async void OnTraining()
         {
             var room = ClientNet.Get.m_ClientRoom;
@@ -325,7 +324,6 @@ namespace HotFix
                     break;
                 default:
                     //Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
-                    //ClientNet.Get.SendTestPVE();
                     OnTraining();
                     break;
             }

@@ -10,6 +10,8 @@ using UnityEditor.Build.Reporting;
 using Debug = UnityEngine.Debug;
 using Code.Client;
 using Code.Server;
+using Code.Shared;
+using HotFix;
 
 public class TestWindow : EditorWindow
 {
@@ -24,42 +26,6 @@ public class TestWindow : EditorWindow
 
     void OnGUI()
     {
-        /*
-        if (GUILayout.Button("PVE"))
-        {
-            if (ClientNet.Get.m_PlayerManager.LocalPlayer == null)
-            {
-                Debug.LogError("请先登录");
-                return;
-            }
-            ClientPlayer host = new ClientPlayer("test1", 1);
-            ClientPlayer guest = new ClientPlayer("BOT", -1);
-            ClientNet.Get.m_ClientRoom = new ClientRoom(1, host, guest);
-            ClientNet.Get.m_ClientRoom.BattleMode = Code.Shared.BattleMode.Training;
-
-            System.Action action = () =>
-            {
-                HotFix.UIManager.Get().PopAll();
-                HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
-                ClientNet.Get.SendTestPVE();
-            };
-            GameManager.Get.LoadBattleAsync(action); //测试PVE
-        }
-        if (GUILayout.Button("PVP"))
-        {
-            if (ClientNet.Get.m_PlayerManager.LocalPlayer == null)
-            {
-                Debug.LogError("请先登录");
-                return;
-            }
-            System.Action action = () =>
-            {
-                HotFix.UIManager.Get().PopAll();
-                HotFix.UIManager.Get().Push<HotFix.UI_GameMenu>();
-                ClientNet.Get.SendTestPVP();
-            };
-            GameManager.Get.LoadBattleAsync(action); //测试PVP
-        }*/
         switch (SceneManager.GetActiveScene().name)
         {
             case "Client": ClientGUI(); break;
@@ -99,10 +65,34 @@ public class TestWindow : EditorWindow
             var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
             Debug.Log(str);
         }
-        if (GUILayout.Button("Battle Print"))
+        if (GUILayout.Button("Training"))
         {
-            var str = $"IsStart:{ClientLogic.Get.IsStart}, ";
-            Debug.Log(str);
+            ClientPlayer host = new ClientPlayer("test1", 0);
+            ClientPlayer guest = new ClientPlayer("bot", 1);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(host, true);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(guest, false);
+            ClientNet.Get.m_ClientRoom = new ClientRoom(0, host, guest);
+            var room = ClientNet.Get.m_ClientRoom;
+            var scene = new S2C_LoadScenePacket
+            {
+                RoomId = (short)room.RoomID,
+                BattleId = room.BattleID,
+                MapId = room.MapId,
+                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = 1 },
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = 2 },
+            };
+            room.BattleMode = BattleMode.Training;
+            room.DoInit(scene);
+            Debug.Log($"[S2C] 训练模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
+
+            // 跳转场景
+            System.Action action = () =>
+            {
+                UIManager.Get().PopAll();
+                UIManager.Get().Push<UI_GameMenu>();
+                ClientLogic.Get.IsStart = true;
+            };
+            GameManager.Get.LoadBattleAsync(action); //训练
         }
     }
     void ServerGUI()
