@@ -15,7 +15,7 @@ public static class LocalSession
 
     public static uint[] RunFrame(uint[] inputs)
     {
-        gs.Update(inputs, 0); //直接更新
+        gs.Update(inputs, 0); //按输入更新
         return inputs;
     }
 

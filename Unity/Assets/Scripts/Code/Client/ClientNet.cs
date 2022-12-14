@@ -484,7 +484,6 @@ namespace Code.Client
                         }
                         else //匹配取消1、匹配后退出2
                         {
-                            m_ClientRoom?.Dispose();
                             m_ClientRoom = null;
                             m_PlayerManager.LocalPlayer.ResetToLobby();
                             m_PlayerManager.RemoveRival();

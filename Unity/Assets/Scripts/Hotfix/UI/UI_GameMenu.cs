@@ -208,9 +208,9 @@ namespace HotFix
             }
         }
 
+        // 对方掉线（超过时间没有返回，将判对方落败）
         private void OnRivalLostNet(INetSerializable reader)
         {
-           //对方掉线。超过时间没有返回，将判对方落败。
             ClientLogic.Get.PauseLoop();
 
             m_MenuPanel.SetActive(true);
@@ -242,9 +242,10 @@ namespace HotFix
         #endregion
 
         #region 按钮事件
+        // 重连回来，先暂停
         public void ShowMenu()
         {
-            ClientLogic.Get.PauseLoop(); //重连回来先暂停
+            ClientLogic.Get.PauseLoop();
 
             m_MenuPanel.SetActive(true);
             m_DescText.text = "我方暂停中";
@@ -377,7 +378,6 @@ namespace HotFix
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_Lobby>();
 
-            ClientNet.Get.m_ClientRoom.Dispose();
             ClientNet.Get.m_ClientRoom = null;
         }
         #endregion

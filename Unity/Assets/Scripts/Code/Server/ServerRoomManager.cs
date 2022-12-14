@@ -66,7 +66,6 @@ namespace Code.Server
                 {
                     RemoveBattle(serverRoom);
                 }
-                serverRoom.Dispose();
                 dic_rooms.Remove(roomId);
             }
             else
@@ -79,12 +78,10 @@ namespace Code.Server
         {
             foreach (var roomItem in dic_rooms)
             {
-                roomItem.Value.Dispose();
                 dic_rooms.Remove(roomItem.Key);
             }
             foreach (var roomItem in dic_battles)
             {
-                roomItem.Value.Dispose();
                 dic_rooms.Remove(roomItem.Key);
             }
         }

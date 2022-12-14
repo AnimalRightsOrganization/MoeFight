@@ -19,24 +19,35 @@ namespace Code.Client
             }
         }
 
-        // 线程中，编辑器暂停时无法停下
-        // 为了保证切后台依然运行
+        // 线程中运行，编辑器暂停时无法停止
+        // 为了保证真机切后台，依然正常运行
         public static LogicTimer LogicTimer { get; private set; }
 
-        public bool IsStart;
+        public bool IsStart; //running
         [SerializeField] uint DELAY_FRAMES = 0;
         [SerializeField] uint sendTick;
         [SerializeField] uint recvTick;
         [SerializeField] uint rendTick;
-        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[]>
-        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[]>
-        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[]>
+        private Dictionary<uint, uint[]> ggpo_predict; //预测帧<帧号, 双方操作[2]>
+        private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[2]>
+        private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[2]>
         private List<uint> predicted;
         private HitstunRunner runner;
 
-        [SerializeField] int mySeatId;
-        [SerializeField] int remoteSeatId;
-        [SerializeField] BattleMode myBattleMode;
+        // 缓存变量
+        private ClientRoom _clientRoom;
+        private ClientRoom m_ClientRoom
+        {
+            get
+            {
+                if (_clientRoom == null)
+                    _clientRoom = ClientNet.Get.m_ClientRoom;
+                return _clientRoom;
+            }
+        }
+        private BattleMode m_BattleMode;
+        private int localSeatId;
+        private int remoteSeatId;
         private ReplayFormat repInfo;
 
         #region 内置函数
@@ -53,16 +64,15 @@ namespace Code.Client
             cache_buffer = new Dictionary<uint, byte[]>();
             predicted = new List<uint>();
             runner = FindObjectOfType<HitstunRunner>();
-            var clientRoom = ClientNet.Get.m_ClientRoom;
-            if (clientRoom != null)
+            if (m_ClientRoom != null)
             {
-                runner.player1Character = (HitstunConstants.CharacterName)clientRoom.HostPlayer.RoleIndex;
-                runner.player2Character = (HitstunConstants.CharacterName)clientRoom.GuestPlayer.RoleIndex;
+                runner.player1Character = (HitstunConstants.CharacterName)m_ClientRoom.HostPlayer.RoleIndex;
+                runner.player2Character = (HitstunConstants.CharacterName)m_ClientRoom.GuestPlayer.RoleIndex;
                 //Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
 
-                mySeatId = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId;
-                remoteSeatId = (mySeatId + 1) % 2;
-                myBattleMode = clientRoom.BattleMode;
+                localSeatId = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId;
+                remoteSeatId = (localSeatId + 1) % 2;
+                m_BattleMode = m_ClientRoom.BattleMode;
                 repInfo = ReplayManager.data;
             }
 
@@ -99,19 +109,19 @@ namespace Code.Client
         {
             //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
 
-            if (ClientNet.Get.m_ClientRoom.BattleStage == BattleStage.End)
+            if (m_ClientRoom.BattleStage == BattleStage.End)
             {
                 // 保证动画播放完
                 var inputs = new uint[] { 0, 0 };
                 runner.SaveOldBuffer();
                 LocalSession.RunFrame(inputs);
-                runner.OnFixedUpdate(inputs); //继续动画
+                runner.OnFixedUpdate(inputs); //游戏结束，动画不停
                 return;
             }
 
             if (!IsStart) return;
 
-            switch (myBattleMode)
+            switch (m_BattleMode)
             {
                 case BattleMode.Training:
                 case BattleMode.Matching:
@@ -124,16 +134,6 @@ namespace Code.Client
         }
         void BattleLoop()
         {
-            // 因暂停，切后台造成此客户端滞后
-            //if (recvTick > sendTick)
-            //{
-            //    for (uint i = sendTick + 1; i <= recvTick; i++)
-            //    {
-            //        ggpo_predict[i] = ggpo_recieve[i];
-            //    }
-            //    sendTick = recvTick;
-            //}
-
             //①收集本地按键，发送。
             sendTick++;
             uint input = LocalSession.ReadInputs();
@@ -145,7 +145,7 @@ namespace Code.Client
             ClientNet.Get.SendInput(cmd);
 
             ggpo_predict[sendTick] = new uint[2];
-            ggpo_predict[sendTick][mySeatId] = input;
+            ggpo_predict[sendTick][localSeatId] = input;
             //Debug.Log($"发送: {sendTick}---{input}");
 
             //②Delay-Based，本地模拟延迟。
@@ -224,7 +224,7 @@ namespace Code.Client
                 }
             }
 
-            // 检查游戏结束
+            //④检查游戏结束
             CheckGameEnd();
         }
         void ReplayLoop()
@@ -242,13 +242,13 @@ namespace Code.Client
         {
             IsStart = true; //播放
             BattleEvent.doSetAnimeSpeed?.Invoke(1); //不能用TimeScale，会导致Dotween等失效
-            ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Running;
+            m_ClientRoom.BattleStage = BattleStage.Running;
         }
         public void PauseLoop()
         {
             IsStart = false; //暂停
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
-            ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Paused;
+            m_ClientRoom.BattleStage = BattleStage.Paused;
         }
         #endregion
 
@@ -287,7 +287,7 @@ namespace Code.Client
         private void CheckGameEnd()
         {
             if (BattleEvent.doSetGameEnd == null) return;
-            if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Training) return;
+            if (m_ClientRoom.BattleMode == BattleMode.Training) return;
 
             int passedTime = (int)(rendTick * Time.fixedDeltaTime);
             int leftTime = Mathf.Max(ConstValue.TOTAL_SECOND - passedTime, 0);
@@ -417,25 +417,24 @@ namespace Code.Client
             var packet = (S2C_BattleEndPacket)reader;
             IsStart = false;
 
-            var clientRoom = ClientNet.Get.m_ClientRoom;
-            clientRoom.BattleStage = BattleStage.End;
-            if (clientRoom.BattleMode == BattleMode.Training)
+            m_ClientRoom.BattleStage = BattleStage.End;
+            if (m_ClientRoom.BattleMode == BattleMode.Training)
             {
                 Debug.LogError("训练不保存录像");
                 return;
             }
 
-            var hostPlayer = clientRoom.HostPlayer;
-            var guestPlayer = clientRoom.GuestPlayer;
+            var hostPlayer = m_ClientRoom.HostPlayer;
+            var guestPlayer = m_ClientRoom.GuestPlayer;
             var scene = new S2C_LoadScenePacket
             {
-                RoomId = (short)clientRoom.RoomID,
-                BattleId = clientRoom.BattleID,
-                MapId = clientRoom.MapId,
+                RoomId = (short)m_ClientRoom.RoomID,
+                BattleId = m_ClientRoom.BattleID,
+                MapId = m_ClientRoom.MapId,
                 Host = new PlayerLoadPacket { RoleIndex = hostPlayer.RoleIndex, UserName = hostPlayer.UserName },
                 Guest = new PlayerLoadPacket { RoleIndex = guestPlayer.RoleIndex, UserName = guestPlayer.UserName },
             };
-            var rep = new ReplayFormat { scene = scene, battleMode = (byte)clientRoom.BattleMode, winnerId = packet.WinnerSeatId, inputs = ggpo_recieve };
+            var rep = new ReplayFormat { scene = scene, battleMode = (byte)m_ClientRoom.BattleMode, winnerId = packet.WinnerSeatId, inputs = ggpo_recieve };
             ReplayManager.SaveReplay(rep);
             Debug.Log("OnBattleEnd: save replay");
         }
