@@ -193,11 +193,6 @@ namespace Code.Client
         void OnLogicUpdate()
         {
             //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
-            
-            // 这是在 Stopwatch 的线程中
-            // handles function key debugging inputs
-            //HandleDevKeys();
-
             if (m_ClientRoom.BattleStage == BattleStage.End)
             {
                 // 保证动画播放完

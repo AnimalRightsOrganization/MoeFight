@@ -440,6 +440,18 @@ public class Character
 
         switch (state)
         {
+            // VT_SKILL STATE
+            case CharacterState.VT_SKILL:
+                if (state == CharacterState.VT_SKILL)
+                {
+                    if (framesInState >= data.animations[state.ToString()].totalFrames)
+                    {
+                        SetCharacterState(CharacterState.STAND);
+                    }
+                }
+                velocity.x = 0;
+                velocity.y = 0;
+                break;
             // DIE STATE
             case CharacterState.DIE:
                 velocity.x = 0;
@@ -769,6 +781,15 @@ public class Character
         {
             FlushBuffer();
             SetCharacterState(CharacterState.SHORYUKEN);
+            return true;
+        }
+        // [I] + [O]
+        else if (/*CheckSequence(Motions.QCB, 20) && 不检查方向*/
+            CheckSequence(new uint[] { (uint)Inputs.INPUT_LP, (uint)Inputs.INPUT_HP }, 3)
+            && !projectile.active)
+        {
+            FlushBuffer();
+            SetCharacterState(CharacterState.VT_SKILL);
             return true;
         }
         return false;

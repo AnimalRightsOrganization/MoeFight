@@ -10,11 +10,11 @@
       "animationName": "STAND",
       "distinctSprites": 10,
       "totalFrames": 70,
-      "frameDuration": [3, 3, 4, 4, 4, 4, 3, 3, 3, 3],
-      "collisionBox": [-250, 250, 0, 1150],
+      "frameDuration": [3,3,4,4,4,4,3,3,3,3],
+      "collisionBox": [-250,250,0,1150],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1320],[-130,130,1320,1600]]
+        "0": [[-300,300,0,1320],[-130,130,1320,1600]]
       }
     },
     "CROUCH": {
@@ -33,10 +33,10 @@
       "distinctSprites": 11,
       "totalFrames": 33,
       "frameDuration": [3,3,3,3,3,3,3,3,3,3,3],
-      "collisionBox": [-250, 250, 0, 1150],
+      "collisionBox": [-250,250,0,1150],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1320],[-130,130,1320,1600]]
+        "0": [[-300,300,0,1320],[-130,130,1320,1600]]
       }
     },
     "WALK_FORWARD": {
@@ -44,10 +44,10 @@
       "distinctSprites": 11,
       "totalFrames": 33,
       "frameDuration": [3,3,3,3,3,3,3,3,3,3,3],
-      "collisionBox": [-250, 250, 0, 1150],
+      "collisionBox": [-250,250,0,1150],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1320],[-130,130,1320,1600]]
+        "0": [[-300,300,0,1320],[-130,130,1320,1600]]
       }
     },
     "CROUCH_TO_STAND": {
@@ -55,10 +55,10 @@
       "distinctSprites": 4,
       "totalFrames": 4,
       "frameDuration": [1,1,1,1],
-      "collisionBox": [-250, 250, 0, 800],
+      "collisionBox": [-250,250,0,800],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 970],[-70,130,970,1100]]
+        "0": [[-300,300,0,970],[-70,130,970,1100]]
       }
     },
     "STAND_TO_CROUCH": {
@@ -66,10 +66,10 @@
       "distinctSprites": 4,
       "totalFrames": 4,
       "frameDuration": [1,1,1,1],
-      "collisionBox": [-270, 270, 0, 400],
+      "collisionBox": [-270,270,0,400],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-320, 330, 0, 600],[-270,130,600,740]]
+        "0": [[-320,330,0,600],[-270,130,600,740]]
       }
     },
     "JUMP_NEUTRAL": {
@@ -77,7 +77,7 @@
       "distinctSprites": 13,
       "totalFrames": 41,
       "frameDuration": [3,3,3,3,3,3,3,3,3,3,4,4,3],
-      "collisionBox": [-250, 250, 400, 1000],
+      "collisionBox": [-250,250,400,1000],
       "staticHurtbox": false,
       "hurtBoxes": {
         "0": [[-300, 300, 0, 970],[-70,130,970,1100]],
@@ -129,7 +129,7 @@
       "distinctSprites": 15,
       "totalFrames": 41,
       "frameDuration": [2,3,3,3,3,3,2,2,2,3,3,3,3,3,3],
-      "collisionBox": [-250, 250, 400, 900],
+      "collisionBox": [-250,250,400,900],
       "staticHurtbox": false,
       "hurtBoxes": {
         "0": [[-300, 300, 0, 970],[-70,130,970,1100]],
@@ -181,7 +181,7 @@
       "distinctSprites": 15,
       "totalFrames": 41,
       "frameDuration": [2,3,3,3,3,3,2,2,2,3,3,3,3,3,3],
-      "collisionBox": [-250, 250, 400, 900],
+      "collisionBox": [-250,250,400,900],
       "staticHurtbox": false,
       "hurtBoxes": {
         "0": [[-300, 300, 0, 970],[-70,130,970,1100]],
@@ -234,10 +234,10 @@
       "totalFrames": 16,
       "frameDuration": [2,2,2,2,2,6],
       "dx": [0,0,0,-6000,-12000,-6000,-6000,0,0,0,0,0,0,0,0,0],
-      "collisionBox": [-250, 250, 0, 1150],
+      "collisionBox": [-250,250,0,1150],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1550]]
+        "0": [[-300,300,0,1550]]
       }
     },
     "DASH_FORWARD": {
@@ -246,10 +246,10 @@
       "totalFrames": 16,
       "frameDuration": [1,4,4,2,4,1],
       "dx": [0,9000,4500,4500,4500,4500,4500,4500,4500,4500,0,0,0,0,0,0],
-      "collisionBox": [-250, 250, 0, 1150],
+      "collisionBox": [-250,250,0,1150],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1550]]
+        "0": [[-300,300,0,1550]]
       }
     },
     "BLOCK_HIGH": {
@@ -257,10 +257,10 @@
       "distinctSprites": 5,
       "totalFrames": 17,
       "frameDuration": [1,4,4,4,4],
-      "collisionBox": [-250, 250, 0, 800],
+      "collisionBox": [-250,250,0,800],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1100]]
+        "0": [[-300,300,0,1100]]
       }
     },
     "BLOCK_STAND": {
@@ -268,10 +268,10 @@
       "distinctSprites": 4,
       "totalFrames": 13,
       "frameDuration": [1,4,4,4],
-      "collisionBox": [-250, 250, 0, 800],
+      "collisionBox": [-250,250,0,800],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1100]]
+        "0": [[-300,300,0,1100]]
       }
     },
     "BLOCK_LOW": {
@@ -279,10 +279,10 @@
       "distinctSprites": 4,
       "totalFrames": 13,
       "frameDuration": [1,4,4,4],
-      "collisionBox": [-270, 270, 0, 400],
+      "collisionBox": [-270,270,0,400],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-320, 330, 0, 740]]
+        "0": [[-320,330,0,740]]
       }
     },
     "HIT_CROUCH": {
@@ -290,10 +290,10 @@
       "distinctSprites": 4,
       "totalFrames": 13,
       "frameDuration": [1,4,4,4],
-      "collisionBox": [-270, 270, 0, 400],
+      "collisionBox": [-270,270,0,400],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-320, 330, 0, 740]]
+        "0": [[-320,330,0,740]]
       }
     },
     "HIT_STAND": {
@@ -301,10 +301,10 @@
       "distinctSprites": 5,
       "totalFrames": 17,
       "frameDuration": [1,4,4,4,4],
-      "collisionBox": [-250, 250, 0, 1300],
+      "collisionBox": [-250,250,0,1300],
       "staticHurtbox": true,
       "hurtBoxes": {
-        "0": [[-300, 300, 0, 1600]]
+        "0": [[-300,300,0,1600]]
       }
     },
     "DIE": {
@@ -316,6 +316,17 @@
       "staticHurtbox": true,
       "hurtBoxes": {
         "0": [[-700,700,0,350]]
+      }
+    },
+    "VT_SKILL": {
+      "animationName": "VT_SKILL",
+      "distinctSprites": 5,
+      "totalFrames": 20,
+      "frameDuration": [1,4,4,4,4],
+      "collisionBox": [-250,250,0,1150],
+      "staticHurtbox": true,
+      "hurtBoxes": {
+        "0": [[-300,300,0,1320]]
       }
     }
   },

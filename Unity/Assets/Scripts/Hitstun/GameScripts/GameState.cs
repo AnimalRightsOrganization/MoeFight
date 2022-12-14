@@ -452,11 +452,11 @@ public class GameState
             // VT技，使对方时停
             if (characters[i].state == CharacterState.HADOUKEN ||
                 characters[i].state == CharacterState.SHORYUKEN ||
-                characters[i].state == CharacterState.VT_SKILL ||
-                characters[i].state == CharacterState.CROUCH ||
-                characters[i].state == CharacterState.WALK_BACKWARD)
+                characters[i].state == CharacterState.VT_SKILL)
             {
-                uint vt_anime_duration = 20; //TODO:读取技能前摇动画时长
+                // 读取技能前摇动画时长
+                string animationName = characters[i].state.ToString();
+                uint vt_anime_duration = (uint)characterDatas[i].animations[animationName].totalFrames;
                 characters[1 - i].vtStun = vt_anime_duration;
             }
         }

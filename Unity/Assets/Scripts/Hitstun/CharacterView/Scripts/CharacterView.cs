@@ -21,8 +21,6 @@ public class CharacterView : MonoBehaviour
 
     private Transform model;
     private Animator animator;
-    //private CharacterState lastState;
-    //private int lastFrame;
 
     void Awake()
     {
@@ -105,13 +103,6 @@ public class CharacterView : MonoBehaviour
             return;
         }
         animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
-        // 避免动画抖动？？
-        //if (lastFrame != currentFrame && currentFrame != 0 && lastState == currentState)
-        //    BattleEvent.doSetAnimeSpeed.Invoke(1);
-        //else
-        //    BattleEvent.doSetAnimeSpeed.Invoke(0);
-        //lastState = currentState;
-        //lastFrame = currentFrame;
 
         // x and y position
         float viewX = ((character.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
