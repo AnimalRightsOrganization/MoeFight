@@ -50,6 +50,7 @@ public class CharacterView : MonoBehaviour
         model = Instantiate(prefab, transform).transform;
         model.name = "model";
         animator = model.GetComponentInChildren<Animator>();
+        animator.speed = 0;
         BattleEvent.doSetAnimeSpeed += SetAnimeSpeed;
 
         // load sprites from animation data and store them into dictionary

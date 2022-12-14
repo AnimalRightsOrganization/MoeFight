@@ -22,7 +22,6 @@ public class HitstunRunner : MonoBehaviour
     // Internal
     NativeArray<byte> buffer;
     NativeArray<byte> oldBuffer;
-    private bool running;
 
     // Fletcher32校验算法
     static int CalcFletcher32(NativeArray<byte> data)
@@ -66,7 +65,6 @@ public class HitstunRunner : MonoBehaviour
         LoadCharacterData();
         // Init View
         InitView();
-        running = true;
     }
 
     void OnDestroy()
@@ -94,63 +92,48 @@ public class HitstunRunner : MonoBehaviour
 
     public void OnFixedUpdate(uint[] inputs)
     {
-        // Stopwatch中使用的是固定时间，无需检查
-        //if (Time.deltaTime < 0.016f || Time.deltaTime > 0.017f)
-        //{
-        //    Debug.LogError("Unstable update tick!" + Time.deltaTime.ToString());
-        //}
-        // handles function key debugging inputs
-        HandleDevKeys();
-
-        // 推进游戏
-        if (running)
+        // save new gamestate
+        if (buffer.IsCreated)
         {
-            // save new gamestate
-            if (buffer.IsCreated)
-            {
-                buffer.Dispose();
-            }
-            buffer = GameState.ToBytes(LocalSession.gs); //class转NativeArray
-            int checksum = CalcFletcher32(buffer);
-            //Debug.Log($"OnFixed111: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
-
-
-            // oldBuffer是执行输入前一帧的 LocalSession.gs
-            // load old gamestate and re-simulate
-            GameState.FromBytes(LocalSession.gs, oldBuffer);
-            LocalSession.gs.Update(inputs, 0); //按返回更新
-
-
-            // 这里会产生错误
-            // save new gamestate again
-            if (buffer.IsCreated)
-            {
-                buffer.Dispose();
-            }
-            buffer = GameState.ToBytes(LocalSession.gs);
-            int checksum2 = CalcFletcher32(buffer);
-            //Debug.Log($"OnFixed222: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
-
-            if (checksum != checksum2)
-            {
-                Debug.LogError(LocalSession.gs.frameNumber + ": " + checksum.ToString() + " , " + checksum2.ToString()); //state和framesInState不同
-            }
-
-            // 运算结束，驱动角色、子弹、相机
-            UpdateGameView(LocalSession.gs); //游戏
+            buffer.Dispose();
         }
+        buffer = GameState.ToBytes(LocalSession.gs); //class转NativeArray
+        int checksum = CalcFletcher32(buffer);
+        //Debug.Log($"OnFixed111: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
+
+
+        // oldBuffer是执行输入前一帧的 LocalSession.gs
+        // load old gamestate and re-simulate
+        GameState.FromBytes(LocalSession.gs, oldBuffer);
+        LocalSession.gs.Update(inputs, 0); //按返回更新
+
+
+        // 这里会产生错误
+        // save new gamestate again
+        if (buffer.IsCreated)
+        {
+            buffer.Dispose();
+        }
+        buffer = GameState.ToBytes(LocalSession.gs);
+        int checksum2 = CalcFletcher32(buffer);
+        //Debug.Log($"OnFixed222: <color=green>{LocalSession.gs.frameNumber}, {LocalSession.gs.hitstop}</color>\n0:{LocalSession.gs.characters[0].ToJson()}, 1:{LocalSession.gs.characters[1].ToJson()}");
+
+        if (checksum != checksum2)
+        {
+            Debug.LogError(LocalSession.gs.frameNumber + ": " + checksum.ToString() + " , " + checksum2.ToString()); //state和framesInState不同
+        }
+
+        // 运算结束，驱动角色、子弹、相机
+        UpdateGameView(LocalSession.gs); //游戏
     }
 
     public void OnReplayUpdate(uint[] inputs)
     {
-        if (running)
-        {
-            //GameState.FromBytes(LocalSession.gs, oldBuffer);
-            LocalSession.gs.Update(inputs, 0); //回放
+        //GameState.FromBytes(LocalSession.gs, oldBuffer);
+        LocalSession.gs.Update(inputs, 0); //回放
 
-            // 运算结束，驱动角色、子弹、相机
-            UpdateGameView(LocalSession.gs); //回放
-        }
+        // 运算结束，驱动角色、子弹、相机
+        UpdateGameView(LocalSession.gs); //回放
     }
 
     void InitView()
@@ -189,34 +172,6 @@ public class HitstunRunner : MonoBehaviour
             newCamPos = Constants.CAM_UPPER_BOUND;
         }
         mainCamera.transform.position = new Vector3(newCamPos, 1, -3);
-    }
-
-    void HandleDevKeys()
-    {
-        // quit
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
-        // toggle hitboxes
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            showHitboxes = !showHitboxes;
-            if (showHitboxes)
-            {
-                Debug.Log("Hitboxes ON");
-            }
-            else
-            {
-                Debug.Log("Hitboxes OFF");
-            }
-        }
-        // manual stepping
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            running = !running;
-            Debug.Log($"running: {running}");
-        }
     }
 
     void LoadCharacterNode()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 using Code.Shared;
 using LiteNetLib;
@@ -23,6 +24,84 @@ namespace Code.Client
         // 线程中运行，编辑器暂停时无法停止
         // 为了保证真机切后台，依然正常运行
         public static LogicTimer LogicTimer { get; private set; }
+
+        void HandleDevKeys()
+        {
+            // quit
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
+            // toggle hitboxes
+            if (Input.GetKeyDown(KeyCode.F1))
+            {
+                runner.showHitboxes = !runner.showHitboxes;
+                if (runner.showHitboxes)
+                {
+                    Debug.Log("Hitboxes ON");
+                }
+                else
+                {
+                    Debug.Log("Hitboxes OFF");
+                }
+            }
+            // pause / running
+            if (Input.GetKeyDown(KeyCode.F2))
+            {
+                if (IsStart == true)
+                    PauseLoop();
+                else
+                    PlayLoop();
+                Debug.Log($"paused: {!IsStart}");
+            }
+            // hp recover
+            if (Input.GetKeyDown(KeyCode.F3))
+            {
+                DebugHeal();
+            }
+            // pause
+            if (Input.GetKeyDown(KeyCode.F10))
+            {
+                DebugStop();
+            }
+            // resume
+            if (Input.GetKeyDown(KeyCode.F11))
+            {
+                DebugStart();
+            }
+            // frame by frame
+            if (Input.GetKeyDown(KeyCode.F12))
+            {
+                DebugStep();
+            }
+        }
+        public void DebugHeal()
+        {
+            for (int i = 0; i < Constants.NUM_PLAYERS; i++)
+            {
+                LocalSession.gs.characters[i].health = 1000;
+                BattleEvent.doSetCurrentHp.Invoke(1, 1000);
+                BattleEvent.doSetCurrentHp.Invoke(2, 1000);
+            }
+        }
+        public void DebugStop()
+        {
+            PauseLoop();
+            LogicTimer.Stop();
+        }
+        public void DebugStart()
+        {
+            PlayLoop();
+            LogicTimer.Start();
+        }
+        public async void DebugStep()
+        {
+            LogicTimer.Start();
+            PlayLoop();
+            await Task.Delay((int)(LogicTimer.FixedDelta * 1000));
+            PauseLoop();
+            LogicTimer.Stop();
+        }
 
         public bool IsStart; //running
         [SerializeField] uint DELAY_FRAMES = 0;
@@ -67,8 +146,8 @@ namespace Code.Client
             runner = FindObjectOfType<HitstunRunner>();
             if (m_ClientRoom != null)
             {
-                runner.player1Character = (HitstunConstants.CharacterName)m_ClientRoom.HostPlayer.RoleIndex;
-                runner.player2Character = (HitstunConstants.CharacterName)m_ClientRoom.GuestPlayer.RoleIndex;
+                runner.player1Character = (CharacterName)m_ClientRoom.HostPlayer.RoleIndex;
+                runner.player2Character = (CharacterName)m_ClientRoom.GuestPlayer.RoleIndex;
                 //Debug.Log($"Awake.p1:{runner.player1Character} vs p2:{runner.player2Character}");
 
                 localSeatId = ClientNet.Get.m_PlayerManager.LocalPlayer.SeatId;
@@ -91,6 +170,9 @@ namespace Code.Client
         }
         void Update()
         {
+            // handles function key debugging inputs
+            HandleDevKeys();
+
             LogicTimer.Update();
         }
         void OnApplicationPause(bool pause)
@@ -105,10 +187,16 @@ namespace Code.Client
                 ClientNet.Get.SendBattleStart(2); //断线重连
             }
         }
+        #endregion
 
+        #region 战斗系统
         void OnLogicUpdate()
         {
             //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
+            
+            // 这是在 Stopwatch 的线程中
+            // handles function key debugging inputs
+            //HandleDevKeys();
 
             if (m_ClientRoom.BattleStage == BattleStage.End)
             {
@@ -251,18 +339,7 @@ namespace Code.Client
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
             m_ClientRoom.BattleStage = BattleStage.Paused;
         }
-        public void Heal()
-        {
-            for (int i = 0; i < Constants.NUM_PLAYERS; i++)
-            {
-                LocalSession.gs.characters[i].health = 1000;
-                BattleEvent.doSetCurrentHp.Invoke(1, 1000);
-                BattleEvent.doSetCurrentHp.Invoke(2, 1000);
-            }
-        }
-        #endregion
 
-        #region 战斗系统
         private void Predict(uint tick)
         {
             uint remoteInput = (ggpo_recieve.Count == 0) ? 0 : ggpo_recieve[(uint)ggpo_recieve.Count][remoteSeatId];

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
@@ -12,6 +11,7 @@ using Code.Client;
 using Code.Server;
 using Code.Shared;
 using HotFix;
+using HitstunConstants;
 
 public class TestWindow : EditorWindow
 {
@@ -24,7 +24,7 @@ public class TestWindow : EditorWindow
         window.Show();
     }
 
-    async void OnGUI()
+    void OnGUI()
     {
         switch (SceneManager.GetActiveScene().name)
         {
@@ -32,39 +32,6 @@ public class TestWindow : EditorWindow
             case "Server": ServerGUI(); break;
             case "Photo": PhotoGUI(); break;
             default: GUILayout.Label("空"); break;
-        }
-
-        //if (GUILayout.Button("定住"))
-        //{
-        //    //ClientLogic.Get.IsStart = false;
-        //    BattleEvent.doSetAnimeSpeed.Invoke(0);
-        //}
-        //if (GUILayout.Button("播放"))
-        //{
-        //    //ClientLogic.Get.IsStart = false;
-        //    BattleEvent.doSetAnimeSpeed.Invoke(1);
-        //}
-        if (GUILayout.Button("回血"))
-        {
-            ClientLogic.Get.Heal();
-        }
-        if (GUILayout.Button("停止"))
-        {
-            ClientLogic.Get.PauseLoop();
-            ClientLogic.LogicTimer.Stop();
-        }
-        if (GUILayout.Button("恢复"))
-        {
-            ClientLogic.Get.PlayLoop();
-            ClientLogic.LogicTimer.Start();
-        }
-        if (GUILayout.Button("下一帧"))
-        {
-            ClientLogic.LogicTimer.Start();
-            ClientLogic.Get.PlayLoop();
-            await Task.Delay((int)(LogicTimer.FixedDelta * 1000));
-            ClientLogic.Get.PauseLoop();
-            ClientLogic.LogicTimer.Stop();
         }
     }
 
@@ -106,8 +73,8 @@ public class TestWindow : EditorWindow
                 RoomId = (short)room.RoomID,
                 BattleId = room.BattleID,
                 MapId = room.MapId,
-                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = 1 },
-                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = 2 },
+                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.HONOKA }, //肯
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.AOI }, //春丽
             };
             room.BattleMode = BattleMode.Training;
             room.DoInit(scene);
