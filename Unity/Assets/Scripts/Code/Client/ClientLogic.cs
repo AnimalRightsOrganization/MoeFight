@@ -3,6 +3,7 @@ using UnityEngine;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using HitstunConstants;
 
 namespace Code.Client
 {
@@ -249,6 +250,15 @@ namespace Code.Client
             IsStart = false; //暂停
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
             m_ClientRoom.BattleStage = BattleStage.Paused;
+        }
+        public void Heal()
+        {
+            for (int i = 0; i < Constants.NUM_PLAYERS; i++)
+            {
+                LocalSession.gs.characters[i].health = 1000;
+                BattleEvent.doSetCurrentHp.Invoke(1, 1000);
+                BattleEvent.doSetCurrentHp.Invoke(2, 1000);
+            }
         }
         #endregion
 

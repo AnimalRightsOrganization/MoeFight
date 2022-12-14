@@ -24,7 +24,7 @@ public class TestWindow : EditorWindow
         window.Show();
     }
 
-    void OnGUI()
+    async void OnGUI()
     {
         switch (SceneManager.GetActiveScene().name)
         {
@@ -34,15 +34,37 @@ public class TestWindow : EditorWindow
             default: GUILayout.Label("空"); break;
         }
 
-        if (GUILayout.Button("定住"))
+        //if (GUILayout.Button("定住"))
+        //{
+        //    //ClientLogic.Get.IsStart = false;
+        //    BattleEvent.doSetAnimeSpeed.Invoke(0);
+        //}
+        //if (GUILayout.Button("播放"))
+        //{
+        //    //ClientLogic.Get.IsStart = false;
+        //    BattleEvent.doSetAnimeSpeed.Invoke(1);
+        //}
+        if (GUILayout.Button("回血"))
         {
-            //ClientLogic.Get.IsStart = false;
-            BattleEvent.doSetAnimeSpeed.Invoke(0);
+            ClientLogic.Get.Heal();
         }
-        if (GUILayout.Button("播放"))
+        if (GUILayout.Button("停止"))
         {
-            //ClientLogic.Get.IsStart = false;
-            BattleEvent.doSetAnimeSpeed.Invoke(1);
+            ClientLogic.Get.PauseLoop();
+            ClientLogic.LogicTimer.Stop();
+        }
+        if (GUILayout.Button("恢复"))
+        {
+            ClientLogic.Get.PlayLoop();
+            ClientLogic.LogicTimer.Start();
+        }
+        if (GUILayout.Button("下一帧"))
+        {
+            ClientLogic.LogicTimer.Start();
+            ClientLogic.Get.PlayLoop();
+            await Task.Delay((int)(LogicTimer.FixedDelta * 1000));
+            ClientLogic.Get.PauseLoop();
+            ClientLogic.LogicTimer.Stop();
         }
     }
 
@@ -68,7 +90,7 @@ public class TestWindow : EditorWindow
             var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
             Debug.Log(str);
         }
-        if (GUILayout.Button("Training"))
+        if (GUILayout.Button("单机调试"))
         {
             ClientNet.Get.Disconnect();
             //await Task.Delay(1);

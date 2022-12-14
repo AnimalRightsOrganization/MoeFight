@@ -161,5 +161,6 @@ namespace HitstunConstants
         CROUCH_HK,
         HADOUKEN,
         SHORYUKEN,
+        VT_SKILL,
     }
 }

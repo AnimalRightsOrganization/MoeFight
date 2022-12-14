@@ -21,6 +21,8 @@ public class CharacterView : MonoBehaviour
 
     private Transform model;
     private Animator animator;
+    //private CharacterState lastState;
+    //private int lastFrame;
 
     void Awake()
     {
@@ -102,6 +104,13 @@ public class CharacterView : MonoBehaviour
             return;
         }
         animator.Play(currentAnimation.animationName, 0, (float)currentFrame / currentAnimation.totalFrames); //卡顿
+        // 避免动画抖动？？
+        //if (lastFrame != currentFrame && currentFrame != 0 && lastState == currentState)
+        //    BattleEvent.doSetAnimeSpeed.Invoke(1);
+        //else
+        //    BattleEvent.doSetAnimeSpeed.Invoke(0);
+        //lastState = currentState;
+        //lastFrame = currentFrame;
 
         // x and y position
         float viewX = ((character.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
@@ -254,9 +263,10 @@ public class CharacterView : MonoBehaviour
 
     // 这个没有意义：
     // IsStart = true时，播放动画是逐帧式的，每个逻辑帧调用 animator.Play("clipName", 0, "franeNum");
-    // IsStart = false时，才受 speed 控制
+    // IsStart = false时，从菜单暂停，才受 speed 控制
     private void SetAnimeSpeed(float value)
     {
-        animator.speed = value;
+        //animator.speed = value;
+        animator.speed = 0;
     }
 }

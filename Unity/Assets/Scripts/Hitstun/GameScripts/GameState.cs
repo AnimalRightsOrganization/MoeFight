@@ -173,6 +173,8 @@ public class GameState
 
         // update the facing direction depending on position and state
         UpdateFacingDirection();
+
+        HandleVT();
     }
 
     public void ApplyHitBox(Character attackingChar, Character defendingChar, HitBox hitBox)
@@ -233,7 +235,7 @@ public class GameState
                     defendingChar.SetCharacterState(CharacterState.DIE);
                     BattleEvent.doSetGameEnd?.Invoke(attacker);
                 }
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
+                //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             else if (defendingChar.IsStand())
             {
@@ -248,7 +250,7 @@ public class GameState
                     defendingChar.SetCharacterState(CharacterState.DIE);
                     BattleEvent.doSetGameEnd?.Invoke(attacker);
                 }
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
+                //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
             // apply hitstun
             defendingChar.framesInState = 0;
@@ -440,6 +442,23 @@ public class GameState
 
             characters[i].position.x = characters[i].position.x <= Constants.BOUNDS_WIDTH ? characters[i].position.x : Constants.BOUNDS_WIDTH;
             characters[i].position.y = characters[i].position.y <= Constants.BOUNDS_HEIGHT ? characters[i].position.y : Constants.BOUNDS_HEIGHT;
+        }
+    }
+
+    public void HandleVT()
+    {
+        for (int i = 0; i < Constants.NUM_PLAYERS; i++)
+        {
+            // VT技，使对方时停
+            if (characters[i].state == CharacterState.HADOUKEN ||
+                characters[i].state == CharacterState.SHORYUKEN ||
+                characters[i].state == CharacterState.VT_SKILL ||
+                characters[i].state == CharacterState.CROUCH ||
+                characters[i].state == CharacterState.WALK_BACKWARD)
+            {
+                uint vt_anime_duration = 20; //TODO:读取技能前摇动画时长
+                characters[1 - i].vtStun = vt_anime_duration;
+            }
         }
     }
 }

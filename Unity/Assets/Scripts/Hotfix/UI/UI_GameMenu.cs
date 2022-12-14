@@ -36,8 +36,6 @@ namespace HotFix
         [SerializeField] Text m_ResultText;
         [SerializeField] Button m_BackBtn;
 
-        [SerializeField] Sprite[] m_HeadArray;
-
         void Awake()
         {
             m_Wallpaper = transform.Find("Wallpaper").gameObject;

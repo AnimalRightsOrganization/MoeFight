@@ -17,6 +17,7 @@ public class Character
     public List<HitBox> hitBoxes;
     public Projectile projectile;
     public int health;
+    public uint vtStun; //VT时停
 
     // Input Buffer
     private uint[] inputBuffer;
@@ -48,6 +49,8 @@ public class Character
         projectile = new Projectile();
         // hp
         health = 0;
+        // vtSkill
+        vtStun = 0;
     }
 
     public void Serialize(BinaryWriter bw)
@@ -67,6 +70,7 @@ public class Character
         bw.Write(blockStun);
         bw.Write(hitStun);
         bw.Write(health);
+        bw.Write(vtStun);
         // input buffer
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; i++)
         {
@@ -100,6 +104,7 @@ public class Character
         blockStun = br.ReadUInt32();
         hitStun = br.ReadUInt32();
         health = br.ReadInt32();
+        vtStun = br.ReadUInt32();
         // input buffer
         inputBuffer = new uint[Constants.INPUT_BUFFER_SIZE]; //60
         for (int i = 0; i < Constants.INPUT_BUFFER_SIZE; ++i)
@@ -403,7 +408,15 @@ public class Character
     // 触发状态，会对速度、状态赋值。
     public void UpdateCharacter(CharacterData data)
     {
-        framesInState++;
+        if (vtStun > 0)
+        {
+            vtStun--;
+        }
+        else
+        {
+            framesInState++;
+        }
+
         // update hitboxes
         foreach (HitBox hitBox in hitBoxes)
         {
@@ -604,19 +617,21 @@ public class Character
                 break;
             // HIT_STAND STATE
             case CharacterState.HIT_STAND:
-                if (hitStun > (data.animations[state.ToString()].distinctSprites - 1) * 4)
+                if (vtStun <= 0)
                 {
-                    hitStun--;
-                    framesInState--;
-                }
-                else if (hitStun > 0)
-                {
-                    hitStun--;
-                    //Debug.Log("HIT_STAND");
-                }
-                else
-                {
-                    SetCharacterState(CharacterState.STAND);
+                    if (hitStun > (data.animations[state.ToString()].distinctSprites - 1) * 4)
+                    {
+                        hitStun--;
+                        framesInState--;
+                    }
+                    else if (hitStun > 0)
+                    {
+                        hitStun--;
+                    }
+                    else
+                    {
+                        SetCharacterState(CharacterState.STAND);
+                    }
                 }
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
