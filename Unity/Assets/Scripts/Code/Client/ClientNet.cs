@@ -91,6 +91,7 @@ namespace Code.Client
 
             _onDisconnected?.Invoke(disconnectInfo);
             _onDisconnected = null;
+            //Debug.Log("清空委托");
         }
 
         void INetEventListener.OnNetworkError(IPEndPoint endPoint, SocketError socketError)
@@ -106,18 +107,6 @@ namespace Code.Client
             PacketType pt = (PacketType)packetType;
             switch (pt)
             {
-                case PacketType.S2C_TestPVE:
-                    {
-                        var packet = new S2C_JoinResultPacket();
-                        packet.Deserialize(reader);
-                        EventManager.Trigger(pt, packet, peer);
-                    }
-                    break;
-                case PacketType.S2C_TestPVP:
-                    {
-                        Debug.LogError("没有TestPVP模式");
-                    }
-                    break;
                 case PacketType.S2C_Input:
                     {
                         var packet = new S2C_InputPacket();
@@ -281,6 +270,7 @@ namespace Code.Client
         public void Connect(Action<DisconnectInfo> onDisconnected)
         {
             if (IsConnect()) return;
+            //Debug.Log("挂载委托");
             _onDisconnected = onDisconnected;
 
             string IP = ConfigManager.Get().globalConfig.IP;
@@ -292,17 +282,8 @@ namespace Code.Client
 
         public void Disconnect()
         {
-            Debug.Log("conn:" + _netManager.ConnectedPeersCount);
-        }
-
-        public void SendTestPVE()
-        {
-            SendPacketSerializable(PacketType.C2S_TestPVE, new EmptyPacket());
-        }
-
-        public void SendTestPVP()
-        {
-            SendPacketSerializable(PacketType.C2S_TestPVP, new EmptyPacket());
+            _netManager.DisconnectAll();
+            //Debug.Log("disconnect:" + _netManager.ConnectedPeersCount);
         }
 
         public void SendInput(C2S_InputPacket cmd)

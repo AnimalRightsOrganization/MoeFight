@@ -252,7 +252,7 @@ public class CharacterView : MonoBehaviour
         }
     }
 
-    private void SetAnimeSpeed(float value)
+    public void SetAnimeSpeed(float value)
     {
         animator.speed = value;
     }

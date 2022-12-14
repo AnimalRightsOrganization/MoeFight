@@ -222,12 +222,6 @@ namespace Code.Server
             //UnityEngine.Debug.Log($"[packet] {pt}");
             switch (pt)
             {
-                case PacketType.C2S_TestPVE:
-                    OnTestPVE(reader, peer);
-                    break;
-                case PacketType.C2S_TestPVP:
-                    OnTestPVP(reader, peer);
-                    break;
                 case PacketType.C2S_Input:
                     OnInputReceived(reader, peer);
                     break;
@@ -302,48 +296,6 @@ namespace Code.Server
 
 
         #region Handler
-        // TODO: 训练走本地，记得删除
-        private void OnTestPVE(NetPacketReader reader, NetPeer peer)
-        {
-            ServerPlayer player = (ServerPlayer)peer.Tag;
-            ServerPlayer bot = new ServerPlayer("BOT");
-            UnityEngine.Debug.Log($"[S] PVE [{peer.Id}]{player.UserName}");
-
-            ServerRoom serverRoom = m_RoomManager.CreateServerRoom(player, bot);
-            serverRoom.BattleMode = BattleMode.Training;
-            serverRoom.DoInit();
-            m_RoomManager.SetBattle(serverRoom);
-            UnityEngine.Debug.Log($"PVE create room#{serverRoom.RoomID}");
-
-            var packet = new S2C_JoinResultPacket { Code = 0, HostId = player.PeerId, HostName = player.UserName, GuestId = bot.PeerId, GuestName = bot.UserName };
-            var writer = WriteSerializable(PacketType.S2C_TestPVE, packet);
-            peer.Send(writer, DeliveryMethod.ReliableOrdered);
-
-            m_PlayerManager.Print();
-            UnityEngine.Debug.Log($"PVE status: \n{player} \n{bot}");
-        }
-
-        private void OnTestPVP(NetPacketReader reader, NetPeer peer)
-        {
-            ServerPlayer player = (ServerPlayer)peer.Tag;
-            UnityEngine.Debug.Log($"[S] PVP [{peer.Id}]{player.UserName}---{m_PlayerManager.Count}/2");
-
-            if (m_PlayerManager.Count == 2)
-            {
-                var host = m_PlayerManager.GetPlayerByPeerId(0);
-                var guest = m_PlayerManager.GetPlayerByPeerId(1);
-
-                ServerRoom serverRoom = m_RoomManager.CreateServerRoom(host, guest);
-                serverRoom.BattleMode = BattleMode.Matching;
-                serverRoom.DoInit();
-                m_RoomManager.SetBattle(serverRoom);
-
-                var packet = new S2C_JoinResultPacket { Code = 0, HostId = host.PeerId, HostName = host.UserName, GuestId = guest.PeerId, GuestName = guest.UserName };
-                var writer = WriteSerializable(PacketType.S2C_TestPVP, packet);
-                serverRoom.Send(writer);
-            }
-        }
-
         private void OnInputReceived(NetPacketReader reader, NetPeer peer)
         {
             if (peer.Tag == null) return;
@@ -361,7 +313,6 @@ namespace Code.Server
                 serverRoom.OnInputReceived(player.SeatId, cmd);
             }
         }
-        //以上是测试，保留
 
         private void OnLoginReceived(NetPacketReader reader, NetPeer peer)
         {

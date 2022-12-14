@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 3954607227531473707}
   - component: {fileID: 13398713011830324}
   m_Layer: 0
-  m_Name: VCam_Normal
+  m_Name: VCam_Pose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 3912481311407079251}
   - component: {fileID: 8399275974167580614}
   m_Layer: 0
-  m_Name: VCam_Hadouken
+  m_Name: VCam_Opening
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

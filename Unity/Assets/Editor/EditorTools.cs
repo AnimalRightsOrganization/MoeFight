@@ -67,6 +67,9 @@ public class TestWindow : EditorWindow
         }
         if (GUILayout.Button("Training"))
         {
+            ClientNet.Get.Disconnect();
+            await Task.Delay(1);
+
             ClientPlayer host = new ClientPlayer("test1", 0);
             ClientPlayer guest = new ClientPlayer("bot", 1);
             ClientNet.Get.m_PlayerManager.AddClientPlayer(host, true);
@@ -83,7 +86,7 @@ public class TestWindow : EditorWindow
             };
             room.BattleMode = BattleMode.Training;
             room.DoInit(scene);
-            Debug.Log($"[S2C] 训练模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
+            //Debug.Log($"[S2C] 训练模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
 
             // 跳转场景
             System.Action action = () =>
@@ -93,6 +96,11 @@ public class TestWindow : EditorWindow
                 ClientLogic.Get.IsStart = true;
             };
             GameManager.Get.LoadBattleAsync(action); //训练
+        }
+        if (GUILayout.Button("定住"))
+        {
+            CharacterView honoka = new CharacterView();
+            honoka.SetAnimeSpeed(0);
         }
     }
     void ServerGUI()

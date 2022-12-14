@@ -41,8 +41,6 @@ namespace Code.Shared
     public enum PacketType : byte
     {
         //  C2S  //
-        C2S_TestPVE         ,   //独立启动加入
-        C2S_TestPVP         ,   //双人启动加入
         C2S_Input           ,   //
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
@@ -60,8 +58,6 @@ namespace Code.Shared
         C2S_BattleQuit      ,   //比赛中、重连后（认输）
         C2S_BattleEnd       ,   //上报比赛结果（双方都要发，由战斗系统判定）
         //  S2C  //
-        S2C_TestPVE         ,   //独立启动加入
-        S2C_TestPVP         ,   //双人启动加入
         S2C_Input           ,   //
         S2C_LoginResult     ,   //登录结果
         S2C_LogoutResult    ,   //登出结果
