@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 using Newtonsoft.Json;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -84,6 +85,20 @@ public class ResManager
         var clip = (AudioClip)config;
 #endif
         return clip;
+    }
+
+    public static Object LoadTimeline(string configName)
+    {
+#if UNITY_EDITOR && !USE_ASSETBUNDLE
+        string filePath = $"{BUNDLES_FOLDER}/{configName}.playable";
+        Object config = AssetDatabase.LoadAssetAtPath<Object>(filePath);
+#else
+        string filePath = GetFilePath($"{configName}.unity3d");
+        AssetBundle asset = AssetBundle.LoadFromFile(filePath);
+        object config = asset.LoadAllAssets()[0];
+        asset.Unload(false);
+#endif
+        return config;
     }
 
     public static string LoadBytes(string fileName)
