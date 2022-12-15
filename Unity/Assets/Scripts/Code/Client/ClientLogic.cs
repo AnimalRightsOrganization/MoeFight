@@ -132,6 +132,7 @@ namespace Code.Client
                 if (m_ClientRoom.BattleMode == BattleMode.Matching)
                 {
                     ClientNet.Get.SendBattleStart(0); //切换场景完，同步
+                    Debug.Log(System.DateTime.Now.ToString("HH:mm:ss.fff"));
                 }
                 else
                 {
