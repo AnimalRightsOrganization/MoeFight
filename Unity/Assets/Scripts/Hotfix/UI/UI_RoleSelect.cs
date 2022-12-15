@@ -114,11 +114,8 @@ namespace HotFix
                     OnGameReady(reader);
                     break;
                 case PacketType.S2C_LoadScene:
-                    OnLoadScene(reader);
+                    OnLoadMatch(reader);
                     break;
-                //case PacketType.S2C_TestPVE:
-                //    OnTestPVE(reader);
-                //    break;
             }
         }
 
@@ -170,7 +167,7 @@ namespace HotFix
             }
         }
 
-        private async void OnLoadScene(INetSerializable reader)
+        private async void OnLoadMatch(INetSerializable reader)
         {
             var packet = (S2C_LoadScenePacket)reader;
             ClientNet.Get.m_ClientRoom.DoInit(packet);
@@ -203,7 +200,7 @@ namespace HotFix
             GameManager.Get.LoadBattleAsync(action); //匹配赛
         }
 
-        private async void OnTraining()
+        private async void OnLoadTraining()
         {
             var room = ClientNet.Get.m_ClientRoom;
             var scene = new S2C_LoadScenePacket
@@ -326,7 +323,7 @@ namespace HotFix
                     break;
                 default:
                     //Debug.Log($"模式: {ClientNet.Get.m_ClientRoom.BattleMode}");
-                    OnTraining();
+                    OnLoadTraining();
                     break;
             }
         }

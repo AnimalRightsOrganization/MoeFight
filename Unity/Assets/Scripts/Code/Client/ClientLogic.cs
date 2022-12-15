@@ -116,7 +116,7 @@ namespace Code.Client
             }
 
             opening_index = 0;
-            Opening_i(opening_index);
+            Opening_i(0);
         }
         public async void Opening_i(int i)
         {
@@ -148,7 +148,10 @@ namespace Code.Client
             reaction.AddListener(() =>
             {
                 if (opening_index == 0)
+                {
+                    opening_index = 1;
                     Opening_i(1);
+                }
             });
 
             if (GetComponent<SignalReceiver>() == false)
