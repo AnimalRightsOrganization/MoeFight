@@ -78,16 +78,17 @@ public class TestWindow : EditorWindow
             };
             room.BattleMode = BattleMode.Training;
             room.DoInit(scene);
-            //Debug.Log($"[S2C] 训练模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
+            //Debug.Log($"调试模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
 
             // 跳转场景
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
-                ClientLogic.Get.IsStart = true;
+                //ClientLogic.Get.IsStart = true;
+                ClientLogic.Get.Opening();
             };
-            GameManager.Get.LoadBattleAsync(action); //训练
+            GameManager.Get.LoadBattleAsync(action);//调试
         }
     }
     void ServerGUI()

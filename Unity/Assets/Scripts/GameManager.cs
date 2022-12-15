@@ -115,6 +115,10 @@ public class GameManager : MonoBehaviour
         audioManager.transform.SetParent(this.transform);
         audioManager.AddComponent<AudioManager>();
 
+        GameObject timelineManager = new GameObject("TimelineManager");
+        timelineManager.transform.SetParent(this.transform);
+        timelineManager.AddComponent<TimelineManager>();
+
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
     }

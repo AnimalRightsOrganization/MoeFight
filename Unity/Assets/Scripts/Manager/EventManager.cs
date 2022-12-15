@@ -47,6 +47,7 @@ public delegate void SetCurrentHp(int pid, int hp);
 public delegate void SetGameEnd(int winner);
 public delegate void ReplayUpdate(uint frameID);
 public delegate void SetAnimeSpeed(float speed);
+public delegate void SetLight(int pid); //VT技灯光变暗
 public class BattleEvent
 {
     public static ShowSkillText doShowSkillText;
@@ -55,4 +56,5 @@ public class BattleEvent
     public static SetGameEnd doSetGameEnd;
     public static ReplayUpdate doReplayUpdate;
     public static SetAnimeSpeed doSetAnimeSpeed;
+    public static SetLight doSetLight;
 }

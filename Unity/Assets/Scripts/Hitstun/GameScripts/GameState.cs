@@ -458,6 +458,7 @@ public class GameState
                 string animationName = characters[i].state.ToString();
                 uint vt_anime_duration = (uint)characterDatas[i].animations[animationName].totalFrames;
                 characters[1 - i].vtStun = vt_anime_duration;
+                BattleEvent.doSetLight?.Invoke(i);
             }
         }
     }

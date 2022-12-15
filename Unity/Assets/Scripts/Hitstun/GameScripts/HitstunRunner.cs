@@ -13,7 +13,8 @@ public class HitstunRunner : MonoBehaviour
     // Rendering
     private CharacterView characterView; //prefab asset
     public CharacterView[] characterViews;
-    public Camera mainCamera;
+    //public Camera mainCamera;
+    public Transform mainCamera;
 
     // Character Data
     CharacterData[] characterDatas; //技能数据
@@ -149,6 +150,12 @@ public class HitstunRunner : MonoBehaviour
         }
         // setup position
         UpdateGameView(LocalSession.gs); //初始化执行一次
+
+        BattleEvent.doSetLight = (int pid) =>
+        {
+            //var chara = characterViews[pid];
+            //TODO: 关闭灯光，单独打亮该角色，两秒后自动恢复灯光
+        };
     }
 
     void UpdateGameView(GameState gs)

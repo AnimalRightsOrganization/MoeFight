@@ -19,7 +19,7 @@ public class CharacterView : MonoBehaviour
     private List<HitboxView> hitboxViews;
     private List<HitboxView> hurtboxViews;
 
-    private Transform model;
+    public Transform model;
     private Animator animator;
 
     void Awake()

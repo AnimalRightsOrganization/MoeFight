@@ -184,7 +184,7 @@ namespace HotFix
                 //ClientNet.Get.SendBattleStart(2); //重连后恢复
                 ClientLogic.Get.Reconnect(packet);
             };
-            GameManager.Get.LoadBattleAsync(action);
+            GameManager.Get.LoadBattleAsync(action);//重连
         }
 
         private void OnBattleEnd(INetSerializable reader)
