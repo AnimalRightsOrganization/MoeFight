@@ -112,19 +112,19 @@ namespace Code.Client
                 await Task.Delay(1);
             }
 
-            bool has_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
-            if (has_comp == false)
-                Camera.main.gameObject.AddComponent<MirrorFlipCamera>();
-            var flip_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
+            //bool has_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
+            //if (has_comp == false)
+            //    Camera.main.gameObject.AddComponent<MirrorFlipCamera>();
+            //var flip_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
 
             //await Task.Delay(100);
             //flip_comp.flipHorizontal = true;
             //TimelineManager.Get.BindTimeline("Opening", runner.characterViews[1].model.gameObject);
-            await Task.Delay(100);
-            flip_comp.flipHorizontal = false;
-            var director = TimelineManager.Get.BindTimeline("Opening", runner.characterViews[0].model.gameObject);
-            director.Play();
-            await Task.Delay(Mathf.RoundToInt((float)director.duration * 1000));
+            //await Task.Delay(100);
+            //flip_comp.flipHorizontal = false;
+            //var director = TimelineManager.Get.BindTimeline("Opening", runner.characterViews[0].model.gameObject);
+            //director.Play();
+            //await Task.Delay(Mathf.RoundToInt((float)director.duration * 1000));
 
             IsStart = true;
             runner.showHitboxes = true;

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Playables;
 using System.Collections.Generic;
 using HitstunConstants;
 
@@ -12,19 +13,20 @@ public class CharacterView : MonoBehaviour
     public float shadowOffset = -0.03f;
     public bool showHitboxes { get; set; }
     private CharacterData data;
-    private Dictionary<string, Sprite[]> sprites;
     private HitboxView collisionBoxView;
     private HitboxView projectileBoxView;
     private ProjectileView projectileView;
     private List<HitboxView> hitboxViews;
     private List<HitboxView> hurtboxViews;
 
-    public Transform model;
+    private Transform model;
     private Animator animator;
+    private Transform playableGroup;
+    private Dictionary<string, PlayableDirector> timelines;
+    const string CinemachineTrackName = "Cinemachine Track";
 
     void Awake()
     {
-        sprites = new Dictionary<string, Sprite[]>();
         hitboxViews = new List<HitboxView>();
         hurtboxViews = new List<HitboxView>();
 
@@ -51,44 +53,29 @@ public class CharacterView : MonoBehaviour
         animator.speed = 0;
         BattleEvent.doSetAnimeSpeed += SetAnimeSpeed;
 
-        // load sprites from animation data and store them into dictionary
-        foreach (KeyValuePair<string, Animation> kvp in data.animations)
+        timelines = new Dictionary<string, PlayableDirector>();
+        playableGroup = model.Find("PlayableGroup");
+        for (int i = 0; i < playableGroup.childCount; i++)
         {
-            string animationName = kvp.Key;
-            Animation animation = kvp.Value;
-            Sprite[] spriteArray = new Sprite[animation.distinctSprites];
-            for (int i = 0; i < animation.distinctSprites; i++)
-            {
-                spriteArray[i] = Resources.Load<Sprite>("Sprites/" + data.name + "/ANIMATIONS/" + animationName + "/" + animationName + "_" + i.ToString());
-            }
-            sprites.Add(kvp.Key, spriteArray);
-        }
+            Transform child = playableGroup.GetChild(i);
+            PlayableDirector director = child.GetComponent<PlayableDirector>();
+            timelines.Add(child.name, director);
 
-        // load sprites from attack data and store them into dictionary
-        foreach (KeyValuePair<string, Attack> kvp in data.attacks)
-        {
-            string animationName = kvp.Key;
-            Attack attack = kvp.Value;
-            Sprite[] spriteArray = new Sprite[attack.distinctSprites];
-            for (int i = 0; i < attack.distinctSprites; i++)
-            {
-                spriteArray[i] = Resources.Load<Sprite>("Sprites/" + data.name + "/ATTACKS/" + animationName + "/" + animationName + "_" + i.ToString());
-            }
-            sprites.Add(kvp.Key, spriteArray);
+            BindTimeline(director, Camera.main.gameObject);
         }
+    }
 
-        // load sprites from attack data and store them into dictionary
-        foreach (KeyValuePair<string, ProjectileData> kvp in data.projectiles)
+    public PlayableDirector BindTimeline(PlayableDirector director, GameObject avatar)
+    {
+        foreach (PlayableBinding output in director.playableAsset.outputs)
         {
-            string animationName = kvp.Key;
-            ProjectileData attack = kvp.Value;
-            Sprite[] spriteArray = new Sprite[attack.distinctSprites];
-            for (int i = 0; i < attack.distinctSprites; i++)
+            //Debug.Log($"{output.streamName}");
+            if (output.streamName == CinemachineTrackName)
             {
-                spriteArray[i] = Resources.Load<Sprite>("Sprites/" + data.name + "/PROJECTILES/" + animationName + "/" + animationName + "_" + i.ToString());
+                director.SetGenericBinding(output.sourceObject, Camera.main.gameObject);
             }
-            sprites.Add(kvp.Key, spriteArray);
         }
+        return director;
     }
 
     public void UpdateCharacterView(Character character)
@@ -132,7 +119,7 @@ public class CharacterView : MonoBehaviour
             {
                 index = ((int)character.projectile.activeSince % (data.projectiles["FIREBALL"].distinctSprites - 1)) + 1;
             }
-            projectileView.spriteRenderer.sprite = sprites["FIREBALL"][index];
+            //projectileView.spriteRenderer.sprite = sprites["FIREBALL"][index];
             projectileView.spriteRenderer.flipX = character.projectile.facingRight;
             float projectileViewX = ((character.projectile.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
             float projectileViewY = (character.projectile.position.y / Constants.SCALE);

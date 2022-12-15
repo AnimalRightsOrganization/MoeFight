@@ -54,7 +54,7 @@ public class TimelineManager : MonoBehaviour
         PlayableDirector director = timelines[clip];
         Debug.Log($"{director.time} / {director.duration}");
 
-        foreach (var output in director.playableAsset.outputs)
+        foreach (PlayableBinding output in director.playableAsset.outputs)
         {
             //Debug.Log($"{output.streamName}");
             if (output.streamName == AnimationTrackName)
@@ -73,6 +73,7 @@ public class TimelineManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
+            //BindTimeline("Opening", characters[0].gameObject);
             PlayableDirector current = timelines[TimelineArray[0]];
             current.Play();
         }

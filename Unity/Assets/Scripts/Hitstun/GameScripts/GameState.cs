@@ -5,6 +5,7 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using HitstunConstants;
+using System.Security.Cryptography;
 
 public class GameState
 {
@@ -450,13 +451,17 @@ public class GameState
         for (int i = 0; i < Constants.NUM_PLAYERS; i++)
         {
             // VT技，使对方时停
-            if (characters[i].state == CharacterState.HADOUKEN ||
-                characters[i].state == CharacterState.SHORYUKEN ||
-                characters[i].state == CharacterState.VT_SKILL)
+            if (characters[i].state == CharacterState.VT_SKILL
+                //|| characters[i].state == CharacterState.HADOUKEN
+                //|| characters[i].state == CharacterState.SHORYUKEN
+                )
             {
                 // 读取技能前摇动画时长
-                string animationName = characters[i].state.ToString();
-                uint vt_anime_duration = (uint)characterDatas[i].animations[animationName].totalFrames;
+                var char1 = characters[i];
+                var data1 = characterDatas[i];
+                string animationName = char1.state.ToString();
+                var currentAnimation1 = char1.isAttacking() ? data1.attacks[animationName] : data1.animations[animationName];
+                uint vt_anime_duration = (uint)currentAnimation1.totalFrames;
                 characters[1 - i].vtStun = vt_anime_duration;
                 BattleEvent.doSetLight?.Invoke(i);
             }

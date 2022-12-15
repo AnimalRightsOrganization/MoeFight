@@ -781,6 +781,14 @@ public class Character
         {
             FlushBuffer();
             SetCharacterState(CharacterState.SHORYUKEN);
+            // prepare the hitboxes
+            foreach (HitBox hb in data.attacks[state.ToString()].hitBoxes)
+            {
+                HitBox hitBox = new HitBox(hb);
+                hitBox.enabled = false;
+                hitBox.used = false;
+                hitBoxes.Add(hitBox);
+            }
             return true;
         }
         // [I] + [O]
