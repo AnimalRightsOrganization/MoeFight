@@ -61,21 +61,20 @@ public class CharacterView : MonoBehaviour
             PlayableDirector director = child.GetComponent<PlayableDirector>();
             timelines.Add(child.name, director);
 
-            BindTimeline(director, Camera.main.gameObject);
+            foreach (PlayableBinding output in director.playableAsset.outputs)
+            {
+                //Debug.Log($"{output.streamName}");
+                if (output.streamName == CinemachineTrackName)
+                {
+                    director.SetGenericBinding(output.sourceObject, Camera.main.gameObject);
+                }
+            }
         }
     }
 
-    public PlayableDirector BindTimeline(PlayableDirector director, GameObject avatar)
+    public PlayableDirector GetDirector(string clip)
     {
-        foreach (PlayableBinding output in director.playableAsset.outputs)
-        {
-            //Debug.Log($"{output.streamName}");
-            if (output.streamName == CinemachineTrackName)
-            {
-                director.SetGenericBinding(output.sourceObject, Camera.main.gameObject);
-            }
-        }
-        return director;
+        return timelines[clip];
     }
 
     public void UpdateCharacterView(Character character)

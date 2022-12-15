@@ -31,11 +31,11 @@ public class TimelineManager : MonoBehaviour
     {
         timelines = new Dictionary<string, PlayableDirector>();
 
-        for (int i = 0; i < TimelineArray.Count; i++)
-        {
-            string timeline_name = TimelineArray[i];
-            LoadTimeline(timeline_name);
-        }
+        //for (int i = 0; i < TimelineArray.Count; i++)
+        //{
+        //    string timeline_name = TimelineArray[i];
+        //    LoadTimeline(timeline_name);
+        //}
     }
 
     void LoadTimeline(string clip)

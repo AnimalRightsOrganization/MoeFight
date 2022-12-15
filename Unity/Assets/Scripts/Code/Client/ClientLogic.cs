@@ -111,20 +111,18 @@ namespace Code.Client
                 runner.characterViews[i].UpdateCharacterView(LocalSession.gs.characters[i]);
                 await Task.Delay(1);
             }
+            await Task.Delay(100);
 
-            //bool has_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
-            //if (has_comp == false)
-            //    Camera.main.gameObject.AddComponent<MirrorFlipCamera>();
-            //var flip_comp = Camera.main.gameObject.GetComponent<MirrorFlipCamera>();
+            var opening_0 = runner.characterViews[0].GetDirector("Opening");
+            int duration_0 = (int)(opening_0.duration * 1000);
+            opening_0.Play();
+            Debug.Log($"opening_0: {duration_0}");
+            await Task.Delay(duration_0);
 
-            //await Task.Delay(100);
-            //flip_comp.flipHorizontal = true;
-            //TimelineManager.Get.BindTimeline("Opening", runner.characterViews[1].model.gameObject);
-            //await Task.Delay(100);
-            //flip_comp.flipHorizontal = false;
-            //var director = TimelineManager.Get.BindTimeline("Opening", runner.characterViews[0].model.gameObject);
-            //director.Play();
-            //await Task.Delay(Mathf.RoundToInt((float)director.duration * 1000));
+            var opening_1 = runner.characterViews[1].GetDirector("Opening");
+            int duration_1 = (int)(opening_1.duration * 1000);
+            opening_1.Play();
+            await Task.Delay(duration_1);
 
             IsStart = true;
             runner.showHitboxes = true;

@@ -51,7 +51,12 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'RightHandRing1'\n\tTransform 'atama_n'\n\tTransform
+    'LeftArmRoll'\n\tTransform 'RightLeg'\n\tTransform 'RightHandMiddle3'\n\tTransform
+    'RightHandIndex2'\n\tTransform 'eye_Right'\n\tTransform 'LeftForeArmRoll'\n\tTransform
+    'LeftHandThumb1'\n\tTransform 'RightHandRing3'\n\tand more ..."
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
@@ -5098,7 +5103,7 @@ GameObject:
   - component: {fileID: 1400922861643337988}
   - component: {fileID: 5697598722272286372}
   m_Layer: 0
-  m_Name: honoka_opening
+  m_Name: Opening
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
