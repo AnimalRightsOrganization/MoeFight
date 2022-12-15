@@ -128,8 +128,15 @@ namespace Code.Client
 
             if (i == 1)
             {
-                IsStart = true;
                 runner.showHitboxes = true;
+                if (m_ClientRoom.BattleMode == BattleMode.Matching)
+                {
+                    ClientNet.Get.SendBattleStart(0); //切换场景完，同步
+                }
+                else
+                {
+                    IsStart = true;
+                }
             }
         }
         private SignalReceiver receiver;

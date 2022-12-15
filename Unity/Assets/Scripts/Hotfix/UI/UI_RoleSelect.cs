@@ -197,7 +197,8 @@ namespace HotFix
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
-                ClientNet.Get.SendBattleStart(0); //切换场景完，同步
+                //ClientNet.Get.SendBattleStart(0); //切换场景完，同步
+                ClientLogic.Get.Opening();
             };
             GameManager.Get.LoadBattleAsync(action); //匹配赛
         }
