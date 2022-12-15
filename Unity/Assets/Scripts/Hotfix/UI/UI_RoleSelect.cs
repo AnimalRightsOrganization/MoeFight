@@ -114,7 +114,7 @@ namespace HotFix
                     OnGameReady(reader);
                     break;
                 case PacketType.S2C_LoadScene:
-                    OnLoadMatch(reader);
+                    OnLoadMatching(reader);
                     break;
             }
         }
@@ -167,43 +167,24 @@ namespace HotFix
             }
         }
 
-        private async void OnLoadMatch(INetSerializable reader)
+        private async void OnLoadMatching(INetSerializable reader)
         {
             var packet = (S2C_LoadScenePacket)reader;
-            ClientNet.Get.m_ClientRoom.DoInit(packet);
-            Debug.Log($"[C] 跳转到比赛场景\n{packet}");
+            Debug.Log($"比赛模式:\n{packet}");
 
-            // 给足动画时间
             m_ConfirmBtn[0].gameObject.SetActive(false);
             m_ReadyObj[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyObj[1].SetActive(true);
-            await Task.Delay(1000);
+            await Task.Delay(1000); //UI表现时间
 
-            var ui_versus = UIManager.Get().Push<UI_Versus>();
-            int left = packet.Host.RoleIndex;
-            int right = packet.Guest.RoleIndex;
-            ui_versus.FadeIn(left, right);
-            await Task.Delay(2000);
-
-            //ui_versus.FadeOut();
-            //await Task.Delay(1000);
-
-            // 跳转场景
-            System.Action action = () =>
-            {
-                UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
-                //ClientNet.Get.SendBattleStart(0); //切换场景完，同步
-                ClientLogic.Get.Opening();
-            };
-            GameManager.Get.LoadBattleAsync(action); //匹配赛
+            GameManager.Get.OnLoadScene(packet);
         }
 
         private async void OnLoadTraining()
         {
             var room = ClientNet.Get.m_ClientRoom;
-            var scene = new S2C_LoadScenePacket
+            var packet = new S2C_LoadScenePacket
             {
                 RoomId = (short)room.RoomID,
                 BattleId = room.BattleID,
@@ -211,34 +192,15 @@ namespace HotFix
                 Host = new PlayerLoadPacket { UserName = localPlayer.UserName, PeerId = localPlayer.PeerId, RoleIndex = localPlayer.RoleIndex },
                 Guest = new PlayerLoadPacket { UserName = rivalPlayer.UserName, PeerId = rivalPlayer.PeerId, RoleIndex = rivalPlayer.RoleIndex },
             };
-            Debug.Log($"[S2C] 训练模式: UserName={rivalPlayer.UserName}, PeerId:{rivalPlayer.PeerId}, RoleIndex:{rivalPlayer.RoleIndex}");
-            room.DoInit(scene);
+            Debug.Log($"训练模式:\n{packet}");
 
-            // 给足动画时间
             m_ConfirmBtn[0].gameObject.SetActive(false);
             m_ReadyObj[0].SetActive(true);
             m_ConfirmBtn[1].gameObject.SetActive(false);
             m_ReadyObj[1].SetActive(true);
-            await Task.Delay(1000);
+            await Task.Delay(1000); //UI表现时间
 
-            var ui_versus = UIManager.Get().Push<UI_Versus>();
-            int left = scene.Host.RoleIndex;
-            int right = scene.Guest.RoleIndex;
-            ui_versus.FadeIn(left, right);
-            await Task.Delay(2000);
-
-            //ui_versus.FadeOut();
-            //await Task.Delay(1000);
-
-            // 跳转场景
-            System.Action action = () =>
-            {
-                UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
-                //ClientLogic.Get.PlayLoop();
-                ClientLogic.Get.Opening();
-            };
-            GameManager.Get.LoadBattleAsync(action); //训练
+            GameManager.Get.OnLoadScene(packet);
         }
         #endregion
 

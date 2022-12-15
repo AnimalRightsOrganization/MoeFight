@@ -150,13 +150,6 @@ namespace HotFix
             var size = (packet.inputs.Length * 12 + 4) / 1024;
             Debug.Log($"跳转Loading页：{packet.frameNumber}条，{size}KB");
 
-            // 显示Loading页
-            UIManager.Get().PopAll();
-            var ui_versus = UIManager.Get().Push<UI_Versus>();
-            int left = m_Packet.Host.RoleIndex;
-            int right = m_Packet.Guest.RoleIndex;
-            ui_versus.FadeIn(left, right);
-
             // 创建用户管理
             bool localIsHost = ClientNet.Get.m_PlayerManager.LocalPlayer.PeerId == m_Packet.Host.PeerId;
             string rivalName = localIsHost ? m_Packet.Guest.UserName : m_Packet.Host.UserName;
@@ -170,18 +163,21 @@ namespace HotFix
             ClientNet.Get.m_ClientRoom.BattleMode = BattleMode.Matching;
             ClientNet.Get.m_ClientRoom.DoInit(m_Packet);
 
+            // 转场动画
+            UIManager.Get().PopAll();
+            var ui_versus = UIManager.Get().Push<UI_Versus>();
+            int left = m_Packet.Host.RoleIndex;
+            int right = m_Packet.Guest.RoleIndex;
+            ui_versus.FadeIn(left, right);
             await Task.Delay(1000);
-            //ui.FadeOut();
 
 
-            // 加载场景
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
                 var menu = UIManager.Get().Push<UI_GameMenu>();
-                menu.ShowMenu();
+                menu.ShowMenu(); //显示暂停
 
-                //ClientNet.Get.SendBattleStart(2); //重连后恢复
                 ClientLogic.Get.Reconnect(packet);
             };
             GameManager.Get.LoadBattleAsync(action);//重连

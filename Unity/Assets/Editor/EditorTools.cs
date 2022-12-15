@@ -68,7 +68,8 @@ public class TestWindow : EditorWindow
             ClientNet.Get.m_PlayerManager.AddClientPlayer(guest, false);
             ClientNet.Get.m_ClientRoom = new ClientRoom(0, host, guest);
             var room = ClientNet.Get.m_ClientRoom;
-            var scene = new S2C_LoadScenePacket
+            room.BattleMode = BattleMode.Training;
+            var packet = new S2C_LoadScenePacket
             {
                 RoomId = (short)room.RoomID,
                 BattleId = room.BattleID,
@@ -76,19 +77,9 @@ public class TestWindow : EditorWindow
                 Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.HONOKA }, //肯
                 Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.AOI }, //春丽
             };
-            room.BattleMode = BattleMode.Training;
-            room.DoInit(scene);
-            //Debug.Log($"调试模式: UserName={scene.Guest.UserName}, PeerId:{scene.Guest.PeerId}, RoleIndex:{scene.Guest.RoleIndex}");
+            Debug.Log($"调试模式:\n{packet}");
 
-            // 跳转场景
-            System.Action action = () =>
-            {
-                UIManager.Get().PopAll();
-                UIManager.Get().Push<UI_GameMenu>();
-                //ClientLogic.Get.PlayLoop();
-                ClientLogic.Get.Opening();
-            };
-            GameManager.Get.LoadBattleAsync(action);//调试
+            GameManager.Get.OnLoadScene(packet);
         }
     }
     void ServerGUI()

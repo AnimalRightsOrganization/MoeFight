@@ -94,22 +94,23 @@ namespace HotFix
 
         private void OnLoadScene()
         {
-            var repInfo = ReplayManager.data;
-            ClientPlayer host = new ClientPlayer(repInfo.scene.Host.UserName, 0);
-            ClientPlayer guest = new ClientPlayer(repInfo.scene.Guest.UserName, 1);
-            ClientRoom clientRoom = new ClientRoom(repInfo.scene.RoomId, host, guest);
-            clientRoom.DoInit(repInfo.scene);
-            clientRoom.BattleMode = BattleMode.Replay;
-            ClientNet.Get.m_ClientRoom = clientRoom;
+            var repData = ReplayManager.data;
+            ClientPlayer host = new ClientPlayer(repData.scene.Host.UserName, 0);
+            ClientPlayer guest = new ClientPlayer(repData.scene.Guest.UserName, 1);
+            ClientRoom room = new ClientRoom(repData.scene.RoomId, host, guest);
+            ClientNet.Get.m_ClientRoom = room;
+            room.BattleMode = BattleMode.Replay;
+
+            room.DoInit(repData.scene);
 
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
                 var ui_replay = UIManager.Get().Push<UI_ReplayMenu>();
-                ui_replay.InitData(repInfo);
+                ui_replay.InitData(repData);
             };
-            GameManager.Get.LoadBattleAsync(action); //回放
+            GameManager.Get.LoadBattleAsync(action);
         }
     }
 }

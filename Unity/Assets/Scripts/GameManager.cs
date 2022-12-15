@@ -3,9 +3,10 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using Code.Client;
-using HotFix;
-using HitstunConstants;
+using Code.Shared;
 using Newtonsoft.Json;
+using HitstunConstants;
+using HotFix;
 
 public class GameManager : MonoBehaviour
 {
@@ -119,6 +120,28 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
+    public async void OnLoadScene(S2C_LoadScenePacket packet)
+    {
+        ClientNet.Get.m_ClientRoom.DoInit(packet);
+
+        // 转场动画
+        var ui_versus = UIManager.Get().Push<UI_Versus>();
+        int left = packet.Host.RoleIndex;
+        int right = packet.Guest.RoleIndex;
+        ui_versus.FadeIn(left, right);
+        await Task.Delay(2000);
+
+        // 加载场景
+        System.Action action = () =>
+        {
+            UIManager.Get().PopAll();
+            UIManager.Get().Push<UI_GameMenu>(); //战斗UI
+
+            //logic.PlayLoop(); //直接开始
+            logic.Opening(); //开场动画
+        };
+        LoadBattleAsync(action); //创建模型
+    }
     public async void LoadBattleAsync(System.Action action = null)
     {
         var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
