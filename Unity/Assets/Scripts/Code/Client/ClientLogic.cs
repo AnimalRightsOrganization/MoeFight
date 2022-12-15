@@ -1,8 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Timeline;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -104,7 +102,8 @@ namespace Code.Client
             PauseLoop();
             LogicTimer.Stop();
         }
-        public int opening_index;
+
+        // Timeline
         public async void Opening()
         {
             runner.showHitboxes = false;
@@ -115,15 +114,19 @@ namespace Code.Client
                 await Task.Delay(1);
             }
 
-            opening_index = 0;
-            Opening_i(0);
+            await Opening_i(0);
+            await Opening_i(1);
         }
-        public async void Opening_i(int i)
+        async Task Opening_i(int i)
         {
             var opening = runner.characterViews[i].GetDirector("Opening");
             int duration = (int)(opening.duration * 1000);
+            if (i == 0)
+                duration = duration - 1000;
+            else
+                duration = duration - 100; //早点发开始，避免卡顿？
             opening.Play();
-            Debug.Log($"opening_{i}: {duration}");
+            Debug.Log($"opening_{i}: {duration}, {m_ClientRoom.BattleStage}");
             await Task.Delay(duration);
 
             if (i == 1)
@@ -136,29 +139,11 @@ namespace Code.Client
                 }
                 else
                 {
-                    IsStart = true;
+                    PlayLoop();
                 }
             }
         }
-        private SignalReceiver receiver;
-        public SignalAsset asset;
-        private void BindSignal()
-        {
-            var reaction = new UnityEvent();
-            reaction.AddListener(() =>
-            {
-                if (opening_index == 0)
-                {
-                    opening_index = 1;
-                    Opening_i(1);
-                }
-            });
 
-            if (GetComponent<SignalReceiver>() == false)
-                gameObject.AddComponent<SignalReceiver>();
-            receiver = GetComponent<SignalReceiver>();
-            receiver.AddReaction(asset, reaction);
-        }
 
         public bool IsStart; //running
         [SerializeField] uint DELAY_FRAMES = 0;
@@ -213,7 +198,7 @@ namespace Code.Client
                 repInfo = ReplayManager.data;
             }
 
-            BindSignal();
+            //BindSignal();
 
             gameObject.AddComponent<ClientDebug>();
         }
@@ -384,7 +369,7 @@ namespace Code.Client
         public void PlayLoop()
         {
             IsStart = true; //播放
-            BattleEvent.doSetAnimeSpeed?.Invoke(1); //不能用TimeScale，会导致Dotween等失效
+            BattleEvent.doSetAnimeSpeed?.Invoke(0);
             m_ClientRoom.BattleStage = BattleStage.Running;
         }
         public void PauseLoop()

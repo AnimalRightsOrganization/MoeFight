@@ -85,7 +85,7 @@ public class TestWindow : EditorWindow
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
-                //ClientLogic.Get.IsStart = true;
+                //ClientLogic.Get.PlayLoop();
                 ClientLogic.Get.Opening();
             };
             GameManager.Get.LoadBattleAsync(action);//调试

@@ -1,29 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-2238803098529330303
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b46e36075dd1c124a8422c228e75e1fb, type: 3}
-  m_Name: Signal Track
-  m_EditorClassIdentifier: 
-  m_Version: 3
-  m_AnimClip: {fileID: 0}
-  m_Locked: 0
-  m_Muted: 0
-  m_CustomPlayableFullTypename: 
-  m_Curves: {fileID: 0}
-  m_Parent: {fileID: 11400000}
-  m_Children: []
-  m_Clips: []
-  m_Markers:
-    m_Objects:
-    - {fileID: 3962342221348707283}
 --- !u!114 &-1659209066183752076
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -98,7 +74,6 @@ MonoBehaviour:
   - {fileID: 4319346655736805865}
   - {fileID: -1659209066183752076}
   - {fileID: 8888504438406659203}
-  - {fileID: -2238803098529330303}
   m_FixedDuration: 0
   m_EditorSettings:
     m_Framerate: 60
@@ -139,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15c38f6fa1940124db1ab7f6fe7268d1, type: 3}
   m_Name: Signal Emitter
   m_EditorClassIdentifier: 
-  m_Time: 2.5
+  m_Time: 3.1666666666666665
   m_Retroactive: 0
   m_EmitOnce: 0
   m_Asset: {fileID: 11400000, guid: 576fda8c6c925d9429de22ab66cdc3ff, type: 2}
@@ -165,37 +140,19 @@ MonoBehaviour:
   m_Children: []
   m_Clips:
   - m_Version: 1
-    m_Start: 3
+    m_Start: 3.1666666666666665
     m_ClipIn: 0
     m_Asset: {fileID: 6799877393386859785}
-    m_Duration: 1.166666666666667
+    m_Duration: 1.0000000000000004
     m_TimeScale: 1
     m_ParentTrack: {fileID: 4319346655736805865}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
-    m_BlendInDuration: 1
+    m_BlendInDuration: 0.8333333333333335
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -243,7 +200,7 @@ MonoBehaviour:
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: -1
-    m_BlendOutDuration: 1
+    m_BlendOutDuration: 0.8333333333333335
     m_MixInCurve:
       serializedVersion: 2
       m_Curve:
@@ -481,7 +438,7 @@ MonoBehaviour:
     m_Start: 0
     m_ClipIn: 0
     m_Asset: {fileID: 3937310022823500041}
-    m_Duration: 3
+    m_Duration: 3.1666666666666665
     m_TimeScale: 1
     m_ParentTrack: {fileID: 8888504438406659203}
     m_EaseInDuration: 0
@@ -547,10 +504,10 @@ MonoBehaviour:
     m_PreExtrapolationTime: 0
     m_DisplayName: Quick Formal Bow
   - m_Version: 1
-    m_Start: 2.5
-    m_ClipIn: 0.5
+    m_Start: 2.6666666666666665
+    m_ClipIn: 0.6666666666666665
     m_Asset: {fileID: 7317295647337151335}
-    m_Duration: 1.5
+    m_Duration: 1.3333333333333335
     m_TimeScale: 1
     m_ParentTrack: {fileID: 8888504438406659203}
     m_EaseInDuration: 0
@@ -559,25 +516,7 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4

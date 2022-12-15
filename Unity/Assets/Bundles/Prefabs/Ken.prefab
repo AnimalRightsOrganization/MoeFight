@@ -109,7 +109,7 @@ MonoBehaviour:
   m_StreamingVersion: 20170927
   m_Priority: 10
   m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
+  m_LookAt: {fileID: 5595036407830196510}
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 26.99147
@@ -2965,20 +2965,20 @@ PlayableDirector:
   m_GameObject: {fileID: 8471152103499970079}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 11400000, guid: cf35a9f7e5607974dbe2261f85d59d8f, type: 2}
+  m_PlayableAsset: {fileID: 11400000, guid: 5db1a59fc222f5f45b6d878bfd521816, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
   m_SceneBindings:
-  - key: {fileID: 4319346655736805865, guid: cf35a9f7e5607974dbe2261f85d59d8f, type: 2}
-    value: {fileID: 0}
-  - key: {fileID: -1659209066183752076, guid: cf35a9f7e5607974dbe2261f85d59d8f, type: 2}
-    value: {fileID: 5766411224245442307}
-  - key: {fileID: 8888504438406659203, guid: cf35a9f7e5607974dbe2261f85d59d8f, type: 2}
-    value: {fileID: 5595036407837908854}
   - key: {fileID: -2238803098529330303, guid: cf35a9f7e5607974dbe2261f85d59d8f, type: 2}
     value: {fileID: 0}
+  - key: {fileID: 4319346655736805865, guid: 5db1a59fc222f5f45b6d878bfd521816, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -1659209066183752076, guid: 5db1a59fc222f5f45b6d878bfd521816, type: 2}
+    value: {fileID: 5766411224245442307}
+  - key: {fileID: 8888504438406659203, guid: 5db1a59fc222f5f45b6d878bfd521816, type: 2}
+    value: {fileID: 5595036407837908854}
   m_ExposedReferences:
     m_References:
     - 41ed4c114ec6e154fa3611b5d8f06d39: {fileID: 0}

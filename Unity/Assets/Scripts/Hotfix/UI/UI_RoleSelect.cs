@@ -235,7 +235,7 @@ namespace HotFix
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
-                //ClientLogic.Get.IsStart = true;
+                //ClientLogic.Get.PlayLoop();
                 ClientLogic.Get.Opening();
             };
             GameManager.Get.LoadBattleAsync(action); //训练

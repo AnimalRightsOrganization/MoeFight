@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         string text = await HttpHelper.TryGetAsync(ConstValue.PRESENT_GET);
         if (string.IsNullOrEmpty(text))
         {
-            Debug.LogError("配置请求失败");
+            Debug.LogError($"配置请求失败: {ConstValue.PRESENT_GET}");
             return;
         }
         Debug.Log($"config: {text}");

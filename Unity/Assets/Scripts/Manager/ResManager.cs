@@ -185,7 +185,7 @@ public class ResManager
             if (subAsset != null)
             {
                 //Debug.Log($"{i}---{subAsset?.name}");
-                sp.Add(subAsset.name, subAsset);
+                sp.TryAdd(subAsset.name, subAsset);
             }
         }
         //Debug.Log($"字典：{sp.Count}个");
