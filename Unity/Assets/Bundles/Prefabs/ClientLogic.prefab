@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f0ae0f74818a548bdbd3cc5c1c8e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  asset: {fileID: 11400000, guid: 576fda8c6c925d9429de22ab66cdc3ff, type: 2}
   IsStart: 0
   DELAY_FRAMES: 4
   sendTick: 0

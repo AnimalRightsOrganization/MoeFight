@@ -5242,19 +5242,15 @@ MonoBehaviour:
     pathColor: {r: 0, g: 1, b: 0, a: 1}
     inactivePathColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     width: 0.2
-  m_Looped: 1
+  m_Looped: 0
   m_Waypoints:
   - position: {x: 0, y: 1, z: -3}
     roll: 0
-  - position: {x: 0.8, y: 1.5, z: -1.1133687}
+  - position: {x: 0.6631179, y: 1.5, z: -1.1870772}
     roll: 0
-  - position: {x: 0.73, y: 1, z: 1.1871667}
+  - position: {x: 1.3151267, y: 0.75, z: -1.6058943}
     roll: 0
-  - position: {x: -0.41529408, y: 0.5, z: 2.3630002}
-    roll: 0
-  - position: {x: 0.49192524, y: 0.75, z: 1.19}
-    roll: 0
-  - position: {x: 0.19, y: 1, z: -1.29}
+  - position: {x: 0.9152292, y: 1, z: -2.2160861}
     roll: 0
 --- !u!1 &8480309643842928373
 GameObject:
@@ -5281,7 +5277,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8480309643842928373}
-  m_LocalRotation: {x: -0.013038944, y: -0.8117447, z: -0.018136673, w: 0.5835852}
+  m_LocalRotation: {x: 0.0008261996, y: -0.9148936, z: 0.0018724399, w: 0.40368968}
   m_LocalPosition: {x: 2.4023118, y: 1.9273647, z: 1.0585785}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

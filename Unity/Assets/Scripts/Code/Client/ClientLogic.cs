@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Timeline;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -102,6 +104,7 @@ namespace Code.Client
             PauseLoop();
             LogicTimer.Stop();
         }
+        public int opening_index;
         public async void Opening()
         {
             runner.showHitboxes = false;
@@ -111,21 +114,39 @@ namespace Code.Client
                 runner.characterViews[i].UpdateCharacterView(LocalSession.gs.characters[i]);
                 await Task.Delay(1);
             }
-            await Task.Delay(100);
 
-            var opening_0 = runner.characterViews[0].GetDirector("Opening");
-            int duration_0 = (int)(opening_0.duration * 1000);
-            opening_0.Play();
-            Debug.Log($"opening_0: {duration_0}");
-            await Task.Delay(duration_0);
+            opening_index = 0;
+            Opening_i(opening_index);
+        }
+        public async void Opening_i(int i)
+        {
+            var opening = runner.characterViews[i].GetDirector("Opening");
+            int duration = (int)(opening.duration * 1000);
+            opening.Play();
+            Debug.Log($"opening_{i}: {duration}");
+            await Task.Delay(duration);
 
-            var opening_1 = runner.characterViews[1].GetDirector("Opening");
-            int duration_1 = (int)(opening_1.duration * 1000);
-            opening_1.Play();
-            await Task.Delay(duration_1);
+            if (i == 1)
+            {
+                IsStart = true;
+                runner.showHitboxes = true;
+            }
+        }
+        private SignalReceiver receiver;
+        public SignalAsset asset;
+        private void BindSignal()
+        {
+            var reaction = new UnityEvent();
+            reaction.AddListener(() =>
+            {
+                if (opening_index == 0)
+                    Opening_i(1);
+            });
 
-            IsStart = true;
-            runner.showHitboxes = true;
+            if (GetComponent<SignalReceiver>() == false)
+                gameObject.AddComponent<SignalReceiver>();
+            receiver = GetComponent<SignalReceiver>();
+            receiver.AddReaction(asset, reaction);
         }
 
         public bool IsStart; //running
@@ -180,6 +201,8 @@ namespace Code.Client
                 m_BattleMode = m_ClientRoom.BattleMode;
                 repInfo = ReplayManager.data;
             }
+
+            BindSignal();
 
             gameObject.AddComponent<ClientDebug>();
         }

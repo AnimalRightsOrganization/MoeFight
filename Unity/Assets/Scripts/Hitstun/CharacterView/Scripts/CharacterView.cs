@@ -2,6 +2,7 @@
 using UnityEngine.Playables;
 using System.Collections.Generic;
 using HitstunConstants;
+using Code.Client;
 
 public class CharacterView : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class CharacterView : MonoBehaviour
     private Transform playableGroup;
     private Dictionary<string, PlayableDirector> timelines;
     const string CinemachineTrackName = "Cinemachine Track";
+    const string SignalTrackName = "Signal Track";
 
     void Awake()
     {
@@ -67,6 +69,10 @@ public class CharacterView : MonoBehaviour
                 if (output.streamName == CinemachineTrackName)
                 {
                     director.SetGenericBinding(output.sourceObject, Camera.main.gameObject);
+                }
+                else if (output.streamName == SignalTrackName)
+                {
+                    director.SetGenericBinding(output.sourceObject, ClientLogic.Get.gameObject);
                 }
             }
         }
