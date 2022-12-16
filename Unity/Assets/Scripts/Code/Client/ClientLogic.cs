@@ -25,7 +25,7 @@ namespace Code.Client
         // 为了保证真机切后台，依然正常运行
         public static LogicTimer LogicTimer { get; private set; }
 
-        void HandleDevKeys()
+        private void HandleDevKeys()
         {
             // quit
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -75,26 +75,29 @@ namespace Code.Client
                 DebugStep();
             }
         }
-        public void DebugHeal()
+        private void DebugHeal()
         {
-            for (int i = 0; i < Constants.NUM_PLAYERS; i++)
+            if (m_ClientRoom.BattleMode == BattleMode.Training)
             {
-                LocalSession.gs.characters[i].health = 1000;
-                BattleEvent.doSetCurrentHp.Invoke(1, 1000);
-                BattleEvent.doSetCurrentHp.Invoke(2, 1000);
+                for (int i = 0; i < Constants.NUM_PLAYERS; i++)
+                {
+                    LocalSession.gs.characters[i].health = 1000;
+                    BattleEvent.doSetCurrentHp.Invoke(1, 1000);
+                    BattleEvent.doSetCurrentHp.Invoke(2, 1000);
+                }
             }
         }
-        public void DebugStop()
+        private void DebugStop()
         {
             PauseLoop();
             LogicTimer.Stop();
         }
-        public void DebugStart()
+        private void DebugStart()
         {
             PlayLoop();
             LogicTimer.Start();
         }
-        public async void DebugStep()
+        private async void DebugStep()
         {
             LogicTimer.Start();
             PlayLoop();

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Code.Client;
 
 public class ClientDebug : MonoBehaviour
@@ -12,7 +12,7 @@ public class ClientDebug : MonoBehaviour
     void Awake()
     {
         runner = FindObjectOfType<HitstunRunner>();
-        style1 = new GUIStyle { fontSize = 25, normal = new GUIStyleState { textColor = Color.red } };
+        style1 = new GUIStyle { fontSize = 30, normal = new GUIStyleState { textColor = Color.red } };
         posX1 = Screen.width / 4;
         posX2 = Screen.width / 4 * 3;
         posY = Screen.height - 50;
@@ -25,20 +25,15 @@ public class ClientDebug : MonoBehaviour
         var currentState0 = char0.state;
         var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
         int currentFrame0 = (int)char0.framesInState % currentAnimation0.totalFrames;
-        //int x0 = char0.position.x;
 
         var char1 = LocalSession.gs.characters[1];
         var data1 = LocalSession.gs.characterDatas[1];
         var currentState1 = char1.state;
         var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
         int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
-        //int x1 = char1.position.x;
 
-        string log = $"Tick: {LocalSession.gs.frameNumber}" +
-            $"\nping: {ClientNet.Get._ping}";
+        string log = $"tick: {LocalSession.gs.frameNumber}\nping: {ClientNet.Get._ping}\nF3:回血\nF10:暂停\nF11:恢复\nF12:步进";
         GUI.Label(new Rect(10, 10, 100, 50), log, style1);
-
-
         string state1 = $"{currentState0}: {currentFrame0}";
         GUI.Label(new Rect(posX1, posY, 100, 50), state1, style1);
         string state2 = $"{currentState1}: {currentFrame1}";
