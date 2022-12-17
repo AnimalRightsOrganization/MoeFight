@@ -87,10 +87,10 @@ public class DeployTools : EditorWindow
         if (GUILayout.Button("线上版本", GUILayout.Width(100))) { GetVersion(); }
         GUILayout.Space(10);
         GUILayout.Label("应用:", GUILayout.Width(40));
-        GUILayout.TextField(r_app_version, GUILayout.Width(175));
+        GUILayout.Box(r_app_version, GUILayout.Width(175));
         GUILayout.Space(10);
         GUILayout.Label("资源:", GUILayout.Width(40));
-        GUILayout.TextField(r_res_version, GUILayout.Width(175));
+        GUILayout.Box(r_res_version, GUILayout.Width(175));
         GUILayout.Space(10);
         GUILayout.EndHorizontal();
         GUILayout.Space(10);

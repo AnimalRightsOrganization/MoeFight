@@ -10,7 +10,6 @@ using Debug = UnityEngine.Debug;
 using Code.Client;
 using Code.Server;
 using Code.Shared;
-using HotFix;
 using HitstunConstants;
 
 public class TestWindow : EditorWindow
@@ -130,12 +129,12 @@ public class EditorTools : Editor
     //^ (ctrl on Windows, Linux, and macOS),
     //# (shift),
     //& (alt)
-    [MenuItem("Tools/启动/调试 %_F10", false)]
+    [MenuItem("Tools/运行/命令面板 %_F10", false)]
     static void RunEditor()
     {
         TestWindow.ShowWindow();
     }
-    [MenuItem("Tools/启动/客户端 %_F11", false)]
+    [MenuItem("Tools/运行/客户端 %_F11", false)]
     static void RunClient()
     {
         var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
@@ -143,7 +142,7 @@ public class EditorTools : Editor
 
         Process.Start(filepath);
     }
-    [MenuItem("Tools/启动/服务器 %_F12", false)]
+    [MenuItem("Tools/运行/服务器 %_F12", false)]
     static void RunServer()
     {
         var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
@@ -152,7 +151,14 @@ public class EditorTools : Editor
         Process.Start(filepath);
     }
 
-    [MenuItem("Tools/打包/服务器", false)]
+    [MenuItem("Tools/打包/热更新", false, 1)]
+    static void BuildRes()
+    {
+        BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
+        Debug.Log($"打包{target}平台资源");
+        BundleTools.Build_Target(target);
+    }
+    [MenuItem("Tools/打包/服务器", false, 2)]
     static void BuildServer_Win64()
     {
         //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Server.unity", true) };
@@ -182,7 +188,7 @@ public class EditorTools : Editor
         if (summary.result == BuildResult.Failed)
             Debug.LogError("打包失败");
     }
-    [MenuItem("Tools/打包/客户端", false)]
+    [MenuItem("Tools/打包/客户端", false, 3)]
     static void BuildClient_Win64()
     {
         //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Client.unity", true) };
@@ -233,12 +239,5 @@ public class EditorTools : Editor
             code = 0;
         }
         PlayerSettings.iOS.buildNumber = (code + 1).ToString();
-    }
-    [MenuItem("Tools/打包/资源", false)]
-    static void BuildRes()
-    {
-        BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
-        Debug.Log($"打包{target}平台资源");
-        BundleTools.Build_Target(target);
     }
 }

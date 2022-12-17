@@ -24,13 +24,13 @@ public class CreateConfig : Editor
         Selection.activeObject = asset;
     }
 
-    [MenuItem("Tools/Data/GlobalConfig", false)]
+    [MenuItem("Tools/Data/GlobalConfig", true)]
     static void CreateGlobalConfig()
     {
         CreateAsset<GlobalConfig>();
     }
 
-    [MenuItem("Tools/Data/选中角色配置", false)]
+    [MenuItem("Tools/Data/选中角色配置", true)]
     static void SelectCharacterConfig()
     {
         // 搜索 type:CharacterConfig
