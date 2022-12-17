@@ -161,8 +161,7 @@ public class EditorTools : Editor
     [MenuItem("Tools/打包/服务器", false, 2)]
     static void BuildServer_Win64()
     {
-        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Server.unity", true) };
-        //EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
+        RemoveIcon();
 
         var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
         string builds_dir = $"{curr_info}/Builds/Server";
@@ -187,12 +186,13 @@ public class EditorTools : Editor
             Debug.Log($"打包成功: {opt.locationPathName}");
         if (summary.result == BuildResult.Failed)
             Debug.LogError("打包失败");
+
+        SetIcon();
     }
     [MenuItem("Tools/打包/客户端", false, 3)]
     static void BuildClient_Win64()
     {
-        //EditorBuildSettings.scenes = new EditorBuildSettingsScene[] { new EditorBuildSettingsScene("Assets/Scenes/Client.unity", true) };
-        //EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
+        SetIcon();
 
         var curr_info = new DirectoryInfo(Environment.CurrentDirectory);
         string builds_dir = $"{curr_info}/Builds/Client";
@@ -239,5 +239,30 @@ public class EditorTools : Editor
             code = 0;
         }
         PlayerSettings.iOS.buildNumber = (code + 1).ToString();
+    }
+    [MenuItem("Tools/图标/SetIcon", true)]
+    static void SetIcon()
+    {
+        string filePath = $"Assets/Arts/Icon/Wikipe-tan_cropped.png";
+        Texture2D t2d = AssetDatabase.LoadAssetAtPath<Texture2D>(filePath);
+
+        Texture2D[] array_1 = new Texture2D[] { t2d };
+        PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, array_1); //default
+
+        Texture2D[] array_8 = new Texture2D[] { t2d, t2d, t2d, t2d, t2d, t2d, t2d, t2d };
+        //PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Standalone, array_8); //override, 会覆盖
+
+        AssetDatabase.Refresh();
+    }
+    [MenuItem("Tools/图标/RemoveIcon", true)]
+    static void RemoveIcon()
+    {
+        Texture2D[] array_1 = new Texture2D[] { null };
+        PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, null); //default
+
+        Texture2D[] array_8 = new Texture2D[] { null, null, null, null, null, null, null, null };
+        //PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Standalone, array_8); //override, 会覆盖
+
+        AssetDatabase.Refresh();
     }
 }
