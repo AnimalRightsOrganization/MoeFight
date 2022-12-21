@@ -157,7 +157,7 @@ namespace Code.Client
         private Dictionary<uint, uint[]> ggpo_recieve; //下发帧<帧号, 双方操作[2]>
         private Dictionary<uint, byte[]> cache_buffer; //快照帧<帧号, 场景缓存[2]>
         private List<uint> predicted;
-        private HitstunRunner runner;
+        public HitstunRunner runner;
 
         // 缓存变量
         private ClientRoom _clientRoom;

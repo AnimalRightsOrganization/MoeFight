@@ -78,7 +78,11 @@ public class TestWindow : EditorWindow
             };
             Debug.Log($"调试模式:\n{packet}");
 
-            GameManager.Get.OnLoadScene(packet);
+            GameManager.Get.OnLoadScene(packet, false);
+        }
+        if (GUILayout.Button("重载配置"))
+        {
+            ClientLogic.Get.runner.Reload();
         }
     }
     void ServerGUI()
@@ -125,6 +129,23 @@ public class EditorTools : Editor
         }
     }
 
+    const string notepad = @"C:\Program Files\Notepad++\notepad++.exe";
+    const string hosts_path = @"C:\Windows\System32\drivers\etc\hosts";
+    const string hosts_www = "Assets/Editor/etc/hosts_www"; //外网,原始hosts
+    const string hosts_lan = "Assets/Editor/etc/hosts_lan"; //局域网,域名映射
+    [MenuItem("Tools/运行/开发环境", false)]
+    static void ModifyHost()
+    {
+        //string src = Path.Combine(ConstValue.UnityDir, hosts_lan);
+        //Debug.Log($"{src}→{hosts_path}");
+        //File.Move(src, hosts_path); //IOException: 文件存在。文件其实存在，但没有权限。
+
+        //string content = File.ReadAllText(hosts_path);
+        //Debug.Log(content);
+
+        //Process.Start("notepad.exe", hosts_path); //系统记事本
+        Process.Start(notepad, hosts_path); //notepad++
+    }
     //% (ctrl on Windows and Linux, cmd on macOS),
     //^ (ctrl on Windows, Linux, and macOS),
     //# (shift),

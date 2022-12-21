@@ -39,10 +39,14 @@ public class GameManager : MonoBehaviour
             Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
             QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
             Screen.fullScreen = false;
-            //Screen.SetResolution(540, 960);
+            //Screen.SetResolution(540, 960, false);
             Screen.sleepTimeout = SleepTimeout.NeverSleep;
             //Debug.unityLogger.logEnabled = false; //release版关闭
             //Application.systemLanguage;
+
+#if CHANNEL_1000 //官方大厅渠道
+            IPC_Login();
+#endif
 
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
             // 不检查更新
@@ -69,8 +73,6 @@ public class GameManager : MonoBehaviour
             return;
         }
         Debug.Log($"config: {text}");
-        //var obj = JsonMapper.ToObject<ServerResponse>(text);
-        //present = JsonMapper.ToObject<Present>(obj.data);
         var obj = JsonConvert.DeserializeObject<ServerResponse>(text);
         present = JsonConvert.DeserializeObject<Present>(obj.data);
 
@@ -120,7 +122,7 @@ public class GameManager : MonoBehaviour
         UIManager.Get().Push<UI_Login>();
     }
 
-    public async void OnLoadScene(S2C_LoadScenePacket packet)
+    public async void OnLoadScene(S2C_LoadScenePacket packet, bool opening = true)
     {
         ClientNet.Get.m_ClientRoom.DoInit(packet);
 
@@ -137,8 +139,10 @@ public class GameManager : MonoBehaviour
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_GameMenu>(); //战斗UI
 
-            //logic.PlayLoop(); //直接开始
-            logic.Opening(); //开场动画
+            if (opening)
+                logic.Opening(); //开场动画
+            else
+                logic.PlayLoop(); //直接开始
         };
         LoadBattleAsync(action); //创建模型
     }

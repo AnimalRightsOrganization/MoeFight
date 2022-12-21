@@ -2,6 +2,7 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using HitstunConstants;
+using Code.Client;
 
 public class HitstunRunner : MonoBehaviour
 {
@@ -198,5 +199,16 @@ public class HitstunRunner : MonoBehaviour
         characterDatas[1] = JsonConvert.DeserializeObject<CharacterData>(ta2.text);
         LocalSession.characterDatas = characterDatas;
         LocalSession.gs.characterDatas = characterDatas;
+    }
+
+    public void Reload()
+    {
+        LoadCharacterData();
+
+        for (int i = 0; i < Constants.NUM_PLAYERS; ++i)
+        {
+            var data = characterDatas[i];
+            characterViews[i].LoadData(data);
+        }
     }
 }

@@ -44,6 +44,10 @@ public class CharacterView : MonoBehaviour
         projectileBoxView.spriteRenderer.sortingLayerName = "HITBOX";
     }
 
+    public void LoadData(CharacterData _data)
+    {
+        this.data = _data;
+    }
     public void LoadResources(CharacterData _data)
     {
         data = _data;
