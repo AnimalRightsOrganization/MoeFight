@@ -16,6 +16,8 @@ public class TestWindow : EditorWindow
 {
     static TestWindow window;
 
+    public bool UseOpening;
+
     public static void ShowWindow()
     {
         window = (TestWindow)GetWindow(typeof(TestWindow));
@@ -56,7 +58,10 @@ public class TestWindow : EditorWindow
             var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
             Debug.Log(str);
         }
-        if (GUILayout.Button("单机调试"))
+        GUILayout.BeginHorizontal();
+        GUILayout.Space(20);
+        UseOpening = GUILayout.Toggle(UseOpening, "使用过场", GUILayout.Height(30));
+        if (GUILayout.Button("单机调试", GUILayout.Height(30)))
         {
             ClientNet.Get.Disconnect();
             //await Task.Delay(1);
@@ -73,13 +78,14 @@ public class TestWindow : EditorWindow
                 RoomId = (short)room.RoomID,
                 BattleId = room.BattleID,
                 MapId = room.MapId,
-                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.HONOKA }, //肯
-                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.AOI }, //春丽
+                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.KEN },
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.SATOMI },
             };
             Debug.Log($"调试模式:\n{packet}");
 
-            GameManager.Get.OnLoadScene(packet, false);
+            GameManager.Get.OnLoadScene(packet, UseOpening);
         }
+        GUILayout.EndHorizontal();
         if (GUILayout.Button("重载配置"))
         {
             ClientLogic.Get.runner.Reload();

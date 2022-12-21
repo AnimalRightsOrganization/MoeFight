@@ -136,7 +136,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Aoi
+  m_Name: Taichi
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: IsCrouch
@@ -264,7 +264,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1827226128182048838, guid: bed1047233a96704c99a8b2fe81d3c97, type: 3}
+  m_Motion: {fileID: 9057265835273632140, guid: 52a99e3c74176a3429f844e55d0daec5, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
