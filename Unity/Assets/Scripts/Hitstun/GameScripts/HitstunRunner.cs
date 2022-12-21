@@ -2,7 +2,6 @@
 using UnityEngine;
 using Newtonsoft.Json;
 using HitstunConstants;
-using Code.Client;
 
 public class HitstunRunner : MonoBehaviour
 {

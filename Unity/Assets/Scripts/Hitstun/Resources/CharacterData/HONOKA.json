@@ -1184,7 +1184,7 @@
           "hitstop": 7,
           "pushback": 4000,
           "type": 1 
-        },
+        }
       ],
       "staticHurtbox": false,
       "hurtBoxes": {
