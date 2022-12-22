@@ -125,6 +125,7 @@ public class GameManager : MonoBehaviour
     public async void OnLoadScene(S2C_LoadScenePacket packet, bool opening = true)
     {
         ClientNet.Get.m_ClientRoom.DoInit(packet);
+        //Debug.Log($"比赛模式：{ClientNet.Get.m_ClientRoom.BattleMode}");
 
         // 转场动画
         var ui_versus = UIManager.Get().Push<UI_Versus>();
@@ -139,7 +140,7 @@ public class GameManager : MonoBehaviour
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_GameMenu>(); //战斗UI
 
-            if (opening)
+            if (opening && ClientNet.Get.m_ClientRoom.BattleMode != BattleMode.Training)
                 logic.Opening(); //开场动画
             else
                 logic.PlayLoop(); //直接开始

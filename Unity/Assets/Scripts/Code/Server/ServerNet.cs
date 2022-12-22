@@ -701,7 +701,7 @@ namespace Code.Server
 
                     // 标记为战场，方便主循环Update中取
                     m_RoomManager.SetBattle(serverRoom);
-                    serverRoom.BattleStage = BattleStage.Running;
+                    serverRoom.SetStage(BattleStage.Running);
                 }
             }
             else if (cmd.Stage == 2) //比赛恢复（只需收到一方）
@@ -710,7 +710,7 @@ namespace Code.Server
                 var writer = WriteSerializable(PacketType.S2C_BattleStart, packet);
                 serverRoom.Send(writer);
                 UnityEngine.Debug.Log($"server resume battle");
-                serverRoom.BattleStage = BattleStage.Running;
+                serverRoom.SetStage(BattleStage.Running);
             }
             else
             {
@@ -728,6 +728,10 @@ namespace Code.Server
 
             int serverRoomID = player.RoomId;
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+            if (serverRoom == null || serverRoom.BattleStage == BattleStage.End)
+            {
+                return; //服务器自身接口保护
+            }
             int chanceLeft = serverRoom.PauseChance[player.SeatId]; //剩余次数
             if (chanceLeft <= 0)
             {
@@ -737,7 +741,7 @@ namespace Code.Server
                 return;
             }
             serverRoom.PauseChance[player.SeatId]--;
-            serverRoom.BattleStage = BattleStage.Paused;
+            serverRoom.SetStage(BattleStage.Paused);
 
             var packet1 = new S2C_BattlePausePacket { SeatID = (byte)player.SeatId, Duration = 30 };
             var writer = WriteSerializable(PacketType.S2C_BattlePause, packet1);
@@ -802,7 +806,7 @@ namespace Code.Server
             ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
             ServerPlayer otherPlayer = serverRoom.GetOtherPlayer(player.SeatId);
             serverRoom.EndCount++;
-            serverRoom.BattleStage = BattleStage.End;
+            serverRoom.SetStage(BattleStage.End);
 
             // 给上报者回包
             var packet = new S2C_BattleEndPacket { WinnerSeatId = cmd.Winner };

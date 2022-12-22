@@ -88,8 +88,8 @@ namespace HotFix
             };
 
             m_ResultPanel = transform.Find("ResultPanel").gameObject;
-            m_ResultText = transform.Find("ResultPanel/Text").GetComponent<Text>();
-            m_BackBtn = transform.Find("ResultPanel/BackBtn").GetComponent<Button>();
+            m_ResultText = transform.Find("ResultPanel/Panel/Text").GetComponent<Text>();
+            m_BackBtn = transform.Find("ResultPanel/Panel/BackBtn").GetComponent<Button>();
             m_BackBtn.onClick.AddListener(OnBackBtnClick);
         }
 
@@ -294,6 +294,12 @@ namespace HotFix
         // 暂停比赛
         void OpenMenu()
         {
+            if (ClientNet.Get.m_ClientRoom.BattleStage == BattleStage.End)
+            {
+                var ui_toast = UIManager.Get().Push<UI_Toast>();
+                ui_toast.Show("已经结束嘞");
+                return; //一重保护
+            }
             switch (ClientNet.Get.m_ClientRoom.BattleMode)
             {
                 case BattleMode.Matching:

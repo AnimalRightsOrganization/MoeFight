@@ -312,14 +312,6 @@ namespace Code.Client
             else
             {
                 // 不需要发
-
-                //Debug.Log($" >> 本地: {cmd.frameNumber}---({cmd.input}) >>");
-                //var packet = new S2C_InputPacket
-                //{
-                //    frameNumber = cmd.frameNumber,
-                //    inputs = new uint[] { cmd.input, 0 },
-                //};
-                //ClientLogic.Get.OnRecvInput(packet);
             }
         }
         //以上是测试，保留

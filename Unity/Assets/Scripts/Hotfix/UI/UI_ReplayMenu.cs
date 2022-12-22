@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using Code.Client;
 using System.Threading.Tasks;
+using Code.Shared;
 
 namespace HotFix
 {
@@ -58,6 +59,11 @@ namespace HotFix
             else
             {
                 ClientLogic.Get.PauseLoop();
+                if (m_ProgressBar.value >= 1)
+                {
+                    //m_PlayTog.isOn = true;
+                    ClientNet.Get.m_ClientRoom.SetStage(BattleStage.End);
+                }
             }
         }
         async void OnSliderChanged(float value)

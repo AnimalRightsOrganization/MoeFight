@@ -238,7 +238,6 @@ namespace Code.Client
         #region 战斗系统
         void OnLogicUpdate()
         {
-            //Debug.Log($"<color=green>OnLogicUpdate: {sendTick}-{recvTick}-{rendTick}==={Time.deltaTime.ToString()}</color>");
             if (m_ClientRoom.BattleStage == BattleStage.End)
             {
                 // 保证动画播放完
@@ -271,7 +270,7 @@ namespace Code.Client
             //ggpo_predict[sendTick] = new uint[2];
             //ggpo_predict[sendTick][localSeatId] = input;
             //Debug.Log($"发送: {sendTick}---{input}");
-            uint[] inputs = TestInputs(sendTick);
+            uint[] inputs = CollectInputs(sendTick);
             uint input = inputs[0];
 
             var cmd = new C2S_InputPacket
@@ -375,13 +374,37 @@ namespace Code.Client
         {
             IsStart = true; //播放
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
-            m_ClientRoom.BattleStage = BattleStage.Running;
+            m_ClientRoom.SetStage(BattleStage.Running);
         }
         public void PauseLoop()
         {
             IsStart = false; //暂停
             BattleEvent.doSetAnimeSpeed?.Invoke(0);
-            m_ClientRoom.BattleStage = BattleStage.Paused;
+            m_ClientRoom.SetStage(BattleStage.Paused);
+        }
+
+        public Queue<uint> custom = new Queue<uint>();
+        uint[] CollectInputs(uint server_tick)
+        {
+            uint[] inputs;
+
+            if (m_ClientRoom.BattleMode == BattleMode.Matching)
+            {
+                uint input = LocalSession.ReadInputs();
+                ggpo_predict[sendTick] = new uint[2];
+                ggpo_predict[sendTick][localSeatId] = input;
+                inputs = new uint[] { input };
+            }
+            else
+            {
+                // 训练或调试，机器人接受实时指令
+                uint input_0 = LocalSession.ReadInputs(); //此模式玩家只能是〇号位
+                uint input_1 = custom.Count > 0 ? custom.Dequeue() : 0;
+                inputs = new uint[] { input_0, input_1 };
+                ggpo_recieve[server_tick] = inputs;
+                ggpo_predict[server_tick] = inputs;
+            }
+            return inputs;
         }
 
         private void Predict(uint tick)
@@ -426,7 +449,7 @@ namespace Code.Client
 
             if (passedTime >= ConstValue.TOTAL_SECOND)
             {
-                BattleEvent.doSetGameEnd.Invoke(2);
+                BattleEvent.doSetGameEnd.Invoke(0);
             }
         }
         // 重连恢复数据
@@ -527,6 +550,7 @@ namespace Code.Client
             }
             else if (packet.Stage == 1) //倒计时完同步
             {
+                BattleEvent.doSetAnimeSpeed?.Invoke(0); //正式开始，动画交由逻辑驱动
                 PlayLoop(); //开始发送帧数据
             }
             else if (packet.Stage == 2)
@@ -548,7 +572,7 @@ namespace Code.Client
             var packet = (S2C_BattleEndPacket)reader; //训练结束没有此消息
 
             IsStart = false;
-            m_ClientRoom.BattleStage = BattleStage.End;
+            m_ClientRoom.SetStage(BattleStage.End);
 
             var hostPlayer = m_ClientRoom.HostPlayer;
             var guestPlayer = m_ClientRoom.GuestPlayer;
@@ -565,29 +589,5 @@ namespace Code.Client
             Debug.Log("OnBattleEnd: save replay");
         }
         #endregion
-
-
-        public Queue<uint> custom = new Queue<uint>();
-        uint[] TestInputs(uint server_tick)
-        {
-            uint[] inputs;
-
-            if (m_ClientRoom.BattleMode == BattleMode.Matching)
-            {
-                uint input = LocalSession.ReadInputs();
-                ggpo_predict[sendTick] = new uint[2];
-                ggpo_predict[sendTick][localSeatId] = input;
-                inputs = new uint[] { input };
-            }
-            else
-            {
-                uint input_0 = LocalSession.ReadInputs();
-                uint input_1 = custom.Count > 0 ? custom.Dequeue() : 0;
-                inputs = new uint[] { input_0, input_1 };
-                ggpo_recieve[server_tick] = inputs;
-                ggpo_predict[server_tick] = inputs;
-            }
-            return inputs;
-        }
     }
 }

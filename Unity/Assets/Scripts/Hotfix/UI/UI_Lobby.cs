@@ -232,7 +232,7 @@ namespace HotFix
             // 创建房间管理
             ClientNet.Get.m_ClientRoom = new ClientRoom(packet.RoomId, localPlayer, rivalPlayer);
             ClientNet.Get.m_ClientRoom.BattleMode = (BattleMode)packet.BattleMode;
-            ClientNet.Get.m_ClientRoom.BattleStage = BattleStage.Ready;
+            ClientNet.Get.m_ClientRoom.SetStage(BattleStage.Ready);
 
             UIManager.Get().PopAll();
             UIManager.Get().Push<UI_RoleSelect>();

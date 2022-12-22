@@ -35,20 +35,23 @@ public class TestWindow : EditorWindow
 
     void ClientGUI()
     {
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("登录.自动填写.test1", GUILayout.Width(200), GUILayout.Height(25)))
+        if (GUILayout.Button("登录.自动填写.test1", GUILayout.Height(25)))
         {
             var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
             login.m_UserNameField.text = "test1";
             login.m_PasswordField.text = "123456";
         }
-        if (GUILayout.Button("登录.自动填写.test2", GUILayout.Width(200), GUILayout.Height(25)))
+        if (GUILayout.Button("登录.自动填写.test2", GUILayout.Height(25)))
         {
             var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
             login.m_UserNameField.text = "test2";
             login.m_PasswordField.text = "123456";
         }
-        GUILayout.EndHorizontal();
+        if (GUILayout.Button("打印房间", GUILayout.Height(25)))
+        {
+            string room = ClientNet.Get.m_ClientRoom.ToString();
+            Debug.Log(room);
+        }
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("单机调试", GUILayout.Width(200), GUILayout.Height(25)))

@@ -56,8 +56,8 @@ public class CharacterView : MonoBehaviour
         model = Instantiate(prefab, transform).transform;
         model.name = "model";
         animator = model.GetComponentInChildren<Animator>();
-        animator.speed = 0;
         BattleEvent.doSetAnimeSpeed += SetAnimeSpeed;
+        animator.speed = 1; //这里要播放Idle。
 
         timelines = new Dictionary<string, PlayableDirector>();
         playableGroup = model.Find("PlayableGroup");
