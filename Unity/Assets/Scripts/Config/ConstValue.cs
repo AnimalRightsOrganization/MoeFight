@@ -1,13 +1,10 @@
 ﻿using System.IO;
 using UnityEngine;
-using Code.Client;
 
 public class ConstValue
 {
-    #region AssetBundle
+#region AssetBundle
     public const string PATCH_NAME = "Bundles";
-    //public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
-    //public const string CONFIG_FOLDER = "Assets/Bundles/Configs";
     // ab打包源文件
     static string _srcPath;
     public static string srcPath
@@ -83,13 +80,13 @@ public class ConstValue
         {
             if (string.IsNullOrEmpty(_unity_dir))
             {
-                var direction = new DirectoryInfo("Assets");
-                _unity_dir = direction.Parent.ToString();
+                _unity_dir = System.Environment.CurrentDirectory;
             }
             return _unity_dir;
         }
     }
-    // 远程部署根目录
+    public static string BuildDir = $"{UnityDir}\\Build";
+    // 局域网部署根目录
     public static string GetDeployRoot
     {
         get
@@ -100,32 +97,37 @@ public class ConstValue
         }
     }
     public static string GetDeployRes { get { return $"{GetDeployRoot}\\res"; } }
+    // 部署，本地目录
+    public static string ZipDeploy = $"{UnityDir}\\Deploy";
     #endregion
 
 
     #region Application
-    public static string BuildDir = System.Environment.CurrentDirectory + "\\Build";
+    public const string APP_NAME = "moefight";
+    public const string COMPANY_NAME = "moegijinka";
+
 #if UNITY_ANDROID
     public const string PLATFORM_NAME = "Android";
-    public static string LocationPath = BuildDir + $"{Application.productName}.apk";
+    public static string LocationPath = $"{BuildDir}\\{PLATFORM_NAME}\\{Application.productName}.apk";
 #elif UNITY_IOS
     public const string PLATFORM_NAME = "iOS";
-    public static string LocationPath = BuildDir;
+    public static string LocationPath = $"{BuildDir}\\{PLATFORM_NAME}\\{Application.productName}.ipa";
 #else
     public const string PLATFORM_NAME = "StandaloneWindows64";
-    public static string LocationPath =  $"{BuildDir}\\{Application.productName}.exe";
+    public static string LocationPath =  $"{BuildDir}\\{PLATFORM_NAME}\\{Application.productName}.exe";
 #endif
-    #endregion
+#endregion
 
 
-    #region URL
-    public const string API_BASE = "http://restapi.moegijinka.cn";
+#region URL
+    public const string API_DOMAIN = "http://restapi.moegijinka.cn"; //使用Http请求
     public const string GAME_DATA = "api/v1/GameCenter/game_data";
     public const string PRESENT_GET = "moefight/v1/GetPresent/get";
     public const string PRESENT_DEPLOY = "moefight/v1/GetPresent/deploy";
-    #endregion
+#endregion
 
 
+#region GameLogic
     static string _replay_folder;
     static string REPLAY_FOLDER
     {
@@ -144,17 +146,15 @@ public class ConstValue
     {
         get
         {
-            var localPlayer = ClientNet.Get.m_PlayerManager.LocalPlayer;
-            string userName = localPlayer == null ? "Unknown" : localPlayer.UserName;
+            var localPlayer = "";
+            string userName = localPlayer == null ? "Unknown" : localPlayer;
             return userName;
         }
     }
     public static string MY_REPLAY_FOLDER => $"{REPLAY_FOLDER}/{LOCAL_PLAYER_NAME}";
     public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
 
-
-    #region GameLogic
     public const int DROP_WAIT_TIME = 30; //掉线等待30s，未重连判负
     public const int TOTAL_SECOND = 90; //比赛时间（s）
-    #endregion
+#endregion
 }
