@@ -142,16 +142,7 @@ public class ConstValue
             return _replay_folder;
         }
     }
-    static string LOCAL_PLAYER_NAME
-    {
-        get
-        {
-            var localPlayer = "";
-            string userName = localPlayer == null ? "Unknown" : localPlayer;
-            return userName;
-        }
-    }
-    public static string MY_REPLAY_FOLDER => $"{REPLAY_FOLDER}/{LOCAL_PLAYER_NAME}";
+    public static string USER_REPLAY_FOLDER => $"{REPLAY_FOLDER}/{Code.Client.ClientNet.Get.m_PlayerManager.LocalPlayer.UserName}";
     public static string DUMP_FOLDER = $"{Application.persistentDataPath}/Dump";
 
     public const int DROP_WAIT_TIME = 30; //掉线等待30s，未重连判负

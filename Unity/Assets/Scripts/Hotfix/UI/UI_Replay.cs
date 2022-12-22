@@ -64,7 +64,7 @@ namespace HotFix
             var connect = UIManager.Get().Push<UI_Connect>();
             await Task.CompletedTask;
 
-            string folder = ConstValue.MY_REPLAY_FOLDER;
+            string folder = ConstValue.USER_REPLAY_FOLDER;
             if (Directory.Exists(folder) == false)
             {
                 Debug.LogError("没有录像文件");

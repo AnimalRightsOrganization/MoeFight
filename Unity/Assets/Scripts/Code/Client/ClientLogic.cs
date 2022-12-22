@@ -545,15 +545,10 @@ namespace Code.Client
         }
         private void OnBattleEnd(INetSerializable reader)
         {
-            var packet = (S2C_BattleEndPacket)reader;
-            IsStart = false;
+            var packet = (S2C_BattleEndPacket)reader; //训练结束没有此消息
 
+            IsStart = false;
             m_ClientRoom.BattleStage = BattleStage.End;
-            if (m_ClientRoom.BattleMode == BattleMode.Training)
-            {
-                Debug.LogError("训练不保存录像");
-                return;
-            }
 
             var hostPlayer = m_ClientRoom.HostPlayer;
             var guestPlayer = m_ClientRoom.GuestPlayer;

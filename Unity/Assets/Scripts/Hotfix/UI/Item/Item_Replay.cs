@@ -31,6 +31,7 @@ namespace HotFix
 
         public async Task<Item_Replay> InitData(FileInfo file)
         {
+            Debug.Log($"加载回放列表: {file.FullName}");
             var repInfo = await ReplayManager.LoadReplay(file.FullName);
             this.SetHostName(repInfo.scene.Host.UserName);
             this.SetGuestName(repInfo.scene.Guest.UserName);

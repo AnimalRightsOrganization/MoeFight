@@ -36,9 +36,10 @@ public class ReplayManager
     // 写入
     public static async void SaveReplay(ReplayFormat dict)
     {
-        string folder = ConstValue.MY_REPLAY_FOLDER;
+        string folder = ConstValue.USER_REPLAY_FOLDER;
         if (!Directory.Exists(folder))
             Directory.CreateDirectory(folder);
+
         string fileName = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string filePath = $"{folder}/{fileName}.bytes";
         if (File.Exists(filePath))
@@ -61,6 +62,7 @@ public class ReplayManager
     public static async Task<ReplayFormat> LoadReplay(string filePath = "")
     {
         string json = await SimpleReadAsync(filePath);
+        //Debug.Log(json);
         data = JsonConvert.DeserializeObject<ReplayFormat>(json);
         return data;
     }
