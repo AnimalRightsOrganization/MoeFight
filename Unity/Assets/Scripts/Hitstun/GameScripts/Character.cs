@@ -384,6 +384,15 @@ public class Character
                (state == CharacterState.JUMP_BACKWARD && framesInState <= Constants.PREJUMP_FRAMES);
     }
 
+    // 是否击飞对方
+    public bool IsKnockOut()
+    {
+        return (state == CharacterState.CROUCH_LK ||
+            state == CharacterState.CROUCH_MK ||
+            state == CharacterState.CROUCH_HK ||
+            state == CharacterState.SHORYUKEN &&  framesInState >= 20); //连打的最后一击，才击飞
+    }
+
     // 只和防御有关
     public bool IsInCorner()
     {
@@ -583,7 +592,6 @@ public class Character
                     if (framesInState >= data.animations[state.ToString()].totalFrames - 1)
                     {
                         SetCharacterState(CharacterState.STAND);
-                        //Debug.Log("Dash");
                     }
                     break;
                 }
@@ -629,7 +637,7 @@ public class Character
                 break;
             // HIT_STAND STATE
             case CharacterState.HIT_STAND:
-                if (vtStun <= 0)
+                if (vtStun <= 0) //时停
                 {
                     if (hitStun > (data.animations[state.ToString()].distinctSprites - 1) * 4)
                     {
@@ -644,6 +652,24 @@ public class Character
                     {
                         SetCharacterState(CharacterState.STAND);
                     }
+                }
+                velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
+                velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
+                break;
+            // KNOCK_OUT STATE
+            case CharacterState.KNOCK_OUT:
+                if (hitStun > (data.animations[state.ToString()].distinctSprites - 1) * 4)
+                {
+                    hitStun--;
+                    framesInState--;
+                }
+                else if (hitStun > 0)
+                {
+                    hitStun--;
+                }
+                else
+                {
+                    SetCharacterState(CharacterState.STAND);
                 }
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);

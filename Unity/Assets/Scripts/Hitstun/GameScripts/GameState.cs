@@ -96,7 +96,6 @@ public class GameState
         }
     }
 
-
     public void Init()
     {
         frameNumber = 0;
@@ -193,17 +192,17 @@ public class GameState
             if (defendingChar.IsCrouch())
             {
                 defendingChar.SetCharacterState(CharacterState.BLOCK_LOW);
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿下段防守");
+                //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿下段防守");
             }
             else if (hitBox.type == HitBoxType.MID)
             {
                 defendingChar.SetCharacterState(CharacterState.BLOCK_STAND);
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿中段防守");
+                //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿中段防守");
             }
             else
             {
                 defendingChar.SetCharacterState(CharacterState.BlOCK_HIGH);
-                Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿上段防守");
+                //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}蹲姿上段防守");
             }
             // apply blockstun
             defendingChar.framesInState = 0;
@@ -239,12 +238,22 @@ public class GameState
             }
             else if (defendingChar.IsStand())
             {
-                defendingChar.SetCharacterState(CharacterState.HIT_STAND);
+                Debug.Log($"未防御，攻方使用: {attackingChar.state}, {hitstop}");
+                if (attackingChar.IsKnockOut())
+                {
+                    defendingChar.SetCharacterState(CharacterState.KNOCK_OUT);
+                }
+                else
+                {
+                    defendingChar.SetCharacterState(CharacterState.HIT_STAND);
+                }
                 int attacker = (characters[0] == attackingChar) ? 0 : 1;
                 int defender = (attacker + 1) % 2;
+                // apply damage
                 int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
                 BattleEvent.doSetCurrentHp?.Invoke(defender, (int)defendingChar.health);
+                // check die
                 if (defendingChar.health <= 0)
                 {
                     defendingChar.SetCharacterState(CharacterState.DIE);

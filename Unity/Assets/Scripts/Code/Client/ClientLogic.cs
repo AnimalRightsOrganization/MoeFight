@@ -83,7 +83,6 @@ namespace Code.Client
                 {
                     LocalSession.gs.characters[i].health = 1000;
                     BattleEvent.doSetCurrentHp.Invoke(i, 1000);
-                    //BattleEvent.doSetCurrentHp.Invoke(2, 1000);
                 }
             }
         }
