@@ -1,11 +1,13 @@
 fileFormatVersion: 2
-guid: a50bd9a009c8dfc4ebd88cc8101225a7
+guid: af55cfd0e7084ab4884c5a4f29b62d9f
 labels:
 - Tween
 - Tweening
 - Animation
 - HOTween
 - Paths
+- VisualScripting
+- VisualEditor
 - iTween
 - DFTween
 - LeanTween
