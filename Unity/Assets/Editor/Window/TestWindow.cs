@@ -239,7 +239,7 @@ public class EditorTools : Editor
     {
         BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
         Debug.Log($"打包{target}平台资源");
-        BundleTools.Build_Target(target);
+        BundleTools.BuildRes(target);
     }
     [MenuItem("Tools/打包/服务器", false, 2)]
     static void BuildServer_Win64()

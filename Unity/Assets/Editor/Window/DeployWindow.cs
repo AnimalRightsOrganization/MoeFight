@@ -210,7 +210,7 @@ public class DeployTools : EditorWindow
     static void BuildRes()
     {
         BuildTarget target = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), ConstValue.PLATFORM_NAME);
-        BundleTools.Build_Target(target);
+        BundleTools.BuildRes(target);
     }
 
     // 压缩

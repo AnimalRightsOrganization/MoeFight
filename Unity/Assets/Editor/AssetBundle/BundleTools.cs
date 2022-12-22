@@ -136,7 +136,7 @@ public partial class BundleTools : Editor
     #endregion
 
     #region 打包
-    private static void BuildAssetBundles()
+    private static void BuildAssetBundles(BuildTarget target)
     {
         //设置标签
         SetLabels();
@@ -147,7 +147,9 @@ public partial class BundleTools : Editor
         Directory.CreateDirectory(ConstValue.outputPath1st);
 
         //打包
-        BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, EditorUserBuildSettings.activeBuildTarget);
+        //BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, BuildTarget.Android);
+        //BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, EditorUserBuildSettings.activeBuildTarget);
+        BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, target);
         Debug.Log($"第一次打包到: {ConstValue.outputPath1st}");
 
         //清理标签
@@ -248,16 +250,17 @@ public partial class BundleTools : Editor
     #endregion
 
     #region 目标平台
-    public static void Build_Target(BuildTarget target)
+    public static void BuildRes(BuildTarget target)
     {
-        if (!EditorUserBuildSettings.activeBuildTarget.Equals(target))
-        {
-            Debug.LogError("请先切换平台");
-            EditorUtility.DisplayDialog("目标平台与当前平台不一致，请先进行平台转换", "当前平台：" + EditorUserBuildSettings.activeBuildTarget + $"\n目标平台：{target}", "OK");
-            return;
-        }
+        Debug.Log($"打包{target}平台资源");
+        //if (!EditorUserBuildSettings.activeBuildTarget.Equals(target))
+        //{
+        //    Debug.LogError("请先切换平台");
+        //    EditorUtility.DisplayDialog("目标平台与当前平台不一致，请先进行平台转换", "当前平台：" + EditorUserBuildSettings.activeBuildTarget + $"\n目标平台：{target}", "OK");
+        //    return;
+        //}
 
-        BuildAssetBundles();
+        BuildAssetBundles(target);
 
         Deploy(target);
 
@@ -278,7 +281,7 @@ public partial class BundleTools : Editor
         CopyFolder(ConstValue.outputPath2nd, appPath);
         Debug.Log($"本地部署完成\n{ConstValue.outputPath2nd}--->\n{appPath}");
 
-        //远程部署
+        //局域网部署
         string wwwPath = $@"{ConstValue.GetDeployRes}\{target}";
         if (Directory.Exists(wwwPath))
             Directory.Delete(wwwPath, true);
@@ -287,6 +290,10 @@ public partial class BundleTools : Editor
 
         //删除输出目录
         Directory.Delete(ConstValue.outputPath2nd, true);
+
+        // 浏览目录
+        //System.Diagnostics.Process.Start("explorer", appPath);
+        System.Diagnostics.Process.Start("explorer", wwwPath);
     }
     private static void CopyFolder(string strFromPath, string strToPath)
     {
