@@ -80,9 +80,11 @@ namespace HotFix
 
             int fileNum = Mathf.Min(6, fileInfo.Length);
             Debug.Log($"录像数={fileInfo.Length}，显示数={fileNum}");
+            int index = 0;
             for (int i = 0; i < fileNum; i++)
             {
-                FileInfo file = fileInfo[i];
+                index = i;
+                FileInfo file = fileInfo[index];
                 await Task.CompletedTask;
                 //Debug.Log($"{i}---{file.Name}");
 
@@ -101,6 +103,7 @@ namespace HotFix
                 {
                     //Debug.Log($"{i}---重新创建");
                     var obj = Instantiate(m_ItemPrefab, m_List);
+                    obj.name = file.Name;
                     await Task.CompletedTask;
                     if (obj.GetComponent<Item_Replay>() == false)
                     {

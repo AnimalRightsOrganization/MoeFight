@@ -294,7 +294,8 @@ namespace HotFix
         // 暂停比赛
         void OpenMenu()
         {
-            if (ClientNet.Get.m_ClientRoom.BattleStage == BattleStage.End)
+            if (ClientNet.Get.m_ClientRoom.BattleMode == BattleMode.Matching && 
+                ClientNet.Get.m_ClientRoom.BattleStage == BattleStage.End)
             {
                 var ui_toast = UIManager.Get().Push<UI_Toast>();
                 ui_toast.Show("已经结束嘞");
@@ -401,8 +402,8 @@ namespace HotFix
             BattleEvent.doSetTimeText = null;
             BattleEvent.doSetCurrentHp = null;
             BattleEvent.doSetGameEnd = null;
-            BattleEvent.doReplayUpdate = null;
-            BattleEvent.doSetAnimeSpeed = null;
+            //BattleEvent.doReplayUpdate = null; //在ReplayMenu中处理了
+            BattleEvent.doSetAnimeSpeed = null; //返回大厅，比赛对象都删除了。
         }
         void ShowSkill(int pid, string content)
         {
@@ -412,7 +413,7 @@ namespace HotFix
         {
             m_TimeText.text = second;
         }
-        async void SetCurrentHp(int index, int hp)
+        void SetCurrentHp(int index, int hp)
         {
             CurrentHp[index].sizeDelta = new Vector2(hp * 0.25f, -10);
             Tweener tw = LastHp[index].DOSizeDelta(CurrentHp[index].sizeDelta, 1); //duration是渐变，一个字一个字变过来

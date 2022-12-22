@@ -362,12 +362,16 @@ namespace Code.Client
         void ReplayLoop()
         {
             if (repInfo == null || repInfo.inputs.Count <= recvTick)
+            {
+                //Debug.LogError($"{repInfo == null} || {repInfo.inputs.Count} <= {recvTick}");
                 return;
+            }
 
             recvTick++;
             uint[] inputs = repInfo.inputs[recvTick];
             runner.OnReplayUpdate(inputs);
 
+            //Debug.Log($"ReplayLoop: {recvTick}");
             BattleEvent.doReplayUpdate?.Invoke(recvTick);
         }
         public void PlayLoop()
@@ -550,7 +554,6 @@ namespace Code.Client
             }
             else if (packet.Stage == 1) //倒计时完同步
             {
-                BattleEvent.doSetAnimeSpeed?.Invoke(0); //正式开始，动画交由逻辑驱动
                 PlayLoop(); //开始发送帧数据
             }
             else if (packet.Stage == 2)

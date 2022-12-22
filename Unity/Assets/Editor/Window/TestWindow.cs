@@ -49,7 +49,7 @@ public class TestWindow : EditorWindow
         }
         if (GUILayout.Button("打印房间", GUILayout.Height(25)))
         {
-            string room = ClientNet.Get.m_ClientRoom.ToString();
+            string room = $"{ClientNet.Get.m_ClientRoom.ToString()}\n{ClientLogic.Get.IsStart}";
             Debug.Log(room);
         }
 

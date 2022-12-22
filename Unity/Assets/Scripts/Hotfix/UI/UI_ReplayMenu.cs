@@ -28,7 +28,16 @@ namespace HotFix
             notice.onDrag = OnSnap;
             notice.onEndDrag = OnSnap;
             notice.onPointClick = OnSnap;
+        }
+
+        void OnEnable()
+        {
             BattleEvent.doReplayUpdate = OnUpdateValue; //replay main loop
+        }
+
+        void OnDisable()
+        {
+            BattleEvent.doReplayUpdate = null;
         }
 
         public void InitData(ReplayFormat info)
@@ -61,7 +70,6 @@ namespace HotFix
                 ClientLogic.Get.PauseLoop();
                 if (m_ProgressBar.value >= 1)
                 {
-                    //m_PlayTog.isOn = true;
                     ClientNet.Get.m_ClientRoom.SetStage(BattleStage.End);
                 }
             }
@@ -99,6 +107,7 @@ namespace HotFix
         void OnUpdateValue(uint frameID)
         {
             m_ProgressBar.value = frameID;
+            //Debug.Log($"Slider Update: {m_ProgressBar.value}/{m_ProgressBar.maxValue}");
         }
     }
 }

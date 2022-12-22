@@ -16,6 +16,7 @@ namespace HotFix
         [SerializeField] Text m_TimeText;
         [SerializeField] Text m_ResultText;
         private Color[] colors = new Color[] { new Color(1, .503f, 0.586f), new Color(1f, .917f, .5f), new Color(.5f, 1f, .75f) };
+        private ReplayFormat replayData;
 
         void Awake()
         {
@@ -29,22 +30,24 @@ namespace HotFix
             m_SelfBtn.onClick.AddListener(OnLoadScene);
         }
 
+        // 加载列表时初始化
         public async Task<Item_Replay> InitData(FileInfo file)
         {
+            this.replayData = await ReplayManager.LoadReplay(file.FullName);
             //Debug.Log($"加载回放列表: {file.FullName}");
-            var repInfo = await ReplayManager.LoadReplay(file.FullName);
-            this.SetHostName(repInfo.scene.Host.UserName);
-            this.SetGuestName(repInfo.scene.Guest.UserName);
-            this.SetMap($"{repInfo.scene.MapId}");
+
+            this.SetHostName(replayData.scene.Host.UserName);
+            this.SetGuestName(replayData.scene.Guest.UserName);
+            this.SetMap($"{replayData.scene.MapId}");
             this.SetTime($"{file.CreationTime}");
 
-            var mySeatId = repInfo.scene.Host.UserName == ClientNet.Get.m_PlayerManager.LocalPlayer.UserName ? 0 : 1;
+            var mySeatId = replayData.scene.Host.UserName == ClientNet.Get.m_PlayerManager.LocalPlayer.UserName ? 0 : 1;
             var result = BattleResult.Draw;
-            if (repInfo.winnerId == 2)
+            if (replayData.winnerId == 2)
             {
                 result = BattleResult.Draw;
             }
-            else if (repInfo.winnerId == mySeatId)
+            else if (replayData.winnerId == mySeatId)
             {
                 result = BattleResult.Win;
             }
@@ -93,23 +96,27 @@ namespace HotFix
             return this;
         }
 
+        // 点击按钮时跳转
         private void OnLoadScene()
         {
-            var repData = ReplayManager.data;
-            ClientPlayer host = new ClientPlayer(repData.scene.Host.UserName, 0);
-            ClientPlayer guest = new ClientPlayer(repData.scene.Guest.UserName, 1);
-            ClientRoom room = new ClientRoom(repData.scene.RoomId, host, guest);
+            var data = this.replayData;
+            ReplayManager.data = this.replayData;
+            Debug.Log($"回放文件: battle:{data.scene.BattleId}, len:{data.inputs.Count}");
+
+            ClientPlayer host = new ClientPlayer(data.scene.Host.UserName, 0);
+            ClientPlayer guest = new ClientPlayer(data.scene.Guest.UserName, 1);
+            ClientRoom room = new ClientRoom(data.scene.RoomId, host, guest);
             ClientNet.Get.m_ClientRoom = room;
             room.BattleMode = BattleMode.Replay;
 
-            room.DoInit(repData.scene);
+            room.DoInit(data.scene);
 
             System.Action action = () =>
             {
                 UIManager.Get().PopAll();
                 UIManager.Get().Push<UI_GameMenu>();
                 var ui_replay = UIManager.Get().Push<UI_ReplayMenu>();
-                ui_replay.InitData(repData);
+                ui_replay.InitData(data);
             };
             GameManager.Get.LoadBattleAsync(action);
         }
