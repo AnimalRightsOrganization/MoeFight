@@ -296,12 +296,12 @@ namespace Code.Client
 
 #if UNITY_EDITOR
             // 模拟丢包
-            int rd = UnityEngine.Random.Range(0, 100);
-            if (rd < dropRate)
-            {
-                Debug.LogError($"丢包:{cmd.frameNumber}");
-                return;
-            }
+            //int rd = UnityEngine.Random.Range(0, 100);
+            //if (rd < dropRate)
+            //{
+            //    Debug.LogError($"丢包:{cmd.frameNumber}");
+            //    return;
+            //}
 #endif
 
             if (m_ClientRoom.BattleMode == BattleMode.Matching)

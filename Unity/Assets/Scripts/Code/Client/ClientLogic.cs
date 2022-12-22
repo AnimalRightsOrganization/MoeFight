@@ -267,17 +267,20 @@ namespace Code.Client
         {
             //①收集本地按键，发送。
             sendTick++;
-            uint input = LocalSession.ReadInputs();
+
+            //uint input = LocalSession.ReadInputs();
+            //ggpo_predict[sendTick] = new uint[2];
+            //ggpo_predict[sendTick][localSeatId] = input;
+            //Debug.Log($"发送: {sendTick}---{input}");
+            uint[] inputs = TestInputs(sendTick);
+            uint input = inputs[0];
+
             var cmd = new C2S_InputPacket
             {
                 frameNumber = sendTick,
                 input = input,
             };
             ClientNet.Get.SendInput(cmd);
-
-            ggpo_predict[sendTick] = new uint[2];
-            ggpo_predict[sendTick][localSeatId] = input;
-            //Debug.Log($"发送: {sendTick}---{input}");
 
             //②Delay-Based，本地模拟延迟。
             for (int i = (int)rendTick + 1; i < (int)sendTick - DELAY_FRAMES; i++)
@@ -568,5 +571,29 @@ namespace Code.Client
             Debug.Log("OnBattleEnd: save replay");
         }
         #endregion
+
+
+        public Queue<uint> custom = new Queue<uint>();
+        uint[] TestInputs(uint server_tick)
+        {
+            uint[] inputs;
+
+            if (m_ClientRoom.BattleMode == BattleMode.Matching)
+            {
+                uint input = LocalSession.ReadInputs();
+                ggpo_predict[sendTick] = new uint[2];
+                ggpo_predict[sendTick][localSeatId] = input;
+                inputs = new uint[] { input };
+            }
+            else
+            {
+                uint input_0 = LocalSession.ReadInputs();
+                uint input_1 = custom.Count > 0 ? custom.Dequeue() : 0;
+                inputs = new uint[] { input_0, input_1 };
+                ggpo_recieve[server_tick] = inputs;
+                ggpo_predict[server_tick] = inputs;
+            }
+            return inputs;
+        }
     }
 }

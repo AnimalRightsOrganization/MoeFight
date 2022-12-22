@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEditor;
@@ -17,6 +18,7 @@ public class TestWindow : EditorWindow
     static TestWindow window;
 
     public bool UseOpening;
+    public bool faceRight = true;
 
     public static void ShowWindow()
     {
@@ -53,11 +55,69 @@ public class TestWindow : EditorWindow
         {
             FillLogin("test2");
         }
-        if (GUILayout.Button("Client Print"))
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Space(20);
+        faceRight = GUILayout.Toggle(faceRight, "屏幕左边", GUILayout.Height(30));
+        if (GUILayout.Button("AI动作", GUILayout.Height(30)))
         {
-            var str = ClientNet.Get.m_PlayerManager.LocalPlayer.ToString();
-            Debug.Log(str);
+            //// hadouken
+            //List<KeyCode[]> keys = new List<KeyCode[]>
+            //{
+            //    new KeyCode[] { },
+            //    new KeyCode[] { KeyCode.D },
+            //    new KeyCode[] { KeyCode.D },
+            //    new KeyCode[] { KeyCode.D },
+            //    new KeyCode[] { KeyCode.D },
+            //    new KeyCode[] { KeyCode.D },
+            //    new KeyCode[] { KeyCode.D, KeyCode.S },
+            //    new KeyCode[] { KeyCode.S },
+            //    new KeyCode[] { KeyCode.S },
+            //    new KeyCode[] { KeyCode.S },
+            //    new KeyCode[] { KeyCode.S },
+            //    new KeyCode[] { KeyCode.I },
+            //    new KeyCode[] { KeyCode.I },
+            //    new KeyCode[] { KeyCode.I },
+            //    new KeyCode[] { KeyCode.I },
+            //    new KeyCode[] { KeyCode.I },
+            //    new KeyCode[] { },
+            //};
+            //// SHORYUKEN
+            KeyCode front = faceRight ? KeyCode.D : KeyCode.A;
+            KeyCode back = faceRight ? KeyCode.A : KeyCode.D;
+            List<KeyCode[]> keys = new List<KeyCode[]>
+            {
+                new KeyCode[] { },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { back },
+                new KeyCode[] { back },
+                new KeyCode[] { back },
+                new KeyCode[] { back, KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { },
+            };
+            for (int i = 0; i < keys.Count; i++)
+            {
+                uint input = LocalSession.ConvertInputs(keys[i]);
+                ClientLogic.Get.custom.Enqueue(input);
+            }
         }
+        GUILayout.EndHorizontal();
+
         GUILayout.BeginHorizontal();
         GUILayout.Space(20);
         UseOpening = GUILayout.Toggle(UseOpening, "使用过场", GUILayout.Height(30));
@@ -79,13 +139,14 @@ public class TestWindow : EditorWindow
                 BattleId = room.BattleID,
                 MapId = room.MapId,
                 Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.KEN },
-                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.SATOMI },
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.HONOKA },
             };
             Debug.Log($"调试模式:\n{packet}");
 
             GameManager.Get.OnLoadScene(packet, UseOpening);
         }
         GUILayout.EndHorizontal();
+
         if (GUILayout.Button("重载配置"))
         {
             ClientLogic.Get.runner.Reload();
