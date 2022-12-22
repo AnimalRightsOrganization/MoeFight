@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using HitstunConstants;
-using System.Linq;
 
 public static class LocalSession
 {
