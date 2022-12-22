@@ -53,28 +53,7 @@ public class TestWindow : EditorWindow
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("AI动作", GUILayout.Width(200), GUILayout.Height(25)))
         {
-            //// hadouken
-            //List<KeyCode[]> keys = new List<KeyCode[]>
-            //{
-            //    new KeyCode[] { },
-            //    new KeyCode[] { KeyCode.D },
-            //    new KeyCode[] { KeyCode.D },
-            //    new KeyCode[] { KeyCode.D },
-            //    new KeyCode[] { KeyCode.D },
-            //    new KeyCode[] { KeyCode.D },
-            //    new KeyCode[] { KeyCode.D, KeyCode.S },
-            //    new KeyCode[] { KeyCode.S },
-            //    new KeyCode[] { KeyCode.S },
-            //    new KeyCode[] { KeyCode.S },
-            //    new KeyCode[] { KeyCode.S },
-            //    new KeyCode[] { KeyCode.I },
-            //    new KeyCode[] { KeyCode.I },
-            //    new KeyCode[] { KeyCode.I },
-            //    new KeyCode[] { KeyCode.I },
-            //    new KeyCode[] { KeyCode.I },
-            //    new KeyCode[] { },
-            //};
-            //// SHORYUKEN
+            // SHORYUKEN
             KeyCode front = faceRight ? KeyCode.D : KeyCode.A;
             KeyCode back = faceRight ? KeyCode.A : KeyCode.D;
             List<KeyCode[]> keys = new List<KeyCode[]>
