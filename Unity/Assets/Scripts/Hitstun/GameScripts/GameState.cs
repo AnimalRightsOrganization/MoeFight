@@ -238,10 +238,14 @@ public class GameState
             }
             else if (defendingChar.IsStand())
             {
-                Debug.Log($"未防御，攻方使用: {attackingChar.state}, {hitstop}");
+                //Debug.Log($"未防御，攻方使用: {attackingChar.state}, {hitstop}");
                 if (attackingChar.IsKnockOut())
                 {
                     defendingChar.SetCharacterState(CharacterState.KNOCK_OUT);
+                }
+                else if (attackingChar.IsKnockDown())
+                {
+                    defendingChar.SetCharacterState(CharacterState.KNOCK_DOWN);
                 }
                 else
                 {

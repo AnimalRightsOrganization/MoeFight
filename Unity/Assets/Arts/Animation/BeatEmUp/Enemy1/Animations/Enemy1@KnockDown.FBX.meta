@@ -996,7 +996,7 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: KNOCK_OUT
+      name: KNOCK_DOWN
       takeName: Take 001
       internalID: -7759920287792007584
       firstFrame: 0

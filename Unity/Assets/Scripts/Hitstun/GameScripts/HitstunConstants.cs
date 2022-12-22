@@ -144,8 +144,9 @@ namespace HitstunConstants
         BLOCK_LOW,
         HIT_STAND,
         HIT_CROUCH,
-        KNOCK_OUT,
-        STAND_UP,
+        KNOCK_OUT, //击飞，空中连打
+        KNOCK_DOWN,//击倒，直接倒地
+        STAND_UP,  //起身
         DIE,
 
         // attacks

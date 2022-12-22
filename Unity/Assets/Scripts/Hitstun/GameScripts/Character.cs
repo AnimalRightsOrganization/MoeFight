@@ -387,10 +387,15 @@ public class Character
     // 是否击飞对方
     public bool IsKnockOut()
     {
+        return state == CharacterState.SHORYUKEN; //&& framesInState >= 20; //连打的最后一击，才击飞
+    }
+
+    // 是否击倒对方
+    public bool IsKnockDown()
+    {
         return (state == CharacterState.CROUCH_LK ||
             state == CharacterState.CROUCH_MK ||
-            state == CharacterState.CROUCH_HK ||
-            state == CharacterState.SHORYUKEN &&  framesInState >= 20); //连打的最后一击，才击飞
+            state == CharacterState.CROUCH_HK);
     }
 
     // 只和防御有关
@@ -656,11 +661,48 @@ public class Character
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
                 break;
-            // KNOCK_OUT STATE
+            // KNOCK_DOWN STATE
             case CharacterState.KNOCK_OUT:
+                /*
                 if (hitStun > 0)
                 {
-                    Debug.Log($"hitStun: {hitStun}");
+                    hitStun--;
+                }
+                else
+                {
+                    SetCharacterState(CharacterState.STAND_UP); //起身
+                }
+                velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
+                velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
+                */
+                if (hitStun > 0)
+                {
+                    hitStun--;
+                }
+                if (framesInState < Constants.PREJUMP_FRAMES)
+                {
+                    velocity.x = 0;
+                    velocity.y = 0;
+                    break;
+                }
+                if (framesInState == Constants.PREJUMP_FRAMES)
+                {
+                    velocity.x = facingRight ? -data.constants.JUMP_VELOCITY_X : data.constants.JUMP_VELOCITY_X;
+                    velocity.y = Constants.JUMP_VELOCITY_Y;
+                    break;
+                }
+                velocity.x = velocity.x;
+                velocity.y += Constants.GRAVITY / Constants.FPS;
+
+                if (position.y <= 0)
+                {
+                    SetCharacterState(CharacterState.STAND_UP);
+                }
+                break;
+            // KNOCK_DOWN STATE
+            case CharacterState.KNOCK_DOWN:
+                if (hitStun > 0)
+                {
                     hitStun--;
                 }
                 else
