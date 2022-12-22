@@ -681,18 +681,19 @@ public class Character
                 }
                 if (framesInState < Constants.PREJUMP_FRAMES)
                 {
-                    velocity.x = 0;
-                    velocity.y = 0;
+                    velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
+                    //velocity.x = 0;
+                    //velocity.y = 0;
                     break;
                 }
                 if (framesInState == Constants.PREJUMP_FRAMES)
                 {
-                    velocity.x = facingRight ? -data.constants.JUMP_VELOCITY_X : data.constants.JUMP_VELOCITY_X;
-                    velocity.y = Constants.JUMP_VELOCITY_Y;
+                    //velocity.x = facingRight ? -data.constants.JUMP_VELOCITY_X : data.constants.JUMP_VELOCITY_X;
+                    velocity.y = Constants.JUMP_VELOCITY_Y / 2; //6666 / 2
                     break;
                 }
                 velocity.x = velocity.x;
-                velocity.y += Constants.GRAVITY / Constants.FPS;
+                velocity.y += Constants.GRAVITY / Constants.FPS * 3 / 2; //每帧都下落
 
                 if (position.y <= 0)
                 {

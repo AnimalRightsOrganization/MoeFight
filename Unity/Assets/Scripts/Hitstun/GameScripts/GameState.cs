@@ -265,6 +265,10 @@ public class GameState
                 }
                 //Debug.Log($"{(defendingChar.facingRight ? "左玩家" : "右玩家")}站姿被命中，HP={defendingChar.health}。攻击者P{attacker}:{attackingChar.state}, 伤害={damage}");
             }
+            else if (defendingChar.IsKnockOut())
+            {
+                Debug.Log($"击飞过程中受击");
+            }
             // apply hitstun
             defendingChar.framesInState = 0;
             defendingChar.hitStun = hitBox.hitstun;
