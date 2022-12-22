@@ -229,7 +229,7 @@ public class GameState
                 int defender = (attacker + 1) % 2;
                 int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
-                BattleEvent.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
+                BattleEvent.doSetCurrentHp?.Invoke(defender, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
                     defendingChar.SetCharacterState(CharacterState.DIE);
@@ -244,7 +244,7 @@ public class GameState
                 int defender = (attacker + 1) % 2;
                 int damage = characterNodes[attacker].GetDamage(attackingChar.state);
                 defendingChar.health -= damage;
-                BattleEvent.doSetCurrentHp?.Invoke(defender + 1, (int)defendingChar.health);
+                BattleEvent.doSetCurrentHp?.Invoke(defender, (int)defendingChar.health);
                 if (defendingChar.health <= 0)
                 {
                     defendingChar.SetCharacterState(CharacterState.DIE);

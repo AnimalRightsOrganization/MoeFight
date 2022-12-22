@@ -82,8 +82,8 @@ namespace Code.Client
                 for (int i = 0; i < Constants.NUM_PLAYERS; i++)
                 {
                     LocalSession.gs.characters[i].health = 1000;
-                    BattleEvent.doSetCurrentHp.Invoke(1, 1000);
-                    BattleEvent.doSetCurrentHp.Invoke(2, 1000);
+                    BattleEvent.doSetCurrentHp.Invoke(i, 1000);
+                    //BattleEvent.doSetCurrentHp.Invoke(2, 1000);
                 }
             }
         }
@@ -473,8 +473,8 @@ namespace Code.Client
             // 血条
             int hp1 = LocalSession.gs.characters[0].health;
             int hp2 = LocalSession.gs.characters[1].health;
-            BattleEvent.doSetCurrentHp?.Invoke(1, hp1);
-            BattleEvent.doSetCurrentHp?.Invoke(2, hp2);
+            BattleEvent.doSetCurrentHp?.Invoke(0, hp1);
+            BattleEvent.doSetCurrentHp?.Invoke(1, hp2);
         }
         public void RollbackReplay(uint tick)
         {

@@ -51,6 +51,35 @@ public class TestWindow : EditorWindow
         GUILayout.EndHorizontal();
 
         GUILayout.BeginHorizontal();
+        if (GUILayout.Button("单机调试", GUILayout.Width(200), GUILayout.Height(25)))
+        {
+            ClientNet.Get.Disconnect();
+            //await Task.Delay(1);
+
+            ClientPlayer host = new ClientPlayer("test1", 0);
+            ClientPlayer guest = new ClientPlayer("bot", 1);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(host, true);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(guest, false);
+            ClientNet.Get.m_ClientRoom = new ClientRoom(0, host, guest);
+            var room = ClientNet.Get.m_ClientRoom;
+            room.BattleMode = BattleMode.Training;
+            var packet = new S2C_LoadScenePacket
+            {
+                RoomId = (short)room.RoomID,
+                BattleId = room.BattleID,
+                MapId = room.MapId,
+                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.HONOKA },
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.AOI },
+            };
+            Debug.Log($"调试模式:\n{packet}");
+
+            GameManager.Get.OnLoadScene(packet, UseOpening);
+        }
+        GUILayout.Space(20);
+        UseOpening = GUILayout.Toggle(UseOpening, "使用过场", GUILayout.Height(25));
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
         if (GUILayout.Button("AI动作", GUILayout.Width(200), GUILayout.Height(25)))
         {
             // SHORYUKEN
@@ -89,35 +118,6 @@ public class TestWindow : EditorWindow
         }
         GUILayout.Space(20);
         faceRight = GUILayout.Toggle(faceRight, "屏幕左边", GUILayout.Height(25));
-        GUILayout.EndHorizontal();
-
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("单机调试", GUILayout.Width(200), GUILayout.Height(25)))
-        {
-            ClientNet.Get.Disconnect();
-            //await Task.Delay(1);
-
-            ClientPlayer host = new ClientPlayer("test1", 0);
-            ClientPlayer guest = new ClientPlayer("bot", 1);
-            ClientNet.Get.m_PlayerManager.AddClientPlayer(host, true);
-            ClientNet.Get.m_PlayerManager.AddClientPlayer(guest, false);
-            ClientNet.Get.m_ClientRoom = new ClientRoom(0, host, guest);
-            var room = ClientNet.Get.m_ClientRoom;
-            room.BattleMode = BattleMode.Training;
-            var packet = new S2C_LoadScenePacket
-            {
-                RoomId = (short)room.RoomID,
-                BattleId = room.BattleID,
-                MapId = room.MapId,
-                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.KEN },
-                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.HONOKA },
-            };
-            Debug.Log($"调试模式:\n{packet}");
-
-            GameManager.Get.OnLoadScene(packet, UseOpening);
-        }
-        GUILayout.Space(20);
-        UseOpening = GUILayout.Toggle(UseOpening, "使用过场", GUILayout.Height(25));
         GUILayout.EndHorizontal();
 
         if (GUILayout.Button("重载配置", GUILayout.Width(200), GUILayout.Height(25)))

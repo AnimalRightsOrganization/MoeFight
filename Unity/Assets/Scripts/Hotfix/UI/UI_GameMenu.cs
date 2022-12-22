@@ -5,6 +5,7 @@ using Code.Shared;
 using Code.Client;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using System.Threading.Tasks;
 
 namespace HotFix
 {
@@ -405,11 +406,10 @@ namespace HotFix
         {
             m_TimeText.text = second;
         }
-        void SetCurrentHp(int pid, int hp)
+        async void SetCurrentHp(int index, int hp)
         {
-            CurrentHp[pid - 1].sizeDelta = new Vector2(hp * 0.25f, -10);
-
-            Tweener tw = LastHp[pid - 1].DOSizeDelta(CurrentHp[pid - 1].sizeDelta, 1); //duration是渐变，一个字一个字变过来
+            CurrentHp[index].sizeDelta = new Vector2(hp * 0.25f, -10);
+            Tweener tw = LastHp[index].DOSizeDelta(CurrentHp[index].sizeDelta, 1); //duration是渐变，一个字一个字变过来
             tw.SetDelay(0.5f);
             tw.Play();
         }
