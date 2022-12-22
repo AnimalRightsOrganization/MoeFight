@@ -658,21 +658,26 @@ public class Character
                 break;
             // KNOCK_OUT STATE
             case CharacterState.KNOCK_OUT:
-                if (hitStun > (data.animations[state.ToString()].distinctSprites - 1) * 4)
+                if (hitStun > 0)
                 {
-                    hitStun--;
-                    framesInState--;
-                }
-                else if (hitStun > 0)
-                {
+                    Debug.Log($"hitStun: {hitStun}");
                     hitStun--;
                 }
                 else
                 {
-                    SetCharacterState(CharacterState.STAND);
+                    SetCharacterState(CharacterState.STAND_UP); //起身
                 }
                 velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                 velocity.x = facingRight ? Mathf.Min(velocity.x, 0) : Mathf.Max(velocity.x, 0);
+                break;
+            // STAND_UP STATE
+            case CharacterState.STAND_UP:
+                if (framesInState >= data.animations[state.ToString()].totalFrames)
+                {
+                    SetCharacterState(CharacterState.STAND);
+                }
+                velocity.x = 0;
+                velocity.y = 0;
                 break;
             // HIT_CROUCH STATE
             case CharacterState.HIT_CROUCH:

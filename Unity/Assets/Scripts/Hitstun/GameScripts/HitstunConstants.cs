@@ -145,6 +145,7 @@ namespace HitstunConstants
         HIT_STAND,
         HIT_CROUCH,
         KNOCK_OUT,
+        STAND_UP,
         DIE,
 
         // attacks
