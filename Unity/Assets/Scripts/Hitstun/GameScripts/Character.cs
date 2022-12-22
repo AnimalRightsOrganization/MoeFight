@@ -267,7 +267,7 @@ public class Character
     public Box GetCollisionBox(CharacterData data)
     {
         int xMin, xMax, yMin, yMax;
-        int[] collisionBox = isAttacking() ? data.attacks[state.ToString()].collisionBox : data.animations[state.ToString()].collisionBox;
+        int[] collisionBox = IsAttacking() ? data.attacks[state.ToString()].collisionBox : data.animations[state.ToString()].collisionBox;
         if (facingRight)
         {
             xMin = position.x + collisionBox[0];
@@ -289,7 +289,7 @@ public class Character
     {
         boxes = new List<Box>();
         Animation animationData;
-        if (isAttacking())
+        if (IsAttacking())
         {
             animationData = data.attacks[state.ToString()];
         }
@@ -315,7 +315,7 @@ public class Character
         return false;
     }
 
-    public bool isAttacking()
+    public bool IsAttacking()
     {
         return state == CharacterState.STAND_LP
             || state == CharacterState.STAND_MP

@@ -23,13 +23,13 @@ public class ClientDebug : MonoBehaviour
         var char0 = LocalSession.gs.characters[0];
         var data0 = LocalSession.gs.characterDatas[0];
         var currentState0 = char0.state;
-        var currentAnimation0 = char0.isAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
+        var currentAnimation0 = char0.IsAttacking() ? data0.attacks[currentState0.ToString()] : data0.animations[currentState0.ToString()];
         int currentFrame0 = (int)char0.framesInState % currentAnimation0.totalFrames;
 
         var char1 = LocalSession.gs.characters[1];
         var data1 = LocalSession.gs.characterDatas[1];
         var currentState1 = char1.state;
-        var currentAnimation1 = char1.isAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
+        var currentAnimation1 = char1.IsAttacking() ? data1.attacks[currentState1.ToString()] : data1.animations[currentState1.ToString()];
         int currentFrame1 = (int)char1.framesInState % currentAnimation1.totalFrames;
 
         string log = $"tick: {LocalSession.gs.frameNumber}\nping: {ClientNet.Get._ping}\nF3:回血\nF10:暂停\nF11:恢复\nF12:步进";

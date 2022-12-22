@@ -59,6 +59,11 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    void OnApplicationQuit()
+    {
+        created = false;
+    }
+
     // 播放BGM
     public void PlayMusic(string soundName, bool loop = false)
     {

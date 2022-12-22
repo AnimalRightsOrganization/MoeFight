@@ -5,7 +5,6 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
 using HitstunConstants;
-using System.Security.Cryptography;
 
 public class GameState
 {
@@ -460,7 +459,7 @@ public class GameState
                 var char1 = characters[i];
                 var data1 = characterDatas[i];
                 string animationName = char1.state.ToString();
-                var currentAnimation1 = char1.isAttacking() ? data1.attacks[animationName] : data1.animations[animationName];
+                var currentAnimation1 = char1.IsAttacking() ? data1.attacks[animationName] : data1.animations[animationName];
                 uint vt_anime_duration = (uint)currentAnimation1.totalFrames;
                 characters[1 - i].vtStun = vt_anime_duration;
                 BattleEvent.doSetLight?.Invoke(i);

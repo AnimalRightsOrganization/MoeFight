@@ -150,6 +150,7 @@ public class GameManager : MonoBehaviour
     {
         var asset = ResManager.LoadPrefab("Prefabs/ClientLogic");
         logic = Instantiate(asset).GetComponent<ClientLogic>();
+        logic.name = typeof(ClientLogic).Name;
         await Task.Delay(1000);
         action?.Invoke();
     }

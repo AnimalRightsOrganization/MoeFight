@@ -91,7 +91,7 @@ public class CharacterView : MonoBehaviour
     {
         // display correct sprite based on state
         CharacterState currentState = character.state;
-        Animation currentAnimation = character.isAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
+        Animation currentAnimation = character.IsAttacking() ? data.attacks[currentState.ToString()] : data.animations[currentState.ToString()];
         int currentFrame = (int)character.framesInState % currentAnimation.totalFrames;
         if (currentState == CharacterState.DIE && character.framesInState >= currentAnimation.totalFrames)
         {
