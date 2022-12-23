@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 using Newtonsoft.Json;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -24,11 +23,11 @@ public class ResManager
     {
         string assetsPath = $"{Application.persistentDataPath}/{ConstValue.PLATFORM_NAME}/assets.bytes"; //解析文件
         string assetsJson = File.ReadAllText(assetsPath);
-        //_assetsBytes = JsonMapper.ToObject<AssetsBytes>(assetsJson);
         _assetsBytes = JsonConvert.DeserializeObject<AssetsBytes>(assetsJson);
     }
 
     public const string BUNDLES_FOLDER = "Assets/Bundles";
+    //public const string PREFAB_FOLDER = "Assets/Bundles/Prefabs";
 
     public static GameObject LoadPrefab(string fileName)
     {
@@ -87,20 +86,7 @@ public class ResManager
         return clip;
     }
 
-    public static PlayableAsset LoadTimeline(string configName)
-    {
-#if UNITY_EDITOR && !USE_ASSETBUNDLE
-        string filePath = $"{BUNDLES_FOLDER}/{configName}.playable";
-        var config = AssetDatabase.LoadAssetAtPath<PlayableAsset>(filePath);
-#else
-        string filePath = GetFilePath($"{configName}.unity3d");
-        AssetBundle asset = AssetBundle.LoadFromFile(filePath);
-        var config = (PlayableAsset)asset.LoadAllAssets().FirstOrDefault();
-        asset.Unload(false);
-#endif
-        return config;
-    }
-
+    // Excel
     public static string LoadBytes(string fileName)
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
@@ -115,6 +101,7 @@ public class ResManager
         return ta.text;
     }
 
+    // ScriptableObject
     public static object LoadConfig(string configName)
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
@@ -129,6 +116,7 @@ public class ResManager
         return config;
     }
 
+    // ILRuntime
     public static byte[] LoadDLL()
     {
 #if UNITY_EDITOR && !USE_ASSETBUNDLE
