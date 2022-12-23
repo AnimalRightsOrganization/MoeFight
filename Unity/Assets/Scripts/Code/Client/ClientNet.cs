@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using UnityEngine;
 using LiteNetLib;
 using LiteNetLib.Utils;
@@ -81,6 +82,8 @@ namespace Code.Client
 
             _onConnected?.Invoke();
             _onConnected = null;
+
+            SendLoginByToken();
         }
 
         void INetEventListener.OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo)
@@ -273,7 +276,8 @@ namespace Code.Client
             //Debug.Log("挂载委托");
             _onDisconnected = onDisconnected;
 
-            string IP = ConfigManager.Get().globalConfig.IP;
+            string IP = GameManager.present.web;
+            //string IP = ConfigManager.Get().globalConfig.IP;
             int Port = ConfigManager.Get().globalConfig.Port;
             string Key = ConfigManager.Get().globalConfig.Key;
             _netManager.Connect(IP, Port, Key);
@@ -346,6 +350,27 @@ namespace Code.Client
             };
             SendPacketSerializable(PacketType.C2S_LoginReq, cmd);
             Debug.Log($"[C] 登录请求：用户名={cmd.UserName}，密码={cmd.Password}");
+        }
+
+        // 连接成功，自动用令牌登录
+        async void SendLoginByToken()
+        {
+            string token = GameManager.Token;
+            Debug.Log($"连接服务器成功，尝试读取Token：'{token}'");
+
+            var connect = UIManager.Get().Push<UI_Connect>();
+            await Task.Delay(500); //转一下
+
+            // 使用Token登录
+            if (!string.IsNullOrEmpty(token))
+            {
+                var cmd = new C2S_LoginByTokenPacket { Token = token };
+                SendPacketSerializable(PacketType.C2S_LoginByToken, cmd);
+            }
+            else
+            {
+                connect.Pop();
+            }
         }
 
         public void SendLogout()

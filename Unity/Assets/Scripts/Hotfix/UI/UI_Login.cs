@@ -79,7 +79,7 @@ namespace HotFix
             ApplyLanguage();
 
             EventManager.RegisterEvent(OnNetCallback);
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR || USE_ASSETBUNDLE
             ConnectToServer();
 #endif
         }

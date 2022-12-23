@@ -10,41 +10,32 @@ using HotFix;
 
 public class GameManager : MonoBehaviour
 {
-    static GameManager _instance;
-    public static GameManager Get
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = FindObjectOfType<GameManager>();
-            return _instance;
-        }
-    }
+    public static GameManager Get;
 
     private static bool Initialized = false;
     public static Present present; //通过请求返回
+    private readonly IPC _ipc = new IPC { ReceiveTimeout = 1000 };
     public static string Token { get; private set; }
 
     private ClientLogic logic;
 
     void Awake()
     {
+        Debug.Log($"渠道:{ConstValue.CHANNEL_NAME}");
+#if USE_ASSETBUNDLE
+            Debug.Log($"使用热更, Initialized:{Initialized}");
+#else
+        Debug.Log($"不是热更, Initialized:{Initialized}");
+#endif
+
         if (!Initialized)
         {
+            Get = this;
             DontDestroyOnLoad(gameObject);
 
-            // 系统设置
-            Time.timeScale = 1.0f;
-            Time.fixedDeltaTime = 1f / Constants.FPS;
-            Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
-            QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
-            Screen.fullScreen = false;
-            //Screen.SetResolution(540, 960, false);
-            Screen.sleepTimeout = SleepTimeout.NeverSleep;
-            //Debug.unityLogger.logEnabled = false; //release版关闭
-            //Application.systemLanguage;
+            SystemSetting();
 
-#if CHANNEL_1000 //官方大厅渠道
+#if Channel_101 //官方大厅渠道
             IPC_Login();
 #endif
 
@@ -61,6 +52,25 @@ public class GameManager : MonoBehaviour
         {
             OnInited();
         }
+    }
+
+    void OnApplicationQuit()
+    {
+        Initialized = false;
+    }
+
+    // 系统设置
+    void SystemSetting()
+    {
+        Time.timeScale = 1.0f;
+        Time.fixedDeltaTime = 1f / Constants.FPS;
+        Application.targetFrameRate = Constants.FPS; //锁定渲染帧60，不锁是-1
+        QualitySettings.vSyncCount = 0; //只能是0/1/2，0是不等待垂直同步
+        Screen.fullScreen = false;
+        //Screen.SetResolution(540, 960, false);
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        //Debug.unityLogger.logEnabled = false; //release版关闭
+        //Application.systemLanguage;
     }
 
     // 请求游戏配置
@@ -120,6 +130,20 @@ public class GameManager : MonoBehaviour
 
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
+    }
+
+    async void IPC_Login()
+    {
+        try
+        {
+            string result = await _ipc.Send("Login 0");
+            Token = result;
+            Debug.Log($"IPC返回：{result}");
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log($"未启动大厅：{e.Message}");
+        }
     }
 
     public async void OnLoadScene(S2C_LoadScenePacket packet, bool opening = true)

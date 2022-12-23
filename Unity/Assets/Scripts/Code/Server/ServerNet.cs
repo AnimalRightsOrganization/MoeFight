@@ -235,6 +235,9 @@ namespace Code.Server
                 case PacketType.C2S_LoginReq:
                     OnLoginReceived(reader, peer);
                     break;
+                case PacketType.C2S_LoginByToken:
+                    OnLoginByTokenReceived(reader, peer);
+                    break;
                 case PacketType.C2S_LogoutReq:
                     OnLogoutReceived(reader, peer);
                     break;
@@ -466,6 +469,137 @@ namespace Code.Server
             };
             peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
             */
+            #endregion
+        }
+
+        private void OnLoginByTokenReceived(NetPacketReader reader, NetPeer peer)
+        {
+            var cmd = new C2S_LoginByTokenPacket();
+            cmd.Deserialize(reader);
+            UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.Token}");
+
+            byte _audio = 0;
+            byte _sound = 0;
+            byte _language = 1;
+            bool isReconnect = false;
+            string userName = string.Empty;
+
+            #region 验证逻辑
+#if UNITY_SERVER || UNITY_EDITOR
+            string query = $"SELECT Count(*) FROM tb_user WHERE token='{cmd.Token}'";
+            int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            //UnityEngine.Debug.Log($"check username & password: {check1}");
+            if (check1 <= 0)
+            {
+                UnityEngine.Debug.LogError("token not exist");
+                var packet = new S2C_LoginResultPacket { Code = 1 };
+                peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
+                return;
+            }
+
+            string columnName = "username,audio,sound,language";
+            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE token='{cmd.Token}'", columnName); //固定长度4
+            List<string> _userList = results[0];
+            List<string> _audioList = results[1];
+            List<string> _soundList = results[2];
+            List<string> _languageList = results[3];
+            userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : (results[0][0]).ToString();
+            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
+            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
+            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
+#endif
+            #endregion
+
+            #region 登录逻辑
+            ServerPlayer player = null;
+            // 校验重复登录或重连，m_PlayerManager中已有该玩家
+            ServerPlayer lastPlayer = m_PlayerManager.GetPlayerByUsername(userName);
+            if (lastPlayer != null)
+            {
+                if (lastPlayer.Status == PlayerStatus.Reconnect)
+                {
+                    UnityEngine.Debug.Log($"重连登录: Peer:{lastPlayer.PeerId},UserName:{lastPlayer.UserName}");
+                    isReconnect = true;
+                    m_PlayerManager.RemovePlayer(lastPlayer.PeerId);
+                    //player = lastPlayer;
+                    //peer.Tag = lastPlayer;
+                    player = new ServerPlayer(userName, peer); //新建玩家对象
+                    m_PlayerManager.AddPlayer(player);
+                    player.CopyFrom(lastPlayer); //拷贝玩家信息
+                }
+                else
+                {
+                    UnityEngine.Debug.Log("重复登录");
+                    var packet = new S2C_ErrorPacket { ErrorCode = (byte)ErrorCode.HAS_LOGIN };
+                    peer.Send(WriteSerializable(PacketType.S2C_ErrorOperate, packet), DeliveryMethod.ReliableOrdered);
+                    return;
+                }
+            }
+            else
+            {
+                player = new ServerPlayer(userName, peer);
+                m_PlayerManager.AddPlayer(player);
+                player.ResetToLobby();
+            }
+
+            // 第一个包，登录许可
+            var packet1 = new S2C_LoginResultPacket
+            {
+                Code = 0,
+                PeerId = player.PeerId,
+                UserName = player.UserName,
+                NickName = player.NickName,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
+
+            // 第二个包，用户设置
+#if UNITY_SERVER || UNITY_EDITOR
+            var packet2 = new Settings
+            {
+                ScreenSize = 0,
+                FullScreen = 0,
+                MusicVolume = _audio,
+                SoundVolume = _sound,
+                Language = _language,
+            };
+            peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
+            UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
+#endif
+
+            // 第三个包，重连数据
+            if (isReconnect)
+            {
+                int serverRoomID = player.RoomId;
+                ServerRoom serverRoom = m_RoomManager.GetServerRoom(serverRoomID);
+                if (serverRoom == null)
+                {
+                    UnityEngine.Debug.LogError($"room not exist: {serverRoomID}");
+                    return;
+                }
+
+                // 之前的Peer连接失效，更新房间内保存的用户对象
+                if (player.SeatId == 0)
+                    serverRoom.hostPlayer = player;
+                else
+                    serverRoom.guestPlayer = player;
+
+                ServerPlayer p1 = serverRoom.hostPlayer;
+                ServerPlayer p2 = serverRoom.guestPlayer;
+
+                // 下发房间信息，弹出是否重连
+                // 是，下发所有帧
+                // 否，结算比赛，关闭弹窗
+                var packet3 = new S2C_LoadScenePacket
+                {
+                    RoomId = (short)serverRoomID,
+                    BattleId = serverRoom.BattleID,
+                    MapId = serverRoom.MapId,
+                    Host = new PlayerLoadPacket { UserName = p1.UserName, PeerId = p1.PeerId, RoleIndex = p1.RoleIndex },
+                    Guest = new PlayerLoadPacket { UserName = p2.UserName, PeerId = p2.PeerId, RoleIndex = p2.RoleIndex },
+                };
+                peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
+                UnityEngine.Debug.Log($"<color=yellow>{player.UserName} is lostnet to reconnect</color>");
+            }
             #endregion
         }
 

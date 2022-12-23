@@ -281,14 +281,7 @@ PlayerSettings:
   AndroidMinifyDebug: 0
   AndroidValidateAppBundleSize: 1
   AndroidAppBundleSizeToValidate: 150
-  m_BuildTargetIcons:
-  - m_BuildTarget: 
-    m_Icons:
-    - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 6adf5770417809345b979bb93fa0b025, type: 3}
-      m_Width: 128
-      m_Height: 128
-      m_Kind: 0
+  m_BuildTargetIcons: []
   m_BuildTargetPlatformIcons:
   - m_BuildTarget: Android
     m_Icons:
@@ -716,7 +709,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     Android: USE_ASSETBUNDLE
     Server: 
-    Standalone: 
+    Standalone: USE_ASSETBUNDLE;Channel_101
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

@@ -44,6 +44,7 @@ namespace Code.Shared
         C2S_Input           ,   //
         C2S_RegisterReq     ,   //注册请求
         C2S_LoginReq        ,   //登录请求
+        C2S_LoginByToken    ,   //登录请求
         C2S_LogoutReq       ,   //登出请求
         C2S_UserInfo        ,   //请求用户信息
         C2S_Settings        ,   //设置选项
@@ -204,6 +205,20 @@ namespace Code.Shared
         {
             UserName = reader.GetString();
             Password = reader.GetString();
+        }
+    }
+
+    public struct C2S_LoginByTokenPacket : INetSerializable
+    {
+        public string Token; //令牌
+
+        public void Serialize(NetDataWriter writer)
+        {
+            writer.Put(Token);
+        }
+        public void Deserialize(NetDataReader reader)
+        {
+            Token = reader.GetString();
         }
     }
 
