@@ -143,14 +143,16 @@ namespace Code.Shared
         public override bool Equals(object obj)
         {
             var other = (Settings)obj;
+            bool cond1 = ScreenSize == other.ScreenSize;
+            bool cond2 = FullScreen == other.FullScreen;
             bool cond3 = MusicVolume == other.MusicVolume;
             bool cond4 = SoundVolume == other.SoundVolume;
             bool cond5 = Language == other.Language;
-            return cond3 && cond4 && cond5;
+            return cond1 && cond2 && cond3 && cond4 && cond5;
         }
         public override string ToString()
         {
-            return $"cond1={ScreenSize}, cond2={FullScreen}, cond3={MusicVolume}, cond4={SoundVolume}, cond5={Language}";
+            return $"sizeChanged={ScreenSize}, fullChanged={FullScreen}, musicChanged={MusicVolume}, soundChanged={SoundVolume}, langChanged={Language}";
         }
     }
     #endregion

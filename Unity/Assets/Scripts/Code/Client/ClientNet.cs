@@ -108,6 +108,7 @@ namespace Code.Client
             if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
+            Debug.Log($"<color=yellow>{pt}</color>");
             switch (pt)
             {
                 case PacketType.S2C_Input:
@@ -167,13 +168,13 @@ namespace Code.Client
                     {
                         var packet = new Settings();
                         packet.Deserialize(reader);
+                        Debug.Log($"[S2C_Settings] music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={(Languages)packet.Language}");
 
                         m_PlayerManager.LocalPlayer.m_Settings = packet;
-                        AudioManager.musicVolume = packet.MusicVolume / 100f;
-                        AudioManager.soundVolume = packet.SoundVolume / 100f;
+                        AudioManager.Get().musicVolume = packet.MusicVolume / 100f;
+                        AudioManager.Get().soundVolume = packet.SoundVolume / 100f;
                         AudioManager.Get().ApplyToCurrent();
                         ConfigManager.Get().SetLanguage((Languages)packet.Language);
-                        Debug.Log($"[C] Settings music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={(Languages)packet.Language}");
 
                         EventManager.Trigger(pt, packet, peer);
                     }
@@ -245,10 +246,7 @@ namespace Code.Client
             }
         }
 
-        void INetEventListener.OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType)
-        {
-
-        }
+        void INetEventListener.OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) { }
 
         void INetEventListener.OnNetworkLatencyUpdate(NetPeer peer, int latency)
         {
@@ -276,8 +274,7 @@ namespace Code.Client
             //Debug.Log("挂载委托");
             _onDisconnected = onDisconnected;
 
-            string IP = GameManager.present.web;
-            //string IP = ConfigManager.Get().globalConfig.IP;
+            string IP = GameManager.present.gate;
             int Port = ConfigManager.Get().globalConfig.Port;
             string Key = ConfigManager.Get().globalConfig.Key;
             _netManager.Connect(IP, Port, Key);

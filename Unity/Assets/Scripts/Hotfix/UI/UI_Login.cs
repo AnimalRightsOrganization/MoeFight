@@ -10,6 +10,7 @@ namespace HotFix
     public class UI_Login : UIBase
     {
         public Button m_OAuthBtn;
+        public Text m_OAuthText;
 
         public CanvasGroup m_LoginPanel;
         public InputField m_UserNameField;
@@ -39,6 +40,7 @@ namespace HotFix
         {
             m_OAuthBtn = transform.Find("OAuthBtn").GetComponent<Button>();
             m_OAuthBtn.onClick.AddListener(OnOAuthBtnClick);
+            m_OAuthText = m_OAuthBtn.transform.Find("Text").GetComponent<Text>();
 
             m_LoginPanel = transform.Find("LoginPanel").GetComponent<CanvasGroup>();
             m_UserNameField = transform.Find("LoginPanel/UserName").GetComponent<InputField>();
@@ -89,10 +91,29 @@ namespace HotFix
             EventManager.UnRegisterEvent(OnNetCallback);
         }
 
+#if UNITY_EDITOR || Channel_1
+        static GUIStyle _custom;
+        static GUIStyle customButton { get { if (_custom == null) { _custom = new GUIStyle("button") { fontSize = 30 }; } return _custom; } }
+        void OnGUI()
+        {
+            if (GUI.Button(new Rect(0, 0, 300, 100), "自动填写.test1", customButton))
+            {
+                m_UserNameField.text = "test1";
+                m_PasswordField.text = "123456";
+            }
+            if (GUI.Button(new Rect(0, 100, 300, 100), "自动填写.test2", customButton))
+            {
+                m_UserNameField.text = "test2";
+                m_PasswordField.text = "123456";
+            }
+        }
+#endif
+
         public override void ApplyLanguage()
         {
             var config = ConfigManager.Get();
 
+            m_OAuthText.text = config.GetWord(27);
             m_UserNamePlaceholder.text = config.GetWord(0);
             m_PasswordPlaceholder.text = config.GetWord(1);
             m_LoginText.text = config.GetWord(2);

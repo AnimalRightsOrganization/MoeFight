@@ -158,7 +158,10 @@ namespace HotFix
             {
                 case PacketType.S2C_Settings:
                     var packet = (Settings)reader;
-                    //ClientNet.Get.m_PlayerManager.LocalPlayer.m_Settings = packet;
+                    m_ScreenSizeDrog.value = packet.ScreenSize;
+                    m_FullScreenTog.isOn = packet.FullScreen == 1;
+                    m_MusicSlider.value = packet.MusicVolume;
+                    m_SoundSlider.value = packet.SoundVolume;
                     m_LanguageDrog.value = packet.Language;
                     this.Pop();
                     break;
@@ -169,13 +172,12 @@ namespace HotFix
         {
             var cmd = new Settings
             {
-                ScreenSize = 0,
-                FullScreen = 0,
+                ScreenSize = (byte)m_ScreenSizeDrog.value,
+                FullScreen = (byte)(m_FullScreenTog.isOn ? 1 : 0),
                 MusicVolume = (byte)m_MusicSlider.value,
                 SoundVolume = (byte)m_SoundSlider.value,
                 Language = (byte)m_LanguageDrog.value,
             };
-            Debug.Log($"退出时：{cmd}");
             if (cmd.Equals(lastSettings))
             {
                 Debug.Log("没有改变，直接退出");
@@ -183,7 +185,7 @@ namespace HotFix
             }
             else
             {
-                Debug.Log("设置变了，提交后退出");
+                Debug.Log($"设置变了，提交后退出：{cmd}");
                 ClientNet.Get.SendSettins(cmd); //提交后退出
             }
         }
@@ -234,16 +236,16 @@ namespace HotFix
 
         void OnMusicChanged(float value)
         {
-            Debug.Log($"音乐变了：{value}");
-            AudioManager.musicVolume = value;
+            //Debug.Log($"音乐变了：{value}");
             m_MusicValue.text = $"{value}";
+            //AudioManager.Get().musicVolume = value;
         }
 
         void OnSoundChanged(float value)
         {
             //Debug.LogError($"音效变了：{value}");
-            AudioManager.soundVolume = value;
             m_SoundValue.text = $"{value}";
+            //AudioManager.Get().soundVolume = value;
         }
 
         void OnLanguageChanged(int index)

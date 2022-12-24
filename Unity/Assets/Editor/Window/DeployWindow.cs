@@ -7,6 +7,10 @@ using UnityEditor;
 using UnityEditor.Build;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
+using Code.Client;
+using Code.Shared;
+using HitstunConstants;
+using System.Collections.Generic;
 
 public class DeployWindow : EditorWindow
 {
@@ -26,6 +30,8 @@ public class DeployWindow : EditorWindow
     static string l_res_version = string.Empty;
 
     static int targetPlatform = 0;
+    static bool UseOpening;
+    static bool faceRight = true;
 
     public static void ShowWindow()
     {
@@ -61,12 +67,14 @@ public class DeployWindow : EditorWindow
 
     void OnGUI()
     {
-        targetPlatform = GUILayout.SelectionGrid(targetPlatform, new string[] { "打包", "环境" }, 2, GUILayout.Height(30)); //一行几个
+        targetPlatform = GUILayout.SelectionGrid(targetPlatform, new string[] { "打包", "环境", "调试" }, 3, GUILayout.Height(30)); //一行几个
         GUILayout.Space(10);
         if (targetPlatform == 0)
             Page0();
-        else
+        else if (targetPlatform == 1)
             Page1();
+        else if (targetPlatform == 2)
+            Page2();
     }
     // 打包
     static void Page0()
@@ -307,6 +315,107 @@ public class DeployWindow : EditorWindow
             GUILayout.Space(10);
         }
         GUILayout.EndHorizontal();
+    }
+    // 调试
+    static void Page2()
+    {
+        if (GUILayout.Button("音量", GUILayout.Height(25)))
+        {
+            Debug.Log($"音量：{AudioManager.Get().musicVolume}, {AudioManager.Get().soundVolume}");
+        }
+        if (GUILayout.Button("登录.自动填写.test1", GUILayout.Height(25)))
+        {
+            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
+            login.m_UserNameField.text = "test1";
+            login.m_PasswordField.text = "123456";
+        }
+        if (GUILayout.Button("登录.自动填写.test2", GUILayout.Height(25)))
+        {
+            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
+            login.m_UserNameField.text = "test2";
+            login.m_PasswordField.text = "123456";
+        }
+        if (GUILayout.Button("打印房间", GUILayout.Height(25)))
+        {
+            if (ClientNet.Get.m_ClientRoom == null) return;
+            string room = $"{ClientNet.Get.m_ClientRoom.ToString()}\n{ClientLogic.Get.IsStart}";
+            Debug.Log(room);
+        }
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("单机调试", GUILayout.Width(200), GUILayout.Height(25)))
+        {
+            ClientNet.Get.Disconnect();
+            //await Task.Delay(1);
+
+            ClientPlayer host = new ClientPlayer("test1", 0);
+            ClientPlayer guest = new ClientPlayer("bot", 1);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(host, true);
+            ClientNet.Get.m_PlayerManager.AddClientPlayer(guest, false);
+            ClientNet.Get.m_ClientRoom = new ClientRoom(0, host, guest);
+            var room = ClientNet.Get.m_ClientRoom;
+            room.BattleMode = BattleMode.Training;
+            var packet = new S2C_LoadScenePacket
+            {
+                RoomId = (short)room.RoomID,
+                BattleId = room.BattleID,
+                MapId = room.MapId,
+                Host = new PlayerLoadPacket { UserName = host.UserName, PeerId = host.PeerId, RoleIndex = (int)CharacterName.HONOKA },
+                Guest = new PlayerLoadPacket { UserName = guest.UserName, PeerId = guest.PeerId, RoleIndex = (int)CharacterName.AOI },
+            };
+            Debug.Log($"调试模式:\n{packet}");
+
+            GameManager.Get.OnLoadScene(packet, UseOpening);
+        }
+        GUILayout.Space(20);
+        UseOpening = GUILayout.Toggle(UseOpening, "使用过场", GUILayout.Height(25));
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("AI动作", GUILayout.Width(200), GUILayout.Height(25)))
+        {
+            // SHORYUKEN
+            KeyCode front = faceRight ? KeyCode.D : KeyCode.A;
+            KeyCode back = faceRight ? KeyCode.A : KeyCode.D;
+            List<KeyCode[]> keys = new List<KeyCode[]>
+            {
+                new KeyCode[] { },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { KeyCode.S, back },
+                new KeyCode[] { back },
+                new KeyCode[] { back },
+                new KeyCode[] { back },
+                new KeyCode[] { back, KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { KeyCode.U },
+                new KeyCode[] { },
+            };
+            for (int i = 0; i < keys.Count; i++)
+            {
+                uint input = LocalSession.ConvertInputs(keys[i]);
+                ClientLogic.Get.custom.Enqueue(input);
+            }
+        }
+        GUILayout.Space(20);
+        faceRight = GUILayout.Toggle(faceRight, "屏幕左边", GUILayout.Height(25));
+        GUILayout.EndHorizontal();
+
+        if (GUILayout.Button("重载配置", GUILayout.Width(200), GUILayout.Height(25)))
+        {
+            ClientLogic.Get.runner.Reload();
+        }
     }
 
     // 配置

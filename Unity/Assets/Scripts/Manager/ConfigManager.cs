@@ -14,7 +14,7 @@ public class ConfigManager : MonoBehaviour
     public GlobalConfig globalConfig;
 
     // 多语言
-    public Languages currentLanguage = Languages.Chinese;
+    public Languages currentLanguage = Languages.简体中文;
     protected LanguageNode[] m_Languages;
     public void SetLanguage(Languages lang)
     {
@@ -37,11 +37,9 @@ public class ConfigManager : MonoBehaviour
         globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
 
         var langConfig = ResManager.LoadBytes("Configs/Language");
-        //m_Languages = JsonMapper.ToObject<LanguageNode[]>(langConfig);
         m_Languages = JsonConvert.DeserializeObject<LanguageNode[]>(langConfig);
 
         var charConfig = ResManager.LoadBytes("Configs/Character");
-        //m_CharacterList = JsonMapper.ToObject<CharacterNode[]>(charConfig);
         m_CharacterList = JsonConvert.DeserializeObject<CharacterNode[]>(charConfig);
     }
 }

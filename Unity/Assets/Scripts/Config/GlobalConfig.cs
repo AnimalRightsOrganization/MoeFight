@@ -3,8 +3,8 @@
 [System.Serializable]
 public class GlobalConfig : ScriptableObject
 {
-    public string IP = "192.168.1.101";
-    public int Port = 5000;      //端口(0~65535)
+    //public string IP = "192.168.1.101"; //由服务器返回
+    public int Port = 5000; //端口(0~65535)
     public string Key = "ExampleGame";
 
     public ushort renderFPS = 60;   //渲染频率(30/60/90)

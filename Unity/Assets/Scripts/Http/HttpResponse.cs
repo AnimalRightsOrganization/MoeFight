@@ -88,10 +88,10 @@ public class Present
     }
     public string web;          //官网
     public string gate;         //服务器连接
-    public string app_url;      //AB包地址
+    public string app_url;      //App下载地址
     public string res_url;      //AB包地址
-    public string app_version;  //服务器资源版本
-    public string res_version;  //服务器资源版本
+    public string app_version;  //官方App版本
+    public string res_version;  //官方资源版本
     public string notice;       //公告
     public override string ToString()
     {

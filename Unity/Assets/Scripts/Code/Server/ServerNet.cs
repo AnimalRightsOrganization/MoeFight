@@ -323,6 +323,9 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.UserName},{cmd.Password}");
 
+            string userName = string.Empty;
+            byte _screensize = 0;
+            byte _fullscreen = 0;
             byte _audio = 0;
             byte _sound = 0;
             byte _language = 1;
@@ -341,11 +344,15 @@ namespace Code.Server
                 return;
             }
 
-            string columnName = "username,audio,sound,language";
+            string columnName = "username,screensize,fullscreen,audio,sound,language";
             List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName); //固定长度4
-            List<string> _audioList = results[1];
-            List<string> _soundList = results[2];
-            List<string> _languageList = results[3];
+            List<string> _screensizeList = results[1];
+            List<string> _fullscreenList = results[2];
+            List<string> _audioList = results[3];
+            List<string> _soundList = results[4];
+            List<string> _languageList = results[5];
+            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
+            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
             _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
             _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
             _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
@@ -394,19 +401,33 @@ namespace Code.Server
             };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
 
-            // 第二个包，用户设置
+#if UNITY_SERVER
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
+#elif UNITY_PLAYER
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+#endif
+
 #if UNITY_SERVER || UNITY_EDITOR
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+#endif
+
+            // 第二个包，用户设置
             var packet2 = new Settings
             {
-                ScreenSize = 0,
-                FullScreen = 0,
+                ScreenSize = _screensize,
+                FullScreen = _fullscreen,
                 MusicVolume = _audio,
                 SoundVolume = _sound,
                 Language = _language,
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
             UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
-#endif
 
             // 第三个包，重连数据
             if (isReconnect)
@@ -478,11 +499,13 @@ namespace Code.Server
             cmd.Deserialize(reader);
             UnityEngine.Debug.Log($"[S] Login packet received: [{peer.Id}]{cmd.Token}");
 
+            string userName = string.Empty;
+            byte _screensize = 0;
+            byte _fullscreen = 0;
             byte _audio = 0;
             byte _sound = 0;
             byte _language = 1;
             bool isReconnect = false;
-            string userName = string.Empty;
 
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
@@ -497,13 +520,17 @@ namespace Code.Server
                 return;
             }
 
-            string columnName = "username,audio,sound,language";
+            string columnName = "username,screensize,fullscreen,audio,sound,language";
             List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE token='{cmd.Token}'", columnName); //固定长度4
             List<string> _userList = results[0];
-            List<string> _audioList = results[1];
-            List<string> _soundList = results[2];
-            List<string> _languageList = results[3];
+            List<string> _screensizeList = results[1];
+            List<string> _fullscreenList = results[2];
+            List<string> _audioList = results[3];
+            List<string> _soundList = results[4];
+            List<string> _languageList = results[5];
             userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : (results[0][0]).ToString();
+            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
+            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
             _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
             _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
             _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
@@ -553,18 +580,16 @@ namespace Code.Server
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
 
             // 第二个包，用户设置
-#if UNITY_SERVER || UNITY_EDITOR
             var packet2 = new Settings
             {
-                ScreenSize = 0,
-                FullScreen = 0,
+                ScreenSize = _screensize,
+                FullScreen = _fullscreen,
                 MusicVolume = _audio,
                 SoundVolume = _sound,
                 Language = _language,
             };
             peer.Send(WriteSerializable(PacketType.S2C_Settings, packet2), DeliveryMethod.ReliableOrdered);
             UnityEngine.Debug.Log($"settings.music:{packet2.MusicVolume}, sound:{packet2.SoundVolume}, lang:{packet2.Language}");
-#endif
 
             // 第三个包，重连数据
             if (isReconnect)

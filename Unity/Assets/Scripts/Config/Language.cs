@@ -1,4 +1,4 @@
-[System.Serializable]
+﻿[System.Serializable]
 public class LanguageNode
 {
     public string Id;
@@ -11,6 +11,6 @@ public class LanguageNode
 public enum Languages : int
 {
     English = 0,
-    Chinese,
-    Japanese,
+    简体中文,
+    日本語,
 }

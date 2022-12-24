@@ -13,19 +13,18 @@ public class GameManager : MonoBehaviour
     public static GameManager Get;
 
     private static bool Initialized = false;
-    public static Present present; //通过请求返回
     private readonly IPC _ipc = new IPC { ReceiveTimeout = 1000 };
     public static string Token { get; private set; }
+    public static Present present; //通过请求返回
 
     private ClientLogic logic;
 
     void Awake()
     {
-        Debug.Log($"渠道:{ConstValue.CHANNEL_NAME}");
 #if USE_ASSETBUNDLE
-            Debug.Log($"使用热更, Initialized:{Initialized}");
+        Debug.Log($"渠道:{ConstValue.CHANNEL_NAME}，使用热更，初始化:{Initialized}");
 #else
-        Debug.Log($"不是热更, Initialized:{Initialized}");
+        Debug.Log($"渠道:{ConstValue.CHANNEL_NAME}，不是热更，初始化:{Initialized}");
 #endif
 
         if (!Initialized)
@@ -38,15 +37,7 @@ public class GameManager : MonoBehaviour
 #if Channel_101 //官方大厅渠道
             IPC_Login();
 #endif
-
-#if UNITY_EDITOR && !USE_ASSETBUNDLE
-            // 不检查更新
-            present = new Present();
-            OnInited();
-#else
-            // 加载配置（需要启动资源服务器）
             GetConfig();
-#endif
         }
         else
         {
@@ -86,7 +77,14 @@ public class GameManager : MonoBehaviour
         var obj = JsonConvert.DeserializeObject<ServerResponse>(text);
         present = JsonConvert.DeserializeObject<Present>(obj.data);
 
+
+#if UNITY_EDITOR && !USE_ASSETBUNDLE
+        // 不检查更新
+        OnInited();
+#else
+        // 加载配置（需要启动资源服务器）
         StartCoroutine(CheckUpdateAsync(OnInited));
+#endif
     }
 
     IEnumerator CheckUpdateAsync(System.Action action)
