@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using Debug = UnityEngine.Debug;
+using UnityEditor.Build;
 
 public partial class MenuTools : Editor
 {
@@ -253,6 +254,8 @@ public partial class MenuTools : Editor
     [MenuItem("Tools/打包/服务器/Windows", false, 2)]
     static void BuildServer_Win64()
     {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
+
         RemoveIcon();
 
         if (Directory.Exists(ConstValue.BuildDir) == false)
@@ -283,17 +286,25 @@ public partial class MenuTools : Editor
         if (summary.result == BuildResult.Failed)
             Debug.LogError("打包失败");
     }
-    [MenuItem("Tools/打包/服务器/Linux", true, 2)]
-    static void BuildServer_Linux() { }
+    [MenuItem("Tools/打包/服务器/Linux", false, 2)]
+    static void BuildServer_Linux()
+    {
+        //EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneWindows64);
+        //EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Server, BuildTarget.StandaloneLinux64);
+    }
 
     [MenuItem("Tools/打包/客户端/Windows", false, 3)]
     static void BuildClient_Win64()
     {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Standalone, BuildTarget.StandaloneWindows64);
+
         BuildClient(BuildTarget.StandaloneWindows64, 101);
     }
     [MenuItem("Tools/打包/客户端/Android", false, 3)]
     static void BuildClient_Android()
     {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.Android, BuildTarget.Android);
+
         BuildClient(BuildTarget.Android, 102);
     }
     [MenuItem("Tools/打包/客户端/iOS", false, 3)]

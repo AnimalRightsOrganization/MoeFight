@@ -149,7 +149,7 @@ public partial class BundleTools : Editor
         //打包
         //BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, BuildTarget.Android);
         //BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, EditorUserBuildSettings.activeBuildTarget);
-        BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, 0, target);
+        BuildPipeline.BuildAssetBundles(ConstValue.outputPath1st, BuildAssetBundleOptions.None, target);
         Debug.Log($"第一次打包到: {ConstValue.outputPath1st}");
 
         //清理标签

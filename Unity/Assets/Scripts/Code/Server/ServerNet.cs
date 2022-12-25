@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using Code.Shared;
 using LiteNetLib;
 using LiteNetLib.Utils;
+#if UNITY_SERVER || UNITY_EDITOR
+using DatabaseEssential;
+#endif
 
 namespace Code.Server
 {
@@ -39,6 +42,19 @@ namespace Code.Server
         //}
         public async Task StartProgram()
         {
+#if UNITY_SERVER || UNITY_EDITOR
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
+#elif UNITY_PLAYER
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
+#else
+            UnityEngine.Debug.Log("StartProgram-----------------------NOTHING-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------NOTHING-----------------------");
+            UnityEngine.Debug.Log("StartProgram-----------------------NOTHING-----------------------");
+#endif
             bool result = StartServer();
             if (!result) return;
 
@@ -334,7 +350,7 @@ namespace Code.Server
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
             string query = $"SELECT Count(*) FROM tb_user WHERE username='{cmd.UserName}' AND password='{cmd.Password}'";
-            int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            int check1 = DatabaseManager.Count(DatabaseManager.db_user, query);
             //UnityEngine.Debug.Log($"check username & password: {check1}");
             if (check1 <= 0)
             {
@@ -345,7 +361,7 @@ namespace Code.Server
             }
 
             string columnName = "username,screensize,fullscreen,audio,sound,language";
-            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE username='{cmd.UserName}'", columnName); //固定长度4
+            List<string>[] results = DatabaseManager.SelectAllRecord(DatabaseManager.db_moefight, $"tb_settings WHERE username='{cmd.UserName}'", columnName); //固定长度4
             List<string> _screensizeList = results[1];
             List<string> _fullscreenList = results[2];
             List<string> _audioList = results[3];
@@ -400,22 +416,6 @@ namespace Code.Server
                 NickName = player.NickName,
             };
             peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet1), DeliveryMethod.ReliableOrdered);
-
-#if UNITY_SERVER
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER-----------------------");
-#elif UNITY_PLAYER
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_PLAYER-----------------------");
-#endif
-
-#if UNITY_SERVER || UNITY_EDITOR
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
-            UnityEngine.Debug.Log("StartProgram-----------------------UNITY_SERVER || UNITY_EDITOR-----------------------");
-#endif
 
             // 第二个包，用户设置
             var packet2 = new Settings
@@ -510,7 +510,7 @@ namespace Code.Server
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
             string query = $"SELECT Count(*) FROM tb_user WHERE token='{cmd.Token}'";
-            int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            int check1 = DatabaseManager.Count(DatabaseManager.db_user, query);
             //UnityEngine.Debug.Log($"check username & password: {check1}");
             if (check1 <= 0)
             {
@@ -521,7 +521,7 @@ namespace Code.Server
             }
 
             string columnName = "username,screensize,fullscreen,audio,sound,language";
-            List<string>[] results = DatabaseEssential.DatabaseManager.SelectAllRecord($"tb_settings WHERE token='{cmd.Token}'", columnName); //固定长度4
+            List<string>[] results = DatabaseManager.SelectAllRecord(DatabaseManager.db_moefight, $"tb_settings WHERE token='{cmd.Token}'", columnName); //固定长度4
             List<string> _userList = results[0];
             List<string> _screensizeList = results[1];
             List<string> _fullscreenList = results[2];
@@ -651,18 +651,18 @@ namespace Code.Server
 #if UNITY_SERVER || UNITY_EDITOR
             string tableName = "tb_settings";
             string query = $"SELECT Count(*) FROM {tableName} WHERE username='{player.UserName}'";
-            int check1 = DatabaseEssential.DatabaseManager.Count(query);
+            int check1 = DatabaseManager.Count(DatabaseManager.db_moefight, query);
             //UnityEngine.Debug.Log($"check1={check1}");
             if (check1 == 0)
             {
                 //①如果没有，创建
-                DatabaseEssential.DatabaseManager.InsertRecord(tableName, "username,audio,sound,language", $"'{player.UserName}', '{cmd.MusicVolume}', '{cmd.SoundVolume}', '{cmd.Language}'");
+                DatabaseManager.InsertRecord(DatabaseManager.db_moefight, tableName, "username,audio,sound,language", $"'{player.UserName}', '{cmd.MusicVolume}', '{cmd.SoundVolume}', '{cmd.Language}'");
                 UnityEngine.Debug.Log($"insert sql:");
             }
             else
             {
                 //②如果有，更新
-                DatabaseEssential.DatabaseManager.UpdateRecord(tableName, $"audio='{cmd.MusicVolume}',sound='{cmd.SoundVolume}',language='{cmd.Language}' WHERE Username='{player.UserName}'");
+                DatabaseManager.UpdateRecord(DatabaseManager.db_moefight, tableName, $"audio='{cmd.MusicVolume}',sound='{cmd.SoundVolume}',language='{cmd.Language}' WHERE Username='{player.UserName}'");
                 UnityEngine.Debug.Log($"update sql:");
             }
 #endif

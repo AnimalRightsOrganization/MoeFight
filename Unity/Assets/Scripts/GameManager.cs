@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
     public static Present present; //通过请求返回
 
     private ClientLogic logic;
+    private Transform canvasRoot;
+    private UI_CheckUpdate ui_check;
 
     void Awake()
     {
@@ -34,9 +36,12 @@ public class GameManager : MonoBehaviour
 
             SystemSetting();
 
-#if Channel_101 //官方大厅渠道
+            BindAssets();
+
+#if Channel_101 //内测PC，从大厅启动
             IPC_Login();
 #endif
+
             GetConfig();
         }
         else
@@ -64,6 +69,47 @@ public class GameManager : MonoBehaviour
         //Application.systemLanguage;
     }
 
+    // 绑定组件
+    void BindAssets()
+    {
+        // 初始化目录
+        if (!Directory.Exists(ConstValue.AB_AppPath))
+            Directory.CreateDirectory(ConstValue.AB_AppPath);
+
+        // 初始化各种管理器
+        GameObject clientNet = new GameObject("ClientNet");
+        clientNet.transform.SetParent(this.transform);
+        clientNet.AddComponent<ClientNet>();
+
+        GameObject uiManager = new GameObject("UIManager");
+        uiManager.transform.SetParent(this.transform);
+        uiManager.AddComponent<UIManager>();
+
+        GameObject configManager = new GameObject("ConfigManager");
+        configManager.transform.SetParent(this.transform);
+        configManager.AddComponent<ConfigManager>();
+
+        GameObject audioManager = new GameObject("AudioManager");
+        audioManager.transform.SetParent(this.transform);
+        audioManager.AddComponent<AudioManager>();
+
+        //transform.Find("ILGlobal").gameObject.AddComponent<ILGlobal>();
+
+        // 初始UI
+        canvasRoot = GameObject.Find("Canvas").transform;
+        //Debug.Assert(canvasRoot);
+        string ui_name = "UI_CheckUpdate";
+        GameObject asset = Resources.Load<GameObject>(ui_name);
+        //Debug.Assert(asset);
+        GameObject obj = Instantiate(asset, canvasRoot);
+        //Debug.Assert(obj);
+        obj.name = ui_name;
+        if (obj.GetComponent<UI_CheckUpdate>() == false)
+            obj.AddComponent<UI_CheckUpdate>();
+        ui_check = obj.GetComponent<UI_CheckUpdate>();
+        //Debug.Assert(ui_check);
+    }
+
     // 请求游戏配置
     async void GetConfig()
     {
@@ -83,24 +129,8 @@ public class GameManager : MonoBehaviour
         OnInited();
 #else
         // 加载配置（需要启动资源服务器）
-        StartCoroutine(CheckUpdateAsync(OnInited));
+        StartCoroutine(ui_check.StartCheck(OnInited));
 #endif
-    }
-
-    IEnumerator CheckUpdateAsync(System.Action action)
-    {
-        if (!Directory.Exists(ConstValue.AB_AppPath))
-            Directory.CreateDirectory(ConstValue.AB_AppPath);
-
-        Transform root = GameObject.Find("Canvas").transform;
-        var request = Resources.LoadAsync<GameObject>("UI_CheckUpdate");
-        yield return request;
-
-        var asset = request.asset as GameObject;
-        GameObject prefab = Instantiate(asset, root);
-        var ui_checkupdate = prefab.AddComponent<UI_CheckUpdate>();
-
-        yield return ui_checkupdate.StartCheck(action);
     }
 
     void OnInited()
@@ -108,23 +138,6 @@ public class GameManager : MonoBehaviour
         Initialized = true;
 
         // 进入HotFix代码
-
-        // 初始化各种管理器
-        GameObject clientNet = new GameObject("ClientNet");
-        clientNet.transform.SetParent(this.transform);
-        clientNet.AddComponent<ClientNet>();
-
-        GameObject uiManager = new GameObject("UIManager");
-        uiManager.transform.SetParent(this.transform);
-        uiManager.AddComponent<UIManager>();
-
-        GameObject configManager = new GameObject("ConfigManager");
-        configManager.transform.SetParent(this.transform);
-        configManager.AddComponent<ConfigManager>();
-
-        GameObject audioManager = new GameObject("AudioManager");
-        audioManager.transform.SetParent(this.transform);
-        audioManager.AddComponent<AudioManager>();
 
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
@@ -144,6 +157,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // 该游戏独立业务
     public async void OnLoadScene(S2C_LoadScenePacket packet, bool opening = true)
     {
         ClientNet.Get.m_ClientRoom.DoInit(packet);

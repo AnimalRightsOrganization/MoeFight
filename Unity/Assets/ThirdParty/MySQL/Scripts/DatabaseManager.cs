@@ -9,19 +9,27 @@ namespace DatabaseEssential
     {
         static MySqlConnection con;
 
+        public static SQLConfiguration db_moefight = new SQLConfiguration
+        {
+            host = "localhost",
+            database = "moefight",
+            user = "seol",
+            password = "123456",
+        };
+        public static SQLConfiguration db_user = new SQLConfiguration
+        {
+            host = "localhost",
+            database = "db_user",
+            user = "seol",
+            password = "123456",
+        };
+
         /// <summary>
         /// Method to Open/Initialize connection with Server, with return type of bool.
         /// </summary>
         /// <returns></returns>
-        public static bool Initialize()
+        public static bool Initialize(SQLConfiguration config)
         {
-            var config = new SQLConfiguration
-            {
-                host = "localhost",
-                database = "moefight",
-                user = "seol",
-                password = "123456",
-            };
             string connectionString = $"Server={config.host};" +
                 $"Database={config.database};" +
                 $"User={config.user};" +
@@ -77,10 +85,10 @@ namespace DatabaseEssential
         /// <param name="tableName">Name of the Table</param>
         /// <param name="statement">SQL Statement</param>
         /// <returns></returns>
-        public static string Query(string statement)
+        public static string Query(SQLConfiguration db, string statement)
         {
             string result = "";
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = statement; //Assign the query to MySQLCommand 
@@ -111,9 +119,9 @@ namespace DatabaseEssential
         /// Method to execute Non-Query SQL Command
         /// </summary>
         /// <param name="statement"></param>
-        public static void NonQuery(string statement)
+        public static void NonQuery(SQLConfiguration db, string statement)
         {
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = statement; //Assign the query to MySQLCommand 
@@ -131,11 +139,11 @@ namespace DatabaseEssential
         /// <param name="tableName"> Name of the table</param>
         /// <param name="keys"> Key(s) name or Column(s) Name</param>
         /// <param name="values"> Value(s) of Key(s) or Column(s) Name</param>
-        public static void InsertRecord(string tableName, string keys, string values)
+        public static void InsertRecord(SQLConfiguration db, string tableName, string keys, string values)
         {
             string query = $"INSERT INTO {tableName} ({keys}) VALUES ({values})";
 
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); // MySQL Command
                 cmd.CommandText = query; // Assign the query to MySQLCommand
@@ -151,11 +159,11 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName">Name of the Table</param>
         /// <param name="condition">WHERE Condition</param>
-        public static void DeleteRecord(string tableName, string condition)
+        public static void DeleteRecord(SQLConfiguration db, string tableName, string condition)
         {
             string query = $"DELETE FROM {tableName} WHERE {condition}";
             // Opening the connection
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand();  // MySQL Command  
                 cmd.CommandText = query; // Assign the query to MySQLCommand
@@ -171,11 +179,11 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName">Name of the Table</param>
         /// <param name="condition">SET Condition, also WHERE condition too. Example: Username='Ashikur Rahman' WHERE Username='Srejon Khan'</param>
-        public static void UpdateRecord(string tableName, string condition)
+        public static void UpdateRecord(SQLConfiguration db, string tableName, string condition)
         {
             string query = $"UPDATE {tableName} SET {condition}";
             // Opening the connection
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand
@@ -192,7 +200,7 @@ namespace DatabaseEssential
         /// <param name="tableName">Name of the Table</param>
         /// <param name="columnName">Name of Column(s) to fetch values</param>
         /// <returns></returns>
-        public static List<string>[] SelectAllRecord(string tableName, string columnName)
+        public static List<string>[] SelectAllRecord(SQLConfiguration db, string tableName, string columnName)
         {
             string query = $"Select * FROM {tableName}";
 
@@ -204,7 +212,7 @@ namespace DatabaseEssential
             }
 
             //Opening Connection
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand               
@@ -236,13 +244,13 @@ namespace DatabaseEssential
         /// </summary>
         /// <param name="tableName"></param>
         /// <returns></returns>
-        public static int Count(string query)
+        public static int Count(SQLConfiguration db, string query)
         {
             //string query = $"SELECT Count(*) FROM {tableName}";
             int count = -1; // Negative value will represent the failure of connection
 
             //Opening the Connection
-            if (Initialize() == true)
+            if (Initialize(db) == true)
             {
                 MySqlCommand cmd = new MySqlCommand(); //MySQL Command
                 cmd.CommandText = query; //Assign the query to MySQLCommand
