@@ -168,7 +168,8 @@ namespace Code.Client
                     {
                         var packet = new Settings();
                         packet.Deserialize(reader);
-                        Debug.Log($"[S2C_Settings] music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={(Languages)packet.Language}");
+                        Debug.Log($"[S2C_Settings] size={packet.ScreenSize}, full={packet.FullScreen}, " +
+                            $"music={packet.MusicVolume}, sound={packet.SoundVolume}, lang={(Languages)packet.Language}");
 
                         m_PlayerManager.LocalPlayer.m_Settings = packet;
                         AudioManager.Get().musicVolume = packet.MusicVolume / 100f;

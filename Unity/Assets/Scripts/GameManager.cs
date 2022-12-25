@@ -66,7 +66,6 @@ public class GameManager : MonoBehaviour
         //Screen.SetResolution(540, 960, false);
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         //Debug.unityLogger.logEnabled = false; //release版关闭
-        //Application.systemLanguage;
     }
 
     // 绑定组件
@@ -119,7 +118,7 @@ public class GameManager : MonoBehaviour
             Debug.LogError($"配置请求失败: {ConstValue.PRESENT_GET}");
             return;
         }
-        Debug.Log($"config: {text}");
+        Debug.Log($"success: {text}");
         var obj = JsonConvert.DeserializeObject<ServerResponse>(text);
         present = JsonConvert.DeserializeObject<Present>(obj.data);
 
@@ -138,7 +137,7 @@ public class GameManager : MonoBehaviour
         Initialized = true;
 
         // 进入HotFix代码
-
+        ui_check.gameObject.SetActive(false);
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();
     }

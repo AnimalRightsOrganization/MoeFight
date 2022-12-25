@@ -367,11 +367,11 @@ namespace Code.Server
             List<string> _audioList = results[3];
             List<string> _soundList = results[4];
             List<string> _languageList = results[5];
-            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
-            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
+            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(_screensizeList[0]);
+            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(_fullscreenList[0]);
+            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(_audioList[0]);
+            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(_soundList[0]);
+            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(_languageList[0]);
 #endif
             #endregion
 
@@ -528,12 +528,12 @@ namespace Code.Server
             List<string> _audioList = results[3];
             List<string> _soundList = results[4];
             List<string> _languageList = results[5];
-            userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : (results[0][0]).ToString();
-            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(results[1][0]);
-            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(results[2][0]);
-            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(results[3][0]);
+            userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : _userList[0].ToString();
+            _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(_screensizeList[0]);
+            _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(_fullscreenList[0]);
+            _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(_audioList[0]);
+            _sound = (_soundList.Count == 0 || string.IsNullOrEmpty(_soundList[0])) ? (byte)0 : (byte)int.Parse(_soundList[0]);
+            _language = (_languageList.Count == 0 || string.IsNullOrEmpty(_languageList[0])) ? (byte)1 : (byte)int.Parse(_languageList[0]);
 #endif
             #endregion
 
