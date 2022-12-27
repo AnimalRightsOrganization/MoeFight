@@ -296,7 +296,6 @@ public class DeployWindow : EditorWindow
                 if (GUILayout.Button("使用热更新", GUILayout.Width(90)))
                 {
                     CheckUseAB();
-                    Debug.Log("刷新");
                 }
             }
             else
@@ -304,7 +303,6 @@ public class DeployWindow : EditorWindow
                 if (GUILayout.Button("不用热更新", GUILayout.Width(90)))
                 {
                     CheckUseAB();
-                    Debug.Log("刷新");
                 }
             }
             GUILayout.Space(10);
@@ -613,8 +611,8 @@ public class DeployWindow : EditorWindow
     static bool is_www = true; //默认
     static bool is_editing = false; //是否正在编辑
 
-    static string[] yes_use_ab = new string[] { "Channel_102", "USE_ASSETBUNDLE" };
-    static string[] not_use_ab = new string[] { "Channel_102" };
+    static string[] yes_use_ab = new string[] { "Channel_101", "USE_ASSETBUNDLE" };
+    static string[] not_use_ab = new string[] { "Channel_101" };
     static NamedBuildTarget target = NamedBuildTarget.Standalone;
     static bool use_ab = false; //默认
 
@@ -641,12 +639,13 @@ public class DeployWindow : EditorWindow
     static bool CheckUseAB()
     {
         string cur_use_ab = PlayerSettings.GetScriptingDefineSymbols(target);
-        use_ab = cur_use_ab.Contains(yes_use_ab[1]);
+        use_ab = cur_use_ab.Contains("USE_ASSETBUNDLE");
         return use_ab;
     }
     static void ChangeUseAB()
     {
-        CheckUseAB();
+        bool res = CheckUseAB();
+        Debug.Log($"res: {res}");
 
         use_ab = !use_ab;
         string[] dst_use_ab = use_ab ? yes_use_ab : not_use_ab;

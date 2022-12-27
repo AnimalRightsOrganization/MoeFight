@@ -371,7 +371,7 @@ namespace Code.Client
             Debug.Log($"连接服务器成功，尝试读取Token：'{token}'");
 
             var connect = UIManager.Get().Push<UI_Connect>();
-            await Task.Delay(500); //转一下
+            await Task.Delay(300); //转一下
 
             // 使用Token登录
             if (!string.IsNullOrEmpty(token))
