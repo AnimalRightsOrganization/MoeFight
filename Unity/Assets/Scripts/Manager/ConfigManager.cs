@@ -32,7 +32,8 @@ public class ConfigManager : MonoBehaviour
         return m_CharacterList[(int)key];
     }
 
-    void Awake()
+    // 等到AB下载完，再调用
+    public void Load()
     {
         globalConfig = ResManager.LoadConfig("Configs/GlobalConfig") as GlobalConfig;
 

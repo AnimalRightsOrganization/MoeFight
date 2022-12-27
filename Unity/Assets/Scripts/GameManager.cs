@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     private static bool Initialized = false;
     private readonly IPC _ipc = new IPC { ReceiveTimeout = 1000 };
-    public static string Token { get; private set; }
+    public static string Token;
     public static Present present; //通过请求返回
 
     private ClientLogic logic;
@@ -92,21 +92,15 @@ public class GameManager : MonoBehaviour
         audioManager.transform.SetParent(this.transform);
         audioManager.AddComponent<AudioManager>();
 
-        //transform.Find("ILGlobal").gameObject.AddComponent<ILGlobal>();
-
         // 初始UI
         canvasRoot = GameObject.Find("Canvas").transform;
-        //Debug.Assert(canvasRoot);
         string ui_name = "UI_CheckUpdate";
         GameObject asset = Resources.Load<GameObject>(ui_name);
-        //Debug.Assert(asset);
         GameObject obj = Instantiate(asset, canvasRoot);
-        //Debug.Assert(obj);
         obj.name = ui_name;
         if (obj.GetComponent<UI_CheckUpdate>() == false)
             obj.AddComponent<UI_CheckUpdate>();
         ui_check = obj.GetComponent<UI_CheckUpdate>();
-        //Debug.Assert(ui_check);
     }
 
     // 请求游戏配置
@@ -137,6 +131,7 @@ public class GameManager : MonoBehaviour
         Initialized = true;
 
         // 进入HotFix代码
+        ConfigManager.Get().Load(); //AB加载完毕，加载配置
         ui_check.gameObject.SetActive(false);
         // 加载第一个UI
         UIManager.Get().Push<UI_Login>();

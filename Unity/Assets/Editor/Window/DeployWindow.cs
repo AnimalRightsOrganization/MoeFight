@@ -319,22 +319,6 @@ public class DeployWindow : EditorWindow
     // 调试
     static void Page2()
     {
-        if (GUILayout.Button("音量", GUILayout.Height(25)))
-        {
-            Debug.Log($"音量：{AudioManager.Get().musicVolume}, {AudioManager.Get().soundVolume}");
-        }
-        if (GUILayout.Button("登录.自动填写.test1", GUILayout.Height(25)))
-        {
-            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
-            login.m_UserNameField.text = "test1";
-            login.m_PasswordField.text = "123456";
-        }
-        if (GUILayout.Button("登录.自动填写.test2", GUILayout.Height(25)))
-        {
-            var login = HotFix.UIManager.Get().GetUI<HotFix.UI_Login>();
-            login.m_UserNameField.text = "test2";
-            login.m_PasswordField.text = "123456";
-        }
         if (GUILayout.Button("打印房间", GUILayout.Height(25)))
         {
             if (ClientNet.Get.m_ClientRoom == null) return;
@@ -629,8 +613,8 @@ public class DeployWindow : EditorWindow
     static bool is_www = true; //默认
     static bool is_editing = false; //是否正在编辑
 
-    const string yes_use_ab = "USE_ASSETBUNDLE";
-    const string not_use_ab = "";
+    static string[] yes_use_ab = new string[] { "Channel_102", "USE_ASSETBUNDLE" };
+    static string[] not_use_ab = new string[] { "Channel_102" };
     static NamedBuildTarget target = NamedBuildTarget.Standalone;
     static bool use_ab = false; //默认
 
@@ -657,7 +641,7 @@ public class DeployWindow : EditorWindow
     static bool CheckUseAB()
     {
         string cur_use_ab = PlayerSettings.GetScriptingDefineSymbols(target);
-        use_ab = cur_use_ab.Contains(yes_use_ab);
+        use_ab = cur_use_ab.Contains(yes_use_ab[1]);
         return use_ab;
     }
     static void ChangeUseAB()
@@ -665,7 +649,7 @@ public class DeployWindow : EditorWindow
         CheckUseAB();
 
         use_ab = !use_ab;
-        string dst_use_ab = use_ab ? yes_use_ab : not_use_ab;
+        string[] dst_use_ab = use_ab ? yes_use_ab : not_use_ab;
 
         PlayerSettings.SetScriptingDefineSymbols(target, dst_use_ab);
         AssetDatabase.Refresh();

@@ -108,7 +108,7 @@ namespace Code.Client
             if (packetType >= Enum.GetValues(typeof(PacketType)).Length) return;
 
             PacketType pt = (PacketType)packetType;
-            Debug.Log($"<color=yellow>{pt}</color>");
+            Debug.Log($"<color=yellow>packet:{pt}</color>");
             switch (pt)
             {
                 case PacketType.S2C_Input:
@@ -275,7 +275,21 @@ namespace Code.Client
             //Debug.Log("挂载委托");
             _onDisconnected = onDisconnected;
 
-            string IP = GameManager.present.gate;
+            IPAddress address = null;
+            //Debug.Log($"test1: {IPAddress.TryParse("192.168.1.101", out address)}"); //True
+            //Debug.Log($"test2: {IPAddress.TryParse("moegijinka.cn", out address)}"); //False
+            string gate = GameManager.present.gate;
+            string IP = string.Empty;
+            if (IPAddress.TryParse(gate, out address) == false) //是域名
+            {
+                IPHostEntry host = Dns.GetHostEntry(gate);
+                address = host.AddressList[0];
+                IP = address.ToString();
+            }
+            else
+            {
+                IP = gate;
+            }
             int Port = ConfigManager.Get().globalConfig.Port;
             string Key = ConfigManager.Get().globalConfig.Key;
             _netManager.Connect(IP, Port, Key);
@@ -351,7 +365,7 @@ namespace Code.Client
         }
 
         // 连接成功，自动用令牌登录
-        async void SendLoginByToken()
+        public async void SendLoginByToken()
         {
             string token = GameManager.Token;
             Debug.Log($"连接服务器成功，尝试读取Token：'{token}'");

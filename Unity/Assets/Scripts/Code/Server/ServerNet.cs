@@ -463,33 +463,6 @@ namespace Code.Server
                 peer.Send(WriteSerializable(PacketType.S2C_BattleReconnect, packet3), DeliveryMethod.ReliableOrdered);
                 UnityEngine.Debug.Log($"<color=yellow>{player.UserName} is lostnet to reconnect</color>");
             }
-            /*
-            //模拟超大消息包收发（最多60*100=6000个，72KB）
-            S2C_InputPacket[] array = new S2C_InputPacket[5001]; //多一个废帧[0]
-            for (int i = 0; i < array.Length; i++)
-            {
-                if (i == 0)
-                {
-                    array[0] = new S2C_InputPacket();
-                }
-                else
-                {
-                    uint tick = (uint)i;
-                    var input = new Dictionary<int, uint>();
-                    input[0] = 0;
-                    input[1] = 1;
-
-                    uint[] _inputs = new uint[2] { input[0], input[1] };
-                    array[i] = new S2C_InputPacket { frameNumber = tick, inputs = _inputs };
-                }
-            }
-            var packet4 = new S2C_LackInputPacket
-            {
-                frameNumber = 5000,
-                inputs = array,
-            };
-            peer.Send(WriteSerializable(PacketType.S2C_BattleInputs, packet4), DeliveryMethod.ReliableOrdered);
-            */
             #endregion
         }
 
@@ -510,25 +483,25 @@ namespace Code.Server
             #region 验证逻辑
 #if UNITY_SERVER || UNITY_EDITOR
             string query = $"SELECT Count(*) FROM tb_user WHERE token='{cmd.Token}'";
-            int check1 = DatabaseManager.Count(DatabaseManager.db_user, query);
-            //UnityEngine.Debug.Log($"check username & password: {check1}");
-            if (check1 <= 0)
+            List<string>[] _list = DatabaseManager.SelectAllRecord(DatabaseManager.db_user, $"tb_user WHERE token='{cmd.Token}'", "username");
+            if (_list.Length <= 0)
             {
                 UnityEngine.Debug.LogError("token not exist");
                 var packet = new S2C_LoginResultPacket { Code = 1 };
                 peer.Send(WriteSerializable(PacketType.S2C_LoginResult, packet), DeliveryMethod.ReliableOrdered);
                 return;
             }
+            List<string> _userList = _list[0];
+            userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : _userList[0].ToString();
+            UnityEngine.Debug.Log($"check list:{_list.Length}, username:{userName}");
 
             string columnName = "username,screensize,fullscreen,audio,sound,language";
-            List<string>[] results = DatabaseManager.SelectAllRecord(DatabaseManager.db_moefight, $"tb_settings WHERE token='{cmd.Token}'", columnName); //固定长度4
-            List<string> _userList = results[0];
+            List<string>[] results = DatabaseManager.SelectAllRecord(DatabaseManager.db_moefight, $"tb_settings WHERE username='{userName}'", columnName); //固定长度4
             List<string> _screensizeList = results[1];
             List<string> _fullscreenList = results[2];
             List<string> _audioList = results[3];
             List<string> _soundList = results[4];
             List<string> _languageList = results[5];
-            userName = (_userList.Count == 0 || string.IsNullOrEmpty(_userList[0])) ? string.Empty : _userList[0].ToString();
             _screensize = (_screensizeList.Count == 0 || string.IsNullOrEmpty(_screensizeList[0])) ? (byte)0 : (byte)int.Parse(_screensizeList[0]);
             _fullscreen = (_fullscreenList.Count == 0 || string.IsNullOrEmpty(_fullscreenList[0])) ? (byte)0 : (byte)int.Parse(_fullscreenList[0]);
             _audio = (_audioList.Count == 0 || string.IsNullOrEmpty(_audioList[0])) ? (byte)0 : (byte)int.Parse(_audioList[0]);
