@@ -118,7 +118,9 @@ public class CharacterView : MonoBehaviour
         // projectile
         if (character.projectile.active)
         {
-            projectileView.spriteRenderer.enabled = true;
+            //projectileView.spriteRenderer.enabled = true;
+            projectileView.particleRenderer.gameObject.SetActive(true);
+            projectileView.particleRenderer.Play();
             int index;
             if (character.projectile.activeSince < 2)
             {
@@ -129,14 +131,17 @@ public class CharacterView : MonoBehaviour
                 index = ((int)character.projectile.activeSince % (data.projectiles["FIREBALL"].distinctSprites - 1)) + 1;
             }
             //projectileView.spriteRenderer.sprite = sprites["FIREBALL"][index];
-            projectileView.spriteRenderer.flipX = character.projectile.facingRight;
+            //projectileView.spriteRenderer.flipX = character.projectile.facingRight;
+            projectileView.particleRenderer.transform.rotation = Quaternion.Euler(0, (character.projectile.facingRight ? 90 : -90), 0);
             float projectileViewX = ((character.projectile.position.x - Constants.BOUNDS_WIDTH / 2) / Constants.SCALE);
             float projectileViewY = (character.projectile.position.y / Constants.SCALE);
             projectileView.transform.position = new Vector3(projectileViewX, projectileViewY, zDistance);
         }
         else
         {
-            projectileView.spriteRenderer.enabled = false;
+            //projectileView.spriteRenderer.enabled = false;
+            projectileView.particleRenderer.Stop();
+            projectileView.particleRenderer.gameObject.SetActive(false);
         }
 
         // boxes
