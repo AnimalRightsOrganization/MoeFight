@@ -1197,7 +1197,7 @@
           "blockstun": 16,
           "hitstun": 22,
           "hitstop": 7,
-          "pushback": 4000,
+          "pushback": 1000,
           "type": 1 
         },{
           "xMin": 350,
@@ -1209,7 +1209,7 @@
           "blockstun": 16,
           "hitstun": 22,
           "hitstop": 7,
-          "pushback": 4000,
+          "pushback": 2000,
           "type": 1 
         }
       ],

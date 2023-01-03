@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using HitstunConstants;
+using System.Linq;
 
 [System.Serializable]
 public class Character
@@ -681,19 +682,17 @@ public class Character
                 }
                 if (framesInState < Constants.PREJUMP_FRAMES)
                 {
-                    velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
-                    //velocity.x = 0;
-                    //velocity.y = 0;
+                    //velocity.x += facingRight ? Constants.FRICTION : -Constants.FRICTION;
                     break;
                 }
                 if (framesInState == Constants.PREJUMP_FRAMES)
                 {
-                    //velocity.x = facingRight ? -data.constants.JUMP_VELOCITY_X : data.constants.JUMP_VELOCITY_X;
-                    velocity.y = Constants.JUMP_VELOCITY_Y / 2; //6666 / 2
+                    velocity.y = Constants.JUMP_VELOCITY_Y; //6666
                     break;
                 }
                 velocity.x = velocity.x;
-                velocity.y += Constants.GRAVITY / Constants.FPS * 3 / 2; //每帧都下落
+                velocity.y += Constants.GRAVITY / Constants.FPS; //每帧都下落
+
 
                 if (position.y <= 0)
                 {
