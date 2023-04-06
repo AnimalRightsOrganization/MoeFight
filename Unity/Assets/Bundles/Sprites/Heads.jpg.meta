@@ -232,11 +232,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      KEN: 1587354797
-      HONOKA: 91509361
-      TAICHI: -62017646
       AOI: -1092190950
+      HONOKA: 91509361
+      KEN: 1587354797
       SATOMI: -772345439
+      TAICHI: -62017646
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

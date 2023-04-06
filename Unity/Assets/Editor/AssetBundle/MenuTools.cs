@@ -401,9 +401,16 @@ public partial class MenuTools : Editor
     [MenuItem("Tools/运行/客户端 %_F11", false, 11)]
     static void RunClient()
     {
-        string filePath = Path.Combine(ConstValue.UnityDir, "Build/Client/GameClient.exe");
-        Process.Start(filePath);
-        Debug.Log(filePath);
+        string filePath = Path.Combine(ConstValue.UnityDir, "Build/GameClient_101/GameClient_101.exe");
+        try
+        {
+            Process.Start(filePath);
+            Debug.Log(filePath);
+        }
+        catch(System.Exception e)
+        {
+            Debug.LogError(e.ToString());
+        }
     }
     [MenuItem("Tools/运行/服务器 %_F12", false, 11)]
     static void RunServer()
