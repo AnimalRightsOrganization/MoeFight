@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50736
 File Encoding         : 65001
 
-Date: 2024-08-25 23:53:23
+Date: 2024-08-26 00:33:01
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,6 +33,6 @@ CREATE TABLE `tb_app` (
 -- ----------------------------
 -- Records of tb_app
 -- ----------------------------
-INSERT INTO `tb_app` VALUES ('moefight', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/moefight/res', '1.0', '1.0', '没有公告');
-INSERT INTO `tb_app` VALUES ('turtlerace', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/turtlerace/res', '1.0', '1.0', '没有公告');
-INSERT INTO `tb_app` VALUES ('afk', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/afk/res', '1.0', '1.0', '没有公告');
+INSERT INTO `tb_app` VALUES ('moefight', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/moefight/res', '0.1.0', '1.0', '没有公告');
+INSERT INTO `tb_app` VALUES ('turtlerace', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/turtlerace/res', '0.1.0', '1.0', '没有公告');
+INSERT INTO `tb_app` VALUES ('afk', 'moegijinka.cn', 'moegijinka.cn', 'moegijinka.cn', 'app.moegijinka.cn/afk/res', '0.1.0', '1.0', '没有公告');

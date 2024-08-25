@@ -36,6 +36,7 @@ public class Md5Utils
         }
     }
 
+    // 哈希MD5 32位[小]
     public static string GetMD5String(string strWord)
     {
         string strRes = string.Empty;
